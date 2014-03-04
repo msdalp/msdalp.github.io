@@ -2,7 +2,7 @@
 layout: post
 title:  "Jetty Embedded Server With Post, Get, and Gson"
 date:   2014-03-04 16:40:24
-categories: jekyll update
+categories:
 ---
 Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the <a href="http://www.eclipse.org/jetty/powered">Jetty Powered page</a> for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
 You should first download the required jetty jar files and import them. Basically you can just down <a href="http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar">jetty all</a> and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from <a href="https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&can=2&q=">this</a> link.

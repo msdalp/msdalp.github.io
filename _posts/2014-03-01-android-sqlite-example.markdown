@@ -2,7 +2,7 @@
 layout: post
 title:  "Android Sqlite Example"
 date:   2014-03-04 16:40:24
-categories: jekyll update
+categories:
 ---
 SQLite is embedded into every Android device. Using an SQLite database in Android does not require a setup procedure or administration of the database. You only have to define the SQL statements for creating and updating the database. Afterwards the database is automatically managed for you by the Android platform.
 

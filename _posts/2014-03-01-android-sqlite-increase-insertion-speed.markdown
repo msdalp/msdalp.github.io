@@ -2,7 +2,7 @@
 layout: post
 title:  "Increase Insertion Speed on Android SQLite"
 date:   2014-03-04 16:40:24
-categories: jekyll update
+categories:
 ---
 I've been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it's a set function so I deleted the datas before inserting anything.
 
