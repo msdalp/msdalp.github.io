@@ -37,7 +37,9 @@ To create and upgrade a database you have to create a subclass of the SQLiteOpen
 {% endhighlight %}
 
 The SQLiteOpenHelper class provides the getReadableDatabase() and getWriteableDatabase() methods to get access to an SQLiteDatabase object; either in read or write mode.Also SQLiteDatabase provides insert(), update(), delete(), and query methods.To make a query you can use either of rawquery() or query().Also keep this mind that you should always make sure you use methods as synchronized.Here another example of adding data into database and retrieving from it.
+
 We want to use synchronized for every database operation method to avoid from getting database locked errors. I used a list of objects which are "Data" objects that make things more readable but you can use just an object or even use only the areas like objects that make things more readable but you can use just an object or even use only the areas like (long \_id, long \_dataId, String \_value).All the database operations are done in try-catch-finally block and returning a boolean value to show if the insertion was successful or not is the convenient way to do it. ContentValues is the class given by Android and its required for any database operation.
+
 REMARK:You will see a commented out code which is db.insertWithOnConflict method that is a very good way to insert with insertion algorithms at the end. I used SQLiteDatabase.CONFLICT\_REPLACE which basicly updates the old one with the new one if it's already in the database. And after the all operations are done always remember to close database otherwise you will get errors saying that database is already opened.
 {% highlight java %}
 public synchronized boolean addData(List<YourObject> _objects) {
@@ -186,6 +188,8 @@ public class MainActivity extends Activity {
         }
     }
 }
-
 {% endhighlight %}
+You can download both mainactivity and db class from the links given below:
+MainActivity:<a href="https://gist.github.com/msdalp/9297781">Github Link</a>
+Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a>
 

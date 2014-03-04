@@ -55,9 +55,11 @@
 <span class="o">}</span>
 </code></pre></div>
 
-<p>The SQLiteOpenHelper class provides the getReadableDatabase() and getWriteableDatabase() methods to get access to an SQLiteDatabase object; either in read or write mode.Also SQLiteDatabase provides insert(), update(), delete(), and query methods.To make a query you can use either of rawquery() or query().Also keep this mind that you should always make sure you use methods as synchronized.Here another example of adding data into database and retrieving from it.
-We want to use synchronized for every database operation method to avoid from getting database locked errors. I used a list of objects which are &quot;Data&quot; objects that make things more readable but you can use just an object or even use only the areas like objects that make things more readable but you can use just an object or even use only the areas like (long _id, long _dataId, String _value).All the database operations are done in try-catch-finally block and returning a boolean value to show if the insertion was successful or not is the convenient way to do it. ContentValues is the class given by Android and its required for any database operation.
-REMARK:You will see a commented out code which is db.insertWithOnConflict method that is a very good way to insert with insertion algorithms at the end. I used SQLiteDatabase.CONFLICT_REPLACE which basicly updates the old one with the new one if it&#39;s already in the database. And after the all operations are done always remember to close database otherwise you will get errors saying that database is already opened.</p>
+<p>The SQLiteOpenHelper class provides the getReadableDatabase() and getWriteableDatabase() methods to get access to an SQLiteDatabase object; either in read or write mode.Also SQLiteDatabase provides insert(), update(), delete(), and query methods.To make a query you can use either of rawquery() or query().Also keep this mind that you should always make sure you use methods as synchronized.Here another example of adding data into database and retrieving from it.</p>
+
+<p>We want to use synchronized for every database operation method to avoid from getting database locked errors. I used a list of objects which are &quot;Data&quot; objects that make things more readable but you can use just an object or even use only the areas like objects that make things more readable but you can use just an object or even use only the areas like (long _id, long _dataId, String _value).All the database operations are done in try-catch-finally block and returning a boolean value to show if the insertion was successful or not is the convenient way to do it. ContentValues is the class given by Android and its required for any database operation.</p>
+
+<p>REMARK:You will see a commented out code which is db.insertWithOnConflict method that is a very good way to insert with insertion algorithms at the end. I used SQLiteDatabase.CONFLICT_REPLACE which basicly updates the old one with the new one if it&#39;s already in the database. And after the all operations are done always remember to close database otherwise you will get errors saying that database is already opened.</p>
 
 <div class="highlight"><pre><code class="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">addData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
@@ -212,6 +214,10 @@ REMARK:You will see a commented out code which is db.insertWithOnConflict method
 <span class="o">}</span>
 </code></pre></div>
 
+<p>You can download both mainactivity and db class from the links given below:
+MainActivity:<a href="https://gist.github.com/msdalp/9297781">Github Link</a>
+Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a></p>
+
 </div>
 
 
@@ -219,7 +225,7 @@ REMARK:You will see a commented out code which is db.insertWithOnConflict method
             <div class="contact">
               <p>
                 Mustafa Alparslan<br />
-                Comp. Engineer<br />
+                Comp. Eng. Student<br />
                 msdalp(at)gmail(dot)com
               </p>
             </div>
