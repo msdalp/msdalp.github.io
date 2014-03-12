@@ -6,7 +6,7 @@ categories:
 ---
 
 There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
-First one is using regular expressions and this is the one I will recommend.This matches as <br> 
+First one is using regular expressions and this is the one I use mostly.This matches as <br> 
 -?     --> negative sign, could have none or one <br>
 \\d+   --> one or more digits
 {% highlight java %}
