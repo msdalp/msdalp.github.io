@@ -27,13 +27,13 @@
 <div class="post">
 <p>I&#39;ve been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it&#39;s a set function so I deleted the datas before inserting anything.</p>
 
-<div class="highlight"><pre><code class="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="n">db</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="s">&quot;table_data&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
             <span class="k">for</span> <span class="o">(</span><span class="n">YourObject</span> <span class="n">object</span> <span class="o">:</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+                <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ContentValues</span><span class="o">();</span>
                 <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;ID&quot;</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
                 <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;NAME&quot;</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
                 <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;ABBR&quot;</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">abbr</span><span class="o">);</span>
@@ -47,12 +47,11 @@
             <span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> 
-<span class="o">}</span>
-</code></pre></div>
+<span class="o">}</span></code></pre></div>
 
 <p>After some digging I found nnother method to insert data into the database by using SqliteStatements.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.We had to make sure it is really inserting the data to database and it was successful.</p>
 
-<div class="highlight"><pre><code class="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kd">final</span> <span class="n">String</span> <span class="n">INSERT_DATA</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO table_data VALUES (?,?,?,?);&quot;</span><span class="o">;</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
@@ -77,8 +76,7 @@
             <span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></div>
+<span class="o">}</span></code></pre></div>
 
 </div>
 

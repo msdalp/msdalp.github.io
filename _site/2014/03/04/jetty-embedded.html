@@ -29,7 +29,7 @@
 You should first download the required jetty jar files and import them. Basically you can just down <a href="http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar">jetty all</a> and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from <a href="https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&can=2&q=">this</a> link.
 First create a class that extends Server and by giving port to its constructor we will be able to start it easily.</p>
 
-<div class="highlight"><pre><code class="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
  
 <span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.google.gson.GsonBuilder</span><span class="o">;</span>
@@ -39,33 +39,31 @@ First create a class that extends Server and by giving port to its constructor w
  
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Jetty</span> <span class="kd">extends</span> <span class="n">Server</span> <span class="o">{</span>
  
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GsonBuilder</span><span class="o">().</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">GsonBuilder</span><span class="o">().</span>
     <span class="n">setDateFormat</span><span class="o">(</span><span class="s">&quot;yyyy-MM-dd HH:mm:ss&quot;</span><span class="o">).</span><span class="na">create</span><span class="o">();</span>
  
     <span class="kd">public</span> <span class="nf">Jetty</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
  
-        <span class="n">ServletContextHandler</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletContextHandler</span><span class="o">(</span><span class="n">ServletContextHandler</span>
+        <span class="n">ServletContextHandler</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ServletContextHandler</span><span class="o">(</span><span class="n">ServletContextHandler</span>
         <span class="o">.</span><span class="na">NO_SESSIONS</span><span class="o">);</span>
         <span class="n">context</span><span class="o">.</span><span class="na">setContextPath</span><span class="o">(</span><span class="s">&quot;/test&quot;</span><span class="o">);</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="n">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="n">GetName</span><span class="o">(</span><span class="n">gson</span><span class="o">)),</span> <span class="s">&quot;/GetName/*&quot;</span><span class="o">);</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="n">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="n">SaveName</span><span class="o">()),</span> <span class="s">&quot;/SaveName/*&quot;</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="nf">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="nf">GetName</span><span class="o">(</span><span class="n">gson</span><span class="o">)),</span> <span class="s">&quot;/GetName/*&quot;</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="nf">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="nf">SaveName</span><span class="o">()),</span> <span class="s">&quot;/SaveName/*&quot;</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setHandler</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setStopAtShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="o">}</span>
  
-<span class="o">}</span>
-</code></pre></div>
+<span class="o">}</span></code></pre></div>
 
 <p>By using context.addServlet() method you can add servlets easily.addServlet() takes two parameters and the first one is the class name that will be called when this servlet called and the second one is the name how you will call it.</p>
 
-<div class="highlight"><pre><code class="java"><span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="n">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="n">SaveName</span><span class="o">()),</span> <span class="s">&quot;/SaveName/*&quot;</span><span class="o">);</span>
-</code></pre></div>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="nf">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="nf">SaveName</span><span class="o">()),</span> <span class="s">&quot;/SaveName/*&quot;</span><span class="o">);</span></code></pre></div>
 
 <p>will be called as localhost:portNumber/test/SaveName 
 GET methods are defined using doGet and POST methods are defined with doPost.SaveName and GetName classes are</p>
 
-<div class="highlight"><pre><code class="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
  
  
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
@@ -100,12 +98,11 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
         <span class="o">}</span>
     <span class="o">}</span>
  
-<span class="o">}</span>
-</code></pre></div>
+<span class="o">}</span></code></pre></div>
 
 <p>And the get method we will use:</p>
 
-<div class="highlight"><pre><code class="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
  
 <span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.google.gson.JsonObject</span><span class="o">;</span>
@@ -129,7 +126,7 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
                                             <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
         <span class="n">String</span> <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="n">JsonObject</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JsonObject</span><span class="o">();</span>
+            <span class="kd">final</span> <span class="n">JsonObject</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">JsonObject</span><span class="o">();</span>
             
             <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;jetty&quot;</span><span class="o">);</span>
             <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;surname&quot;</span><span class="o">,</span> <span class="s">&quot;is awasome&quot;</span><span class="o">);</span>
@@ -146,33 +143,30 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
         <span class="o">}</span>
     <span class="o">}</span>
  
-<span class="o">}</span>
-</code></pre></div>
+<span class="o">}</span></code></pre></div>
 
 <p>It&#39;s all that simple and now you only need to start to jetty server from your main class.</p>
 
-<div class="highlight"><pre><code class="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
  
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
  
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="n">Jetty</span> <span class="n">jetty</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jetty</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="n">Jetty</span> <span class="n">jetty</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Jetty</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
             <span class="n">jetty</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
             <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">500</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="kc">false</span> <span class="o">==</span> <span class="n">jetty</span><span class="o">.</span><span class="na">isStarted</span><span class="o">())</span> <span class="o">{</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="o">(</span><span class="s">&quot;Cannot start jetty server&quot;</span><span class="o">);</span>
             <span class="o">}</span>
     <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div>
+<span class="o">}</span></code></pre></div>
 
 <p>When your application is running you can call localhost:8080/test/GetName and it will return to you a json object like this</p>
 
-<div class="highlight"><pre><code class="json"><span class="p">{</span>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
   <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;jetty&quot;</span><span class="p">,</span>
   <span class="nt">&quot;surname&quot;</span><span class="p">:</span> <span class="s2">&quot;is awesome&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
+<span class="p">}</span></code></pre></div>
 
 <p>You can use HTTP:POST to send data to server by using localhost:8080/test/SaveName and your post parameters should be named as &quot;name&quot; and &quot;surName&quot;.It is the simplest thing you can do with jetty embedded server.I use it to get data from database using parameters and posting data into database and it&#39;s really fast and lightweight which makes it really feasible.</p>
 
