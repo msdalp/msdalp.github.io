@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Android Advanced Udp Client Example"
+title:  "Android Udp Client Example"
 date:   2014-03-09 19:46:32
 categories:
 ---
