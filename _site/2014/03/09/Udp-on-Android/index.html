@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Android Udp Client Example &middot; msdalp
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="msdalp" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">msdalp</a>
+          <small>java, android, etc.</small>
+        </h3>
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Android Udp Client Example</h1>
+  <time datetime="2014-03-09T21:46:32+02:00" class="page-date">09 Mar 2014</time>
+  <p>UDP (User Datagram Protocol) is anther commonly used protocol on the Internet. However, UDP is never used to send important data such as webpages,
+database information, etc; UDP is commonly used for streaming audio and video. Streaming media such as Windows Media audio files (.WMA) , Real Player (.RM),
+and others use UDP because it offers speed! The reason UDP is faster than TCP is because there is no form of flow control or error correction. 
+The data sent over the Internet is affected by collisions, and errors will be present. Remember that UDP is only concerned with speed.
+This is the main reason why streaming media is not high quality.<br />
+Besides UDP a is connectionless protocol. Communication is datagram oriented. The integrity is guaranteed only on the single datagram.
+Datagrams reach destination and can arrive out of order or don’t arrive at all. Is more efficient than TCP because it uses non ack.
+It’s generally used for real time communication, where a little percentage of packet loss rate is preferable to the overhead of a TCP connection.</p>
+
+<p>These are the general details of the UDP you can find anywhere.I assume you decided that it’s better to use UDP on you Android application here some ways to implement 
+client for UDP.A client can send data to server, can listen for coming data from a port or send a data to server and wait for answer.<br /></p>
+
+<p>First we start with sending data to server.You need datagramsocket and datagrampacket to send data to server.DatagramSocket is the port we will send and DatagramPacket is the data
+we will send represented as bytes.It may throw SocketException when you try to create a new DatagramSocket object or IOException when you try to send data.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSend</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+                <span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ip</span><span class="o">);</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="o">(</span><span class="s">&quot;The String to Send&quot;</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+                <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">,</span><span class="n">serverAddr</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                <span class="n">udpSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Udp:&quot;</span><span class="o">,</span> <span class="s">&quot;Socket Error:&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Udp Send:&quot;</span><span class="o">,</span> <span class="s">&quot;IO Error:&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Just sending data may not be enough.You can listen a port as well.Listening a port is done by infinite loops since you don’t know when to stop listening.
+We should prefer run flags for this than can close the loop when the job is done.If you just use while(true) you can see on your logcat it is still listening even the application
+is not open on the main screen.The data size will be defined first as byte here so use a reasonable number.If you choose a small number it will give unexpected errors.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+	  <span class="k">try</span> <span class="o">{</span>
+	    <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+	    <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8000</span><span class="o">];</span>
+	    <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">message</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">&quot;UDP client: &quot;</span><span class="o">,</span> <span class="s">&quot;about to wait to receive&quot;</span><span class="o">);</span>
+	    <span class="n">udpSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+	    <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">message</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">packet</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&quot;Received data&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>
+	  <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;UDP client has IOException&quot;</span><span class="o">,</span> <span class="s">&quot;error: &quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+	    <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	  <span class="o">}</span>
+	<span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>There is also another way to write listener by giving it listening time.How can we use such an implementmation?
+It may work first you send a data to server like “FILES” asking for files on the server.And set the listening time with setSoTimeout() method and start listening.
+You should catch the exception which is SocketTimeoutException if there is no answer.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSendAndListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramSocket</span><span class="o">(</span><span class="n">portVal</span><span class="o">);</span>
+		<span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ipVal</span><span class="o">);</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="o">(</span><span class="s">&quot;FILES&quot;</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+                <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">,</span><span class="n">serverAddr</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                <span class="n">udpSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+                <span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">try</span> <span class="o">{</span>
+                        <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8000</span><span class="o">];</span>
+                        <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">message</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">&quot;UDP client: &quot;</span><span class="o">,</span> <span class="s">&quot;about to wait to receive&quot;</span><span class="o">);</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="mi">10000</span><span class="o">);</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+                        <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">message</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&quot;Received text&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>                        
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot; UDP client has IOException&quot;</span><span class="o">,</span> <span class="s">&quot;error: &quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                        <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketTimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Timeout Exception&quot;</span><span class="o">,</span><span class="s">&quot;UDP Connection:&quot;</span><span class="o">,</span><span class="n">e</span><span class="o">);</span>
+                        <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Socket Open:&quot;</span><span class="o">,</span> <span class="s">&quot;Error:&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>The last thing is how to call these Clients from you main activity.Remember these were Runnable so you should start these with Thread.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">msd</span><span class="o">.</span><span class="na">udp</span><span class="o">.</span><span class="na">test</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.view.View</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.widget.EditText</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramPacket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketTimeoutException</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">ip</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+        <span class="n">udpConnect</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nf">ClientSendAndListen</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+
+</article>
+
+<aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="//2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
+            Create Exe from a Java Project with Many Jars Included
+            <small><time datetime="2015-01-11T21:46:32+02:00">11 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="//2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
+            Java Sqlite Fast Insert with PreparedStatement
+            <small><time datetime="2014-12-11T21:00:00+02:00">11 Dec 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside>
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-03-24T15:19:06+02:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

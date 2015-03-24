@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      msdalp &middot; java, android, etc.
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="msdalp" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">msdalp</a>
+          <small>java, android, etc.</small>
+        </h3>
+      </header>
+
+      <main>
+        <div class="posts">
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/11/How-to-Check-If-a-String-is-Integer/">
+        How to Check If a String is Integer
+      </a>
+    </h1>
+
+    <time datetime="2014-03-11T21:46:32+02:00" class="post-date">11 Mar 2014</time>
+
+    <p>There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
+First one is using regular expressions and this is the one I use mostly.This matches as <br /> 
+-?     –&gt; negative sign, could have none or one <br />
+\d+   –&gt; one or more digits</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
+  <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="s">&quot;-?\\d+&quot;</span><span class="o">);</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Using parseInt is possible as well.In this way you should try to parse a String to integer and catch if any exceptions occur.
+If your code creats an NumberFormatException then you should return false.We don’t care about other exceptions here.If there is no exception that means it went okey and your string is indeed an integer.
+Also please be aware that we used parseInt() and not the Integer.valueOf() method.You can check the differences here.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NumberFormatException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Another way is more complex  but much faster than Integer.parseInt() or regex method.It’s better to check which works best for you.
+Here some of you may ask why not use java.lang.Character.isDigit() and check the char values itself.isDigit returns true for things like Devanagari digits. While Integer.parseInt() handles these as digits, it may not be what’s expected for most use cases</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Jonas</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">for</span> <span class="o">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+		<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="sc">&#39;0&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="sc">&#39;9&#39;</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span></code></pre></div>
+
+<p>The last one is using StringUtils or NumberUtils which is not a good idea but it works.You can check the detailed page <a href="http://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isNumeric%28java.lang.CharSequence%29">here</a>.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str</span><span class="o">);</span></code></pre></div>
+
+<p>Which one is the best to use?If you need performance you should use the Jonas one.It may look unnecessary but it is really fast.
+Here some test results with these methods.Running many times these methods shows that it may differ a lot.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ByException</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<span class="n">ByException</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">465</span>
+
+<span class="n">ByRegex</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<span class="n">ByRegex</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">26</span>
+
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">8</span>
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">2</span></code></pre></div>
+
+  </article>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page5">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page3">Newer</a>
+    
+  
+</div>
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-03-24T15:19:06+02:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>
