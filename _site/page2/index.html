@@ -95,7 +95,7 @@
 <p>Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml</p>
 
 <p>2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br />
-<img src="msdalp.github.io/assets/img/l4j_build_xml.png" alt="My helpful screenshot" /><br />
+<img src="/assets/img/l4j_build_xml.png" alt="My helpful screenshot" /><br />
 Open build.xml and add these target code before the &lt;/project&gt; closing. You need to update your lauch4j folder by using location after the &lt;property name=”launch4jexe.dir”  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.</p>
 
 <div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;package-for-launch4j&quot;</span> <span class="na">depends=</span><span class="s">&quot;clean,compile,jar&quot;</span><span class="nt">&gt;</span>
@@ -126,7 +126,7 @@ Open build.xml and add these target code before the &lt;/project&gt; closing. Yo
 <span class="nt">&lt;/target&gt;</span></code></pre></div>
 
 <p>3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -&gt; Other Targets -&gt; package-for-lauch4j <br /><br />
-<img src="msdalp.github.io/assets/img/l4j_build_target.png" alt="My helpful screenshot" /><br /></p>
+<img src="/assets/img/l4j_build_target.png" alt="My helpful screenshot" /><br /></p>
 
 <p>Compile output will be like this  and if there is no error you can get your exe under exe folder.</p>
 
@@ -163,7 +163,7 @@ Open build.xml and add these target code before the &lt;/project&gt; closing. Yo
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-03-26T09:53:35+02:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-06-20T14:39:24+03:00">2015</time>. All rights reserved.
         </small>
       </footer>
     </div>

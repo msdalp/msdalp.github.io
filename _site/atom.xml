@@ -4,11 +4,11 @@
  <title>msdalp</title>
  <link href="msdalp.github.io/atom.xml" rel="self"/>
  <link href="msdalp.github.io/"/>
- <updated>2015-03-26T09:53:35+02:00</updated>
+ <updated>2015-06-20T14:39:24+03:00</updated>
  <id>msdalp.github.io</id>
  <author>
-   <name>Mark Otto</name>
-   <email>markdotto@gmail.com</email>
+   <name>Mustafa Alparslan</name>
+   <email>msdalp@gmail.com</email>
  </author>
 
  
@@ -58,11 +58,11 @@ Open /etc/sysctl.conf with your text editor.&lt;/p&gt;
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Save the file and close it. To make sure IPv6 is disabled run&lt;/p&gt;
+&lt;p&gt;Save the file and close it. To make sure IPv6 is disabled run &lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;sudo sysctl -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;and you will see&lt;/p&gt;
+&lt;p&gt;and you will see &lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;net.ipv6.conf.all.disable_ipv6 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1
 net.ipv6.conf.default.disable_ipv6 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1
@@ -73,11 +73,11 @@ net.ipv6.conf.lo.disable_ipv6 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1&l
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cat /proc/sys/net/ipv6/conf/all/disable_ipv6&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;It will report: 1 &lt;br /&gt;
-Now it is ready to run on port 80. Start your tomcat with&lt;/p&gt;
+Now it is ready to run on port 80. Start your tomcat with &lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo service tomcat7 start&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;If you look at your catalina.out logs it will be written in there as&lt;/p&gt;
+&lt;p&gt;If you look at your catalina.out logs it will be written in there as &lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;Mar 21, &lt;span class=&quot;m&quot;&gt;2015&lt;/span&gt; 10:02:44 PM org.apache.coyote.AbstractProtocol init
 INFO: Initializing ProtocolHandler &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;http-bio-80&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -127,7 +127,7 @@ example.com/Services/&lt;/p&gt;
 &lt;p&gt;Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml&lt;/p&gt;
 
 &lt;p&gt;2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.&lt;br /&gt;
-&lt;img src=&quot;msdalp.github.io/assets/img/l4j_build_xml.png&quot; alt=&quot;My helpful screenshot&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/assets/img/l4j_build_xml.png&quot; alt=&quot;My helpful screenshot&quot; /&gt;&lt;br /&gt;
 Open build.xml and add these target code before the &amp;lt;/project&amp;gt; closing. You need to update your lauch4j folder by using location after the &amp;lt;property name=”launch4jexe.dir”  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;target&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;package-for-launch4j&amp;quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;depends=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;clean,compile,jar&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
@@ -158,7 +158,7 @@ Open build.xml and add these target code before the &amp;lt;/project&amp;gt; clo
 &lt;span class=&quot;nt&quot;&gt;&amp;lt;/target&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -&amp;gt; Other Targets -&amp;gt; package-for-lauch4j &lt;br /&gt;&lt;br /&gt;
-&lt;img src=&quot;msdalp.github.io/assets/img/l4j_build_target.png&quot; alt=&quot;My helpful screenshot&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;img src=&quot;/assets/img/l4j_build_target.png&quot; alt=&quot;My helpful screenshot&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;Compile output will be like this  and if there is no error you can get your exe under exe folder.&lt;/p&gt;
 

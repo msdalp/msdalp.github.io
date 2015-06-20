@@ -39,7 +39,7 @@ With 3  steps you can easily create an exe file from your project that may have 
 Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml
 
 2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br>
-![My helpful screenshot]({{ site.url }}/assets/img/l4j_build_xml.png)<br>
+![My helpful screenshot](/assets/img/l4j_build_xml.png)<br>
 Open build.xml and add these target code before the </project> closing. You need to update your lauch4j folder by using location after the <property name="launch4jexe.dir"  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.
 
 
@@ -73,7 +73,7 @@ Open build.xml and add these target code before the </project> closing. You need
 {% endhighlight %} 
 
 3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -> Other Targets -> package-for-lauch4j <br><br>
-![My helpful screenshot]({{ site.url }}/assets/img/l4j_build_target.png)<br>
+![My helpful screenshot](/assets/img/l4j_build_target.png)<br>
 
 Compile output will be like this  and if there is no error you can get your exe under exe folder.
 

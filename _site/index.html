@@ -102,11 +102,11 @@ Open /etc/sysctl.conf with your text editor.</p>
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1</code></pre></div>
 
-<p>Save the file and close it. To make sure IPv6 is disabled run</p>
+<p>Save the file and close it. To make sure IPv6 is disabled run </p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">sudo sysctl -p</code></pre></div>
 
-<p>and you will see</p>
+<p>and you will see </p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">net.ipv6.conf.all.disable_ipv6 <span class="o">=</span> 1
 net.ipv6.conf.default.disable_ipv6 <span class="o">=</span> 1
@@ -117,11 +117,11 @@ net.ipv6.conf.lo.disable_ipv6 <span class="o">=</span> 1</code></pre></div>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cat /proc/sys/net/ipv6/conf/all/disable_ipv6</code></pre></div>
 
 <p>It will report: 1 <br />
-Now it is ready to run on port 80. Start your tomcat with</p>
+Now it is ready to run on port 80. Start your tomcat with </p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo service tomcat7 start</code></pre></div>
 
-<p>If you look at your catalina.out logs it will be written in there as</p>
+<p>If you look at your catalina.out logs it will be written in there as </p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">Mar 21, <span class="m">2015</span> 10:02:44 PM org.apache.coyote.AbstractProtocol init
 INFO: Initializing ProtocolHandler <span class="o">[</span><span class="s2">&quot;http-bio-80&quot;</span><span class="o">]</span></code></pre></div>
@@ -147,7 +147,7 @@ example.com/Services/</p>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-03-26T09:53:35+02:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-06-20T14:39:24+03:00">2015</time>. All rights reserved.
         </small>
       </footer>
     </div>
