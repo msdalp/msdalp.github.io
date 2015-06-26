@@ -5,7 +5,7 @@ relative_permalinks: true
 # Setup
 title:            msdalp
 tagline:          java, android, etc.
-url:              msdalp.github.io
+url:              http://msdalp.github.io
 paginate:         1
 baseurl:          /
 author:
@@ -17,8 +17,8 @@ author:
 version:          1.0.0
 github:
   repo:           https://github.com/msdalp
-  
-pages_list:       
+
+pages_list:
   About: '/about'
   Archive: '/archive'
   Feed: '/atom.xml'
