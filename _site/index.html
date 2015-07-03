@@ -193,100 +193,6 @@ example.com/Services/</p>
 
   </article>
   
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-        Create Exe from a Java Project with Many Jars Included
-      </a>
-    </h1>
-
-    <time datetime="2015-01-11T21:46:32+02:00" class="post-date">11 Jan 2015</time>
-
-    <p>With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.</p>
-
-<p>1) Create your xml file with launch4j: It is required on the build level and will be done only one time. Simple details will be enough like min jre level and name etc.Here what I use as xml file for launch4j.It just takes icon file and min jre.</p>
-
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="nt">&lt;launch4jConfig&gt;</span>
-  <span class="nt">&lt;dontWrapJar&gt;</span>false<span class="nt">&lt;/dontWrapJar&gt;</span>
-  <span class="nt">&lt;headerType&gt;</span>gui<span class="nt">&lt;/headerType&gt;</span>
-  <span class="nt">&lt;jar&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyAppJarName.jar<span class="nt">&lt;/jar&gt;</span>
-  <span class="nt">&lt;outfile&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe<span class="nt">&lt;/outfile&gt;</span>
-  <span class="nt">&lt;errTitle&gt;&lt;/errTitle&gt;</span>
-  <span class="nt">&lt;cmdLine&gt;&lt;/cmdLine&gt;</span>
-  <span class="nt">&lt;chdir&gt;</span>.<span class="nt">&lt;/chdir&gt;</span>
-  <span class="nt">&lt;priority&gt;</span>normal<span class="nt">&lt;/priority&gt;</span>
-  <span class="nt">&lt;downloadUrl&gt;</span>http://java.com/download<span class="nt">&lt;/downloadUrl&gt;</span>
-  <span class="nt">&lt;supportUrl&gt;&lt;/supportUrl&gt;</span>
-  <span class="nt">&lt;stayAlive&gt;</span>false<span class="nt">&lt;/stayAlive&gt;</span>
-  <span class="nt">&lt;restartOnCrash&gt;</span>false<span class="nt">&lt;/restartOnCrash&gt;</span>
-  <span class="nt">&lt;manifest&gt;&lt;/manifest&gt;</span>
-  <span class="nt">&lt;icon&gt;</span>/home/mstf/Pictures/S.ico<span class="nt">&lt;/icon&gt;</span>
-  <span class="nt">&lt;jre&gt;</span>
-    <span class="nt">&lt;path&gt;&lt;/path&gt;</span>
-    <span class="nt">&lt;bundledJre64Bit&gt;</span>false<span class="nt">&lt;/bundledJre64Bit&gt;</span>
-    <span class="nt">&lt;bundledJreAsFallback&gt;</span>false<span class="nt">&lt;/bundledJreAsFallback&gt;</span>
-    <span class="nt">&lt;minVersion&gt;</span>1.6.0<span class="nt">&lt;/minVersion&gt;</span>
-    <span class="nt">&lt;maxVersion&gt;&lt;/maxVersion&gt;</span>
-    <span class="nt">&lt;jdkPreference&gt;</span>preferJre<span class="nt">&lt;/jdkPreference&gt;</span>
-    <span class="nt">&lt;runtimeBits&gt;</span>64/32<span class="nt">&lt;/runtimeBits&gt;</span>
-  <span class="nt">&lt;/jre&gt;</span>
-<span class="nt">&lt;/launch4jConfig&gt;</span></code></pre></div>
-
-<p>Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml</p>
-
-<p>2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br />
-<img src="/assets/img/l4j_build_xml.png" alt="My helpful screenshot" /><br />
-Open build.xml and add these target code before the &lt;/project&gt; closing. You need to update your lauch4j folder by using location after the &lt;property name=”launch4jexe.dir”  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.</p>
-
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;package-for-launch4j&quot;</span> <span class="na">depends=</span><span class="s">&quot;clean,compile,jar&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4jexe.dir&quot;</span> <span class="na">location=</span><span class="s">&quot;/home/mstf/Downloads/launch4j&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">&quot;launch4j&quot;</span>
-             <span class="na">classname=</span><span class="s">&quot;net.sf.launch4j.ant.Launch4jTask&quot;</span>
-             <span class="na">classpath=</span><span class="s">&quot;${launch4jexe.dir}/launch4j.jar</span>
-<span class="s">            :${launch4jexe.dir}/lib/xstream.jar&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4j.jar.name&quot;</span> <span class="na">value=</span><span class="s">&quot;YourOneJarName&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4j.dir&quot;</span> <span class="na">value=</span><span class="s">&quot;exe&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4j.jar&quot;</span> <span class="na">value=</span><span class="s">&quot;${launch4j.dir}/${launch4j.jar.name}.jar&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;echo</span> <span class="na">message=</span><span class="s">&quot;Packaging ${application.title} into a single JAR at ${launch4j.jar}&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">&quot;${launch4j.dir}&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">&quot;${launch4j.dir}&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;jar</span> <span class="na">destfile=</span><span class="s">&quot;${launch4j.dir}/temp_final.jar&quot;</span> <span class="na">filesetmanifest=</span><span class="s">&quot;skip&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">&quot;dist&quot;</span> <span class="na">includes=</span><span class="s">&quot;*.jar&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">&quot;dist/lib&quot;</span> <span class="na">includes=</span><span class="s">&quot;*.jar&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;manifest&gt;</span>
-        <span class="nt">&lt;attribute</span> <span class="na">name=</span><span class="s">&quot;Main-Class&quot;</span> <span class="na">value=</span><span class="s">&quot;${main.class}&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/manifest&gt;</span>
-    <span class="nt">&lt;/jar&gt;</span>
-    <span class="nt">&lt;zip</span> <span class="na">destfile=</span><span class="s">&quot;${launch4j.jar}&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;zipfileset</span> <span class="na">src=</span><span class="s">&quot;${launch4j.dir}/temp_final.jar&quot;</span>
-            <span class="na">excludes=</span><span class="s">&quot;META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;/zip&gt;</span>
-    <span class="nt">&lt;delete</span> <span class="na">file=</span><span class="s">&quot;${launch4j.dir}/temp_final.jar&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;launch4j</span> <span class="na">configFile=</span><span class="s">&quot;misc/l4j-myapp.xml&quot;</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/target&gt;</span></code></pre></div>
-
-<p>3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -&gt; Other Targets -&gt; package-for-lauch4j <br /><br />
-<img src="/assets/img/l4j_build_target.png" alt="My helpful screenshot" /><br /></p>
-
-<p>Compile output will be like this  and if there is no error you can get your exe under exe folder.</p>
-
-<div class="highlight"><pre><code class="language-console" data-lang="console"><span class="go">package-for-launch4j:</span>
-<span class="go">Packaging MyProject into a single JAR at exe/MyAppJarName.jar</span>
-<span class="go">Deleting directory /home/mstf/NetBeansProjects/MyProject/exe</span>
-<span class="go">Created dir: /home/mstf/NetBeansProjects/MyProject/exe</span>
-<span class="go">Building jar: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar</span>
-<span class="go">Building zip: /home/mstf/NetBeansProjects/SentioSync/exe/MyAppJarName.jar</span>
-<span class="go">Deleting: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar</span>
-<span class="go">Compiling resources</span>
-<span class="go">Linking</span>
-<span class="go">Wrapping</span>
-<span class="go">Successfully created /home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe</span>
-<span class="go">BUILD SUCCESSFUL (total time: 20 seconds)</span></code></pre></div>
-
-
-  </article>
-  
 </div>
 
 <div class="pagination">
@@ -298,11 +204,11 @@ Open build.xml and add these target code before the &lt;/project&gt; closing. Yo
   
 </div>
 
+        
       </main>
-
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-07-03T15:01:29+03:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-07-03T17:09:49+03:00">2015</time>. All rights reserved.
         </small>
       </footer>
     </div>

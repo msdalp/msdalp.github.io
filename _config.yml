@@ -6,12 +6,13 @@ relative_permalinks: true
 title:            msdalp
 tagline:          java, android, etc.
 url:              http://msdalp.github.io
-paginate:         3
+paginate:         2
 baseurl:          /
 author:
   name:           Mustafa Alparslan
   url:            www.msdalp.github.io
   email:          msdalp@gmail.com
+
 
 # Custom vars
 version:          1.1.0
