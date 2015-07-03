@@ -54,94 +54,291 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-        Create Exe from a Java Project with Many Jars Included
+      <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
+        Java Sqlite Fast Insert with PreparedStatement
       </a>
     </h1>
 
-    <time datetime="2015-01-11T21:46:32+02:00" class="post-date">11 Jan 2015</time>
+    <time datetime="2014-12-11T21:00:00+02:00" class="post-date">11 Dec 2014</time>
 
-    <p>With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.</p>
+    <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
 
-<p>1) Create your xml file with launch4j: It is required on the build level and will be done only one time. Simple details will be enough like min jre level and name etc.Here what I use as xml file for launch4j.It just takes icon file and min jre.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="o">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="nt">&lt;launch4jConfig&gt;</span>
-  <span class="nt">&lt;dontWrapJar&gt;</span>false<span class="nt">&lt;/dontWrapJar&gt;</span>
-  <span class="nt">&lt;headerType&gt;</span>gui<span class="nt">&lt;/headerType&gt;</span>
-  <span class="nt">&lt;jar&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyAppJarName.jar<span class="nt">&lt;/jar&gt;</span>
-  <span class="nt">&lt;outfile&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe<span class="nt">&lt;/outfile&gt;</span>
-  <span class="nt">&lt;errTitle&gt;&lt;/errTitle&gt;</span>
-  <span class="nt">&lt;cmdLine&gt;&lt;/cmdLine&gt;</span>
-  <span class="nt">&lt;chdir&gt;</span>.<span class="nt">&lt;/chdir&gt;</span>
-  <span class="nt">&lt;priority&gt;</span>normal<span class="nt">&lt;/priority&gt;</span>
-  <span class="nt">&lt;downloadUrl&gt;</span>http://java.com/download<span class="nt">&lt;/downloadUrl&gt;</span>
-  <span class="nt">&lt;supportUrl&gt;&lt;/supportUrl&gt;</span>
-  <span class="nt">&lt;stayAlive&gt;</span>false<span class="nt">&lt;/stayAlive&gt;</span>
-  <span class="nt">&lt;restartOnCrash&gt;</span>false<span class="nt">&lt;/restartOnCrash&gt;</span>
-  <span class="nt">&lt;manifest&gt;&lt;/manifest&gt;</span>
-  <span class="nt">&lt;icon&gt;</span>/home/mstf/Pictures/S.ico<span class="nt">&lt;/icon&gt;</span>
-  <span class="nt">&lt;jre&gt;</span>
-    <span class="nt">&lt;path&gt;&lt;/path&gt;</span>
-    <span class="nt">&lt;bundledJre64Bit&gt;</span>false<span class="nt">&lt;/bundledJre64Bit&gt;</span>
-    <span class="nt">&lt;bundledJreAsFallback&gt;</span>false<span class="nt">&lt;/bundledJreAsFallback&gt;</span>
-    <span class="nt">&lt;minVersion&gt;</span>1.6.0<span class="nt">&lt;/minVersion&gt;</span>
-    <span class="nt">&lt;maxVersion&gt;&lt;/maxVersion&gt;</span>
-    <span class="nt">&lt;jdkPreference&gt;</span>preferJre<span class="nt">&lt;/jdkPreference&gt;</span>
-    <span class="nt">&lt;runtimeBits&gt;</span>64/32<span class="nt">&lt;/runtimeBits&gt;</span>
-  <span class="nt">&lt;/jre&gt;</span>
-<span class="nt">&lt;/launch4jConfig&gt;</span></code></pre></div>
+       
+        <span class="k">try</span> <span class="o">{</span> 
 
-<p>Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml</p>
+            <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
 
-<p>2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br />
-<img src="/assets/img/l4j_build_xml.png" alt="My helpful screenshot" /><br />
-Open build.xml and add these target code before the &lt;/project&gt; closing. You need to update your lauch4j folder by using location after the &lt;property name=”launch4jexe.dir”  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.</p>
+                <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span> 
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;TIMESTAMP&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;HALF&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;MIN&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;SEC&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;OBJECT_TYPE&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;OBJECT_ID&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span> 
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;X_POS&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;Y_POS&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;Z_POS&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
+                <span class="n">trans</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">SQL</span><span class="o">.</span><span class="na">TABLE_STAT</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">&quot;package-for-launch4j&quot;</span> <span class="na">depends=</span><span class="s">&quot;clean,compile,jar&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4jexe.dir&quot;</span> <span class="na">location=</span><span class="s">&quot;/home/mstf/Downloads/launch4j&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">&quot;launch4j&quot;</span>
-             <span class="na">classname=</span><span class="s">&quot;net.sf.launch4j.ant.Launch4jTask&quot;</span>
-             <span class="na">classpath=</span><span class="s">&quot;${launch4jexe.dir}/launch4j.jar</span>
-<span class="s">            :${launch4jexe.dir}/lib/xstream.jar&quot;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4j.jar.name&quot;</span> <span class="na">value=</span><span class="s">&quot;YourOneJarName&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4j.dir&quot;</span> <span class="na">value=</span><span class="s">&quot;exe&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;launch4j.jar&quot;</span> <span class="na">value=</span><span class="s">&quot;${launch4j.dir}/${launch4j.jar.name}.jar&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;echo</span> <span class="na">message=</span><span class="s">&quot;Packaging ${application.title} into a single JAR at ${launch4j.jar}&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">&quot;${launch4j.dir}&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">&quot;${launch4j.dir}&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;jar</span> <span class="na">destfile=</span><span class="s">&quot;${launch4j.dir}/temp_final.jar&quot;</span> <span class="na">filesetmanifest=</span><span class="s">&quot;skip&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">&quot;dist&quot;</span> <span class="na">includes=</span><span class="s">&quot;*.jar&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">&quot;dist/lib&quot;</span> <span class="na">includes=</span><span class="s">&quot;*.jar&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;manifest&gt;</span>
-        <span class="nt">&lt;attribute</span> <span class="na">name=</span><span class="s">&quot;Main-Class&quot;</span> <span class="na">value=</span><span class="s">&quot;${main.class}&quot;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/manifest&gt;</span>
-    <span class="nt">&lt;/jar&gt;</span>
-    <span class="nt">&lt;zip</span> <span class="na">destfile=</span><span class="s">&quot;${launch4j.jar}&quot;</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;zipfileset</span> <span class="na">src=</span><span class="s">&quot;${launch4j.dir}/temp_final.jar&quot;</span>
-            <span class="na">excludes=</span><span class="s">&quot;META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;/zip&gt;</span>
-    <span class="nt">&lt;delete</span> <span class="na">file=</span><span class="s">&quot;${launch4j.dir}/temp_final.jar&quot;</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;launch4j</span> <span class="na">configFile=</span><span class="s">&quot;misc/l4j-myapp.xml&quot;</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/target&gt;</span></code></pre></div>
+            <span class="o">}</span>
 
-<p>3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -&gt; Other Targets -&gt; package-for-lauch4j <br /><br />
-<img src="/assets/img/l4j_build_target.png" alt="My helpful screenshot" /><br /></p>
+            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Cannot add  stat data&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></div>
 
-<p>Compile output will be like this  and if there is no error you can get your exe under exe folder.</p>
+<p>Doing the same insert with prepared statement.</p>
 
-<div class="highlight"><pre><code class="language-console" data-lang="console"><span class="go">package-for-launch4j:</span>
-<span class="go">Packaging MyProject into a single JAR at exe/MyAppJarName.jar</span>
-<span class="go">Deleting directory /home/mstf/NetBeansProjects/MyProject/exe</span>
-<span class="go">Created dir: /home/mstf/NetBeansProjects/MyProject/exe</span>
-<span class="go">Building jar: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar</span>
-<span class="go">Building zip: /home/mstf/NetBeansProjects/SentioSync/exe/MyAppJarName.jar</span>
-<span class="go">Deleting: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar</span>
-<span class="go">Compiling resources</span>
-<span class="go">Linking</span>
-<span class="go">Wrapping</span>
-<span class="go">Successfully created /home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe</span>
-<span class="go">BUILD SUCCESSFUL (total time: 20 seconds)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            
+            <span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="na">preparedStmt</span><span class="o">(</span><span class="s">&quot;INSERT INTO local_stat VALUES (?,?,?,?,?,?,?,?,?)&quot;</span><span class="o">);</span>
+       
+            <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">9</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">addBatch</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="n">stmt</span><span class="o">.</span><span class="na">executeBatch</span><span class="o">();</span> 
+            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Cannot add stat data&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></div>
+
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/11/How-to-Check-If-a-String-is-Integer/">
+        How to Check If a String is Integer
+      </a>
+    </h1>
+
+    <time datetime="2014-03-11T21:46:32+02:00" class="post-date">11 Mar 2014</time>
+
+    <p>There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
+First one is using regular expressions and this is the one I use mostly.This matches as <br /> 
+-?     –&gt; negative sign, could have none or one <br />
+\d+   –&gt; one or more digits</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
+  <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="s">&quot;-?\\d+&quot;</span><span class="o">);</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Using parseInt is possible as well.In this way you should try to parse a String to integer and catch if any exceptions occur.
+If your code creats an NumberFormatException then you should return false.We don’t care about other exceptions here.If there is no exception that means it went okey and your string is indeed an integer.
+Also please be aware that we used parseInt() and not the Integer.valueOf() method.You can check the differences here.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NumberFormatException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Another way is more complex  but much faster than Integer.parseInt() or regex method.It’s better to check which works best for you.
+Here some of you may ask why not use java.lang.Character.isDigit() and check the char values itself.isDigit returns true for things like Devanagari digits. While Integer.parseInt() handles these as digits, it may not be what’s expected for most use cases</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Jonas</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">for</span> <span class="o">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+		<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="sc">&#39;0&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="sc">&#39;9&#39;</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span></code></pre></div>
+
+<p>The last one is using StringUtils or NumberUtils which is not a good idea but it works.You can check the detailed page <a href="http://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isNumeric%28java.lang.CharSequence%29">here</a>.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str</span><span class="o">);</span></code></pre></div>
+
+<p>Which one is the best to use?If you need performance you should use the Jonas one.It may look unnecessary but it is really fast.
+Here some test results with these methods.Running many times these methods shows that it may differ a lot.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ByException</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<span class="n">ByException</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">465</span>
+
+<span class="n">ByRegex</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<span class="n">ByRegex</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">26</span>
+
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">8</span>
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">2</span></code></pre></div>
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/09/Udp-on-Android/">
+        Android Udp Client Example
+      </a>
+    </h1>
+
+    <time datetime="2014-03-09T21:46:32+02:00" class="post-date">09 Mar 2014</time>
+
+    <p>UDP (User Datagram Protocol) is anther commonly used protocol on the Internet. However, UDP is never used to send important data such as webpages,
+database information, etc; UDP is commonly used for streaming audio and video. Streaming media such as Windows Media audio files (.WMA) , Real Player (.RM),
+and others use UDP because it offers speed! The reason UDP is faster than TCP is because there is no form of flow control or error correction. 
+The data sent over the Internet is affected by collisions, and errors will be present. Remember that UDP is only concerned with speed.
+This is the main reason why streaming media is not high quality.<br />
+Besides UDP a is connectionless protocol. Communication is datagram oriented. The integrity is guaranteed only on the single datagram.
+Datagrams reach destination and can arrive out of order or don’t arrive at all. Is more efficient than TCP because it uses non ack.
+It’s generally used for real time communication, where a little percentage of packet loss rate is preferable to the overhead of a TCP connection.</p>
+
+<p>These are the general details of the UDP you can find anywhere.I assume you decided that it’s better to use UDP on you Android application here some ways to implement 
+client for UDP.A client can send data to server, can listen for coming data from a port or send a data to server and wait for answer.<br /></p>
+
+<p>First we start with sending data to server.You need datagramsocket and datagrampacket to send data to server.DatagramSocket is the port we will send and DatagramPacket is the data
+we will send represented as bytes.It may throw SocketException when you try to create a new DatagramSocket object or IOException when you try to send data.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSend</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+                <span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ip</span><span class="o">);</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="o">(</span><span class="s">&quot;The String to Send&quot;</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+                <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">,</span><span class="n">serverAddr</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                <span class="n">udpSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Udp:&quot;</span><span class="o">,</span> <span class="s">&quot;Socket Error:&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Udp Send:&quot;</span><span class="o">,</span> <span class="s">&quot;IO Error:&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Just sending data may not be enough.You can listen a port as well.Listening a port is done by infinite loops since you don’t know when to stop listening.
+We should prefer run flags for this than can close the loop when the job is done.If you just use while(true) you can see on your logcat it is still listening even the application
+is not open on the main screen.The data size will be defined first as byte here so use a reasonable number.If you choose a small number it will give unexpected errors.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+	  <span class="k">try</span> <span class="o">{</span>
+	    <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+	    <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8000</span><span class="o">];</span>
+	    <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">message</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">&quot;UDP client: &quot;</span><span class="o">,</span> <span class="s">&quot;about to wait to receive&quot;</span><span class="o">);</span>
+	    <span class="n">udpSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+	    <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">message</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">packet</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&quot;Received data&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>
+	  <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;UDP client has IOException&quot;</span><span class="o">,</span> <span class="s">&quot;error: &quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+	    <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	  <span class="o">}</span>
+	<span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>There is also another way to write listener by giving it listening time.How can we use such an implementmation?
+It may work first you send a data to server like “FILES” asking for files on the server.And set the listening time with setSoTimeout() method and start listening.
+You should catch the exception which is SocketTimeoutException if there is no answer.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSendAndListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramSocket</span><span class="o">(</span><span class="n">portVal</span><span class="o">);</span>
+		<span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ipVal</span><span class="o">);</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="o">(</span><span class="s">&quot;FILES&quot;</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+                <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">,</span><span class="n">serverAddr</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                <span class="n">udpSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+                <span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">try</span> <span class="o">{</span>
+                        <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8000</span><span class="o">];</span>
+                        <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">DatagramPacket</span><span class="o">(</span><span class="n">message</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">&quot;UDP client: &quot;</span><span class="o">,</span> <span class="s">&quot;about to wait to receive&quot;</span><span class="o">);</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="mi">10000</span><span class="o">);</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+                        <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">message</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&quot;Received text&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>                        
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot; UDP client has IOException&quot;</span><span class="o">,</span> <span class="s">&quot;error: &quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                        <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketTimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Timeout Exception&quot;</span><span class="o">,</span><span class="s">&quot;UDP Connection:&quot;</span><span class="o">,</span><span class="n">e</span><span class="o">);</span>
+                        <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;Socket Open:&quot;</span><span class="o">,</span> <span class="s">&quot;Error:&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+<p>The last thing is how to call these Clients from you main activity.Remember these were Runnable so you should start these with Thread.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">msd</span><span class="o">.</span><span class="na">udp</span><span class="o">.</span><span class="na">test</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.view.View</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.widget.EditText</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramPacket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketTimeoutException</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">ip</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+        <span class="n">udpConnect</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nf">ClientSendAndListen</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
 
 
   </article>
@@ -163,7 +360,7 @@ Open build.xml and add these target code before the &lt;/project&gt; closing. Yo
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-06-26T11:42:49+03:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2015-07-03T15:01:29+03:00">2015</time>. All rights reserved.
         </small>
       </footer>
     </div>

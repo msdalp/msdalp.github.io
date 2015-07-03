@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Understanding innodb_buffer_pool_size &middot; msdalp
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="msdalp" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+      <h3 class="masthead-title">
+<a href="/" title="Home">msdalp</a>
+<small>java, android, etc.</small>
+
+  &nbsp;&nbsp;&nbsp;
+  <small><a href="/about">About</a></small>
+
+  &nbsp;&nbsp;&nbsp;
+  <small><a href="/archive">Archive</a></small>
+
+  &nbsp;&nbsp;&nbsp;
+  <small><a href="/atom.xml">Feed</a></small>
+
+
+</h3>
+
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Understanding innodb_buffer_pool_size</h1>
+  <time datetime="2015-06-28T00:54:22+03:00" class="page-date">28 Jun 2015</time>
+  <p>There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:</p>
+
+<blockquote>
+  <p>InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer &gt; pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.</p>
+</blockquote>
+
+<p>The idea is keeping innodb_buffer_pool_size bigger as possible that doesn’t block other OS and programs running properly. This will make InnoDB work like a in-memory database and increase the performance a lot. At first InnoDB will take all the required data from disk and access it from memory in the future queries. The default value for InnoDB is 8MB so you might want to update it as a bigger number which fits well for your system.</p>
+
+<p>Before going exact details there is a wrong assumption about Innodb Buffer Pool. People think that if they give enough space for keys to be in the memory and there will be very low IO accesss. The idea is searching keys fast as much as and retrieve data with index directly. Let’s assume you have a query that runs in 600ms and 450 ms is searching keys, 75 ms is getting data from disk and last 75 ms is fetching data from server. Providing proper innodb_buffer_pool_size will make sure you don’t access disk for index search and that 450 ms will decrease to 30 ms (it really depends on your keys and structure) so total time for query is 180 ms now. You still have IO at this rate but it is only retrieving data from disk which can be acceptable.</p>
+
+<p>I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">CONCAT</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="n">KBS</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span>
+<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">)))</span><span class="o">+</span><span class="mi">0</span><span class="p">.</span><span class="mi">49999</span><span class="p">),</span>
+<span class="n">SUBSTR</span><span class="p">(</span><span class="s1">&#39; KMG&#39;</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">SUM</span><span class="p">(</span><span class="n">data_length</span><span class="o">+</span><span class="n">index_length</span><span class="p">)</span> <span class="n">KBS</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+<span class="k">WHERE</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;InnoDB&#39;</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="mi">3</span> <span class="n">PowerOf1024</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></div>
+
+<p>In my system it returns the value:</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="mi">48</span><span class="k">G</span></code></pre></div>
+
+<p>Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.</p>
+
+<p>This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let’s assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="p">(</span><span class="n">PagesData</span><span class="o">*</span><span class="n">PageSize</span><span class="p">)</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">DataGB</span> <span class="k">FROM</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PagesData</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">&#39;Innodb_buffer_pool_pages_data&#39;</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PageSize</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">&#39;Innodb_page_size&#39;</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></div>
+
+<p>For my system it returns:</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">DataGB</span>
+<span class="mi">22</span><span class="p">.</span><span class="mi">5</span><span class="k">G</span></code></pre></div>
+
+<p>It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn’t go up quickly after for a week etc.</p>
+
+<p>There are some other parameters that needed to be adjusted as well but I will not get into these details. Let’s assume you run the query for recommended buffer pool and you got 11GB. However you only have 11.5GB data in your database and it seems a bit odd to have such a big number. The reason for this you probably have too much or redundant index for your tables. You should reconsider the indices and adjust them to a proper state which doesn’t make your operations slower and reserve so much space.</p>
+
+<p>One other issue primary keys of very big tables. Let’s say we have 20 tables with average 1 million to 5 million rows data but only two of them have 200 million rows data per table. At total you should have 450 million rows and probably with indices it would require around 50GB inno db pool. If you don’t access these tables heavily or they are accessed by a big group (like 1.5 million records of logs  belong to one operation) then you should not need a really big buffer pool. However a small amount of pool will be filled with one group data easily and other operations become slower at that time. At least try to give a proper amount of memory to handle the one big operation and it’s additional queries. Of course it is totally another discussion topic why don’t you use some other systems (Cassandra or a different NOSQL maybe ) to store big tables to create results and put these values into mysql to be access etc.</p>
+
+<p>To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.</p>
+
+</article>
+
+<aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
+            Create Exe from a Java Project with Many Jars Included
+            <small><time datetime="2015-01-11T21:46:32+02:00">11 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
+            Java Sqlite Fast Insert with PreparedStatement
+            <small><time datetime="2014-12-11T21:00:00+02:00">11 Dec 2014</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside>
+
+      </main>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2015-07-03T15:01:29+03:00">2015</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>
