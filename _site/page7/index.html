@@ -10,7 +10,7 @@
 
   <title>
     
-      Jetty Embedded Server With Post, Get, and Gson &middot; msdalp
+      msdalp &middot; java, android, etc.
     
   </title>
 
@@ -50,10 +50,18 @@
       </header>
 
       <main>
-        <article class="post">
-  <h1 class="post-title">Jetty Embedded Server With Post, Get, and Gson</h1>
-  <time datetime="2014-03-04T18:40:24+02:00" class="page-date">04 Mar 2014</time>
-  <p>Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the <a href="http://www.eclipse.org/jetty/powered">Jetty Powered page</a> for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
+        <div class="posts">
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/04/jetty-embedded/">
+        Jetty Embedded Server With Post, Get, and Gson
+      </a>
+    </h1>
+
+    <time datetime="2014-03-04T18:40:24+02:00" class="post-date">04 Mar 2014</time>
+
+    <p>Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the <a href="http://www.eclipse.org/jetty/powered">Jetty Powered page</a> for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
 You should first download the required jetty jar files and import them. Basically you can just down <a href="http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar">jetty all</a> and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from <a href="https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&amp;can=2&amp;q=">this</a> link.
 First create a class that extends Server and by giving port to its constructor we will be able to start it easily.</p>
 
@@ -199,40 +207,20 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
 <p>You can use HTTP:POST to send data to server by using localhost:8080/test/SaveName and your post parameters should be named as “name” and “surName”.It is the simplest thing you can do with jetty embedded server.I use it to get data from database using parameters and posting data into database and it’s really fast and lightweight which makes it really feasible.</p>
 
 
-</article>
-<aside class="related">
-  <h2>Related Posts</h2>
-  <ul class="related-posts">
+  </article>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page8">Older</a>
+  
+  
     
-      <li>
-        <h3>
-          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
+      <a class="pagination-item newer" href="/page6">Newer</a>
     
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-            Create Exe from a Java Project with Many Jars Included
-            <small><time datetime="2015-01-11T21:46:32+02:00">11 Jan 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-  </ul>
-</aside>
+  
+</div>
 
 
       </main>

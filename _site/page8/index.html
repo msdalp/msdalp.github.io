@@ -10,7 +10,7 @@
 
   <title>
     
-      Increase Insertion Speed on Android SQLite &middot; msdalp
+      msdalp &middot; java, android, etc.
     
   </title>
 
@@ -50,10 +50,18 @@
       </header>
 
       <main>
-        <article class="post">
-  <h1 class="post-title">Increase Insertion Speed on Android SQLite</h1>
-  <time datetime="2014-03-04T18:40:24+02:00" class="page-date">04 Mar 2014</time>
-  <p>I’ve been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it’s a set function so I deleted the datas before inserting anything.</p>
+        <div class="posts">
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/04/android-sqlite-increase-insertion-speed/">
+        Increase Insertion Speed on Android SQLite
+      </a>
+    </h1>
+
+    <time datetime="2014-03-04T18:40:24+02:00" class="post-date">04 Mar 2014</time>
+
+    <p>I’ve been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it’s a set function so I deleted the datas before inserting anything.</p>
 
 <div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
@@ -107,40 +115,20 @@
 <span class="o">}</span></code></pre></div>
 
 
-</article>
-<aside class="related">
-  <h2>Related Posts</h2>
-  <ul class="related-posts">
+  </article>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page9">Older</a>
+  
+  
     
-      <li>
-        <h3>
-          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
+      <a class="pagination-item newer" href="/page7">Newer</a>
     
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-            Create Exe from a Java Project with Many Jars Included
-            <small><time datetime="2015-01-11T21:46:32+02:00">11 Jan 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-  </ul>
-</aside>
+  
+</div>
 
 
       </main>
