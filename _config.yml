@@ -7,13 +7,13 @@ title:            msdalp
 tagline:          java, android, etc.
 url:              http://msdalp.github.io
 paginate:         1
-comments: true
+comments:         true
+disqus-shortname: msdalp
 baseurl:          /
 author:
   name:           Mustafa Alparslan
   url:            www.msdalp.github.io
   email:          msdalp@gmail.com
-  disqus-shortname: msdalp
 
 # Custom vars
 version:          1.1.0

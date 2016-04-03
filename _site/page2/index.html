@@ -54,80 +54,116 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-        Run Tomcat7 on Port 80
+      <a href="/2015/07/13/Tomcat-Setenv-sh/">
+        Configuring Tomcat SetEnv File
       </a>
     </h1>
 
-    <time datetime="2015-03-01T21:46:32+02:00" class="post-date">01 Mar 2015</time>
+    <time datetime="2015-07-13T23:39:22+03:00" class="post-date">13 Jul 2015</time>
 
-    <p>You may need to run Tomcat on port 80 for many reasons. It is possible to accomplish this in three steps. <br />
-First step is move 8080 to port 80.Find your server.xml file for Tomcat. It is probably under /etc/tomcat/server.xml but still 
-you can find it by using: <br /></p>
+    <blockquote>
+  <p>Very specific details about the set env details.</p>
+</blockquote>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>locate server.xml
-/etc/tomcat7/server.xml</code></pre></div>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#! /bin/sh</span>
+<span class="c"># ==================================================================</span>
+<span class="c">#  ______                           __     _____</span>
+<span class="c"># /_  __/___  ____ ___  _________ _/ /_   /__  /</span>
+<span class="c">#  / / / __ \/ __ `__ \/ ___/ __ `/ __/     / /</span>
+<span class="c"># / / / /_/ / / / / / / /__/ /_/ / /_      / /</span>
+<span class="c">#/_/  \____/_/ /_/ /_/\___/\__,_/\__/     /_/</span>
 
-<p>Open server.xml file with an avaliable text editor (I will use nano).</p>
+<span class="c"># Multi-instance Apache Tomcat installation with a focus</span>
+<span class="c"># on best-practices as defined by Apache, SpringSource, and MuleSoft</span>
+<span class="c"># and enterprise use with large-scale deployments.</span>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo nano /etc/tomcat7/server.xml</code></pre></div>
+<span class="c"># Credits:</span>
+<span class="c">#       Google -&gt; Couldn&#39;t survive without it</span>
+<span class="c">#       Stackoverflow.com -&gt; Community support</span>
+<span class="c">#       SpringSource -&gt; Specifically best-practices and seminars (Expert Series)</span>
 
-<p>Find the part where port is defined as 8080 and change it to 80.</p>
+<span class="c"># Based On:</span>
+<span class="c">#       http://www.springsource.com/files/uploads/tomcat/tomcatx-performance-tuning.pdf</span>
+<span class="c">#       http://www.springsource.com/files/u1/PerformanceTuningApacheTomcat-Part2.pdf</span>
+<span class="c">#       http://www.springsource.com/files/uploads/tomcat/tomcatx-large-scale-deployments.pdf</span>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;Connector</span> <span class="na">port=</span><span class="s">&quot;80&quot;</span> <span class="na">protocol=</span><span class="s">&quot;HTTP/1.1&quot;</span>
-               <span class="na">connectionTimeout=</span><span class="s">&quot;20000&quot;</span>
-               <span class="na">URIEncoding=</span><span class="s">&quot;UTF-8&quot;</span>
-               <span class="na">redirectPort=</span><span class="s">&quot;8443&quot;</span> <span class="nt">/&gt;</span></code></pre></div>
+<span class="c"># Created By: Terrance A. Snyder</span>
+<span class="c"># URL: http://www.terranceasnyder.com, http://shutupandcode.net</span>
 
-<p>Close the file by saving it. If you run tomcat now it will complain about some authentication errors. It happens because we are trying to run 
-Tomcat under 1023 ports. So the next step is enable authbind for tomcat. If you run Tomcat on port numbers that are all higher than 1023, then you
- do not need authbind.  It is used for binding Tomcat to lower port numbers. Open /etc/default/tomcat with your text editor.</p>
+<span class="c"># Best Practice Documentation:</span>
+<span class="c"># http://terranceasnyder.com/2011/05/tomcat-best-practices/</span>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo nano /etc/default/tomcat7</code></pre></div>
+<span class="c"># Looking for the latest version?</span>
+<span class="c"># github @ https://github.com/terrancesnyder</span>
 
-<p>Switch authbind=no to authbind=yes which is located at the end of file.</p>
+<span class="c"># ==================================================================</span>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"># NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.
-# (yes/no, default: no)
-AUTHBIND=yes</code></pre></div>
+<span class="c"># discourage address map swapping by setting Xms and Xmx to the same value</span>
+<span class="c"># http://confluence.atlassian.com/display/DOC/Garbage+Collector+Performance+Issues</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -Xms64m&quot;</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -Xmx512m&quot;</span>
 
-<p>The last step is disabling IPv6. You can see the warning just before authbind line saying that “NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.”.
-Open /etc/sysctl.conf with your text editor.</p>
+<span class="c"># Increase maximum perm size for web base applications to 4x the default amount</span>
+<span class="c"># http://wiki.apache.org/tomcat/FAQ/Memoryhttp://wiki.apache.org/tomcat/FAQ/Memory</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:MaxPermSize=256m&quot;</span>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo nano /etc/sysctl.conf</code></pre></div>
+<span class="c"># Reset the default stack size for threads to a lower value (by 1/10th original)</span>
+<span class="c"># By default this can be anywhere between 512k -&gt; 1024k depending on x32 or x64</span>
+<span class="c"># bit Java version.</span>
+<span class="c"># http://www.springsource.com/files/uploads/tomcat/tomcatx-large-scale-deployments.pdf</span>
+<span class="c"># http://www.oracle.com/technetwork/java/hotspotfaq-138619.html</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -Xss192k&quot;</span>
 
-<p>And add these three lines to end of the file.</p>
+<span class="c"># Oracle Java as default, uses the serial garbage collector on the</span>
+<span class="c"># Full Tenured heap. The Young space is collected in parallel, but the</span>
+<span class="c"># Tenured is not. This means that at a time of load if a full collection</span>
+<span class="c"># event occurs, since the event is a &#39;stop-the-world&#39; serial event then</span>
+<span class="c"># all application threads other than the garbage collector thread are</span>
+<span class="c"># taken off the CPU. This can have severe consequences if requests continue</span>
+<span class="c"># to accrue during these &#39;outage&#39; periods. (specifically webservices, webapps)</span>
+<span class="c"># [Also enables adaptive sizing automatically]</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:+UseParallelGC&quot;</span>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml">net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1</code></pre></div>
+<span class="c"># This is interpreted as a hint to the garbage collector that pause times</span>
+<span class="c"># of &lt;nnn&gt; milliseconds or less are desired. The garbage collector will</span>
+<span class="c"># adjust the  Java heap size and other garbage collection related parameters</span>
+<span class="c"># in an attempt to keep garbage collection pauses shorter than &lt;nnn&gt; milliseconds.</span>
+<span class="c"># http://java.sun.com/docs/hotspot/gc5.0/ergo5.html</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:MaxGCPauseMillis=1500&quot;</span>
 
-<p>Save the file and close it. To make sure IPv6 is disabled run </p>
+<span class="c"># A hint to the virtual machine that it.s desirable that not more than:</span>
+<span class="c"># 1 / (1 + GCTimeRation) of the application execution time be spent in</span>
+<span class="c"># the garbage collector.</span>
+<span class="c"># http://themindstorms.wordpress.com/2009/01/21/advanced-jvm-tuning-for-low-pause/</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:GCTimeRatio=9&quot;</span>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">sudo sysctl -p</code></pre></div>
+<span class="c"># The hotspot server JVM has specific code-path optimizations</span>
+<span class="c"># which yield an approximate 10% gain over the client version.</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -server&quot;</span>
 
-<p>and you will see </p>
+<span class="c"># Disable remote (distributed) garbage collection by Java clients</span>
+<span class="c"># and remove ability for applications to call explicit GC collection</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:+DisableExplicitGC&quot;</span>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">net.ipv6.conf.all.disable_ipv6 <span class="o">=</span> 1
-net.ipv6.conf.default.disable_ipv6 <span class="o">=</span> 1
-net.ipv6.conf.lo.disable_ipv6 <span class="o">=</span> 1</code></pre></div>
+<span class="c"># Check for application specific parameters at startup</span>
+<span class="k">if</span> <span class="o">[</span> -r <span class="s2">&quot;$CATALINA_BASE/bin/appenv.sh&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  . <span class="s2">&quot;$CATALINA_BASE/bin/appenv.sh&quot;</span>
+<span class="k">fi</span>
 
-<p>After that, if you run:</p>
+<span class="nb">echo</span> <span class="s2">&quot;Using CATALINA_OPTS:&quot;</span>
+<span class="k">for</span> arg in <span class="nv">$CATALINA_OPTS</span>
+<span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">&quot;&gt;&gt; &quot;</span> <span class="nv">$arg</span>
+<span class="k">done</span>
+<span class="nb">echo</span> <span class="s2">&quot;&quot;</span>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cat /proc/sys/net/ipv6/conf/all/disable_ipv6</code></pre></div>
-
-<p>It will report: 1 <br />
-Now it is ready to run on port 80. Start your tomcat with </p>
-
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo service tomcat7 start</code></pre></div>
-
-<p>If you look at your catalina.out logs it will be written in there as </p>
-
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">Mar 21, <span class="m">2015</span> 10:02:44 PM org.apache.coyote.AbstractProtocol init
-INFO: Initializing ProtocolHandler <span class="o">[</span><span class="s2">&quot;http-bio-80&quot;</span><span class="o">]</span></code></pre></div>
-
-<p>Now you can access your services directly without any port like <br />
-example.com/Services/</p>
+<span class="nb">echo</span> <span class="s2">&quot;Using JAVA_OPTS:&quot;</span>
+<span class="k">for</span> arg in <span class="nv">$JAVA_OPTS</span>
+<span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">&quot;&gt;&gt; &quot;</span> <span class="nv">$arg</span>
+<span class="k">done</span>
+<span class="nb">echo</span> <span class="s2">&quot;_______________________________________________&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;&quot;</span></code></pre></div>
 
 
   </article>
@@ -165,7 +201,7 @@ example.com/Services/</p>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-07-04T12:55:05+03:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>
