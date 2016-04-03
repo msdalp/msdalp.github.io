@@ -1,12 +1,13 @@
 # Permalinks
 permalink:        pretty
-relative_permalinks: true
+
+gems: [jekyll-paginate]
+paginate:         1
 
 # Setup
 title:            msdalp
 tagline:          java, android, etc.
 url:              http://msdalp.github.io
-paginate:         1
 comments:         true
 disqus-shortname: msdalp
 baseurl:          /

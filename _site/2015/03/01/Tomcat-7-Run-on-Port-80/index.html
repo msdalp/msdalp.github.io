@@ -57,66 +57,66 @@
 First step is move 8080 to port 80.Find your server.xml file for Tomcat. It is probably under /etc/tomcat/server.xml but still 
 you can find it by using: <br /></p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>locate server.xml
-/etc/tomcat7/server.xml</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>locate server.xml
+/etc/tomcat7/server.xml</code></pre></figure>
 
 <p>Open server.xml file with an avaliable text editor (I will use nano).</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo nano /etc/tomcat7/server.xml</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo nano /etc/tomcat7/server.xml</code></pre></figure>
 
 <p>Find the part where port is defined as 8080 and change it to 80.</p>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;Connector</span> <span class="na">port=</span><span class="s">&quot;80&quot;</span> <span class="na">protocol=</span><span class="s">&quot;HTTP/1.1&quot;</span>
-               <span class="na">connectionTimeout=</span><span class="s">&quot;20000&quot;</span>
-               <span class="na">URIEncoding=</span><span class="s">&quot;UTF-8&quot;</span>
-               <span class="na">redirectPort=</span><span class="s">&quot;8443&quot;</span> <span class="nt">/&gt;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"> <span class="nt">&lt;Connector</span> <span class="na">port=</span><span class="s">"80"</span> <span class="na">protocol=</span><span class="s">"HTTP/1.1"</span>
+               <span class="na">connectionTimeout=</span><span class="s">"20000"</span>
+               <span class="na">URIEncoding=</span><span class="s">"UTF-8"</span>
+               <span class="na">redirectPort=</span><span class="s">"8443"</span> <span class="nt">/&gt;</span></code></pre></figure>
 
 <p>Close the file by saving it. If you run tomcat now it will complain about some authentication errors. It happens because we are trying to run 
 Tomcat under 1023 ports. So the next step is enable authbind for tomcat. If you run Tomcat on port numbers that are all higher than 1023, then you
  do not need authbind.  It is used for binding Tomcat to lower port numbers. Open /etc/default/tomcat with your text editor.</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo nano /etc/default/tomcat7</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo nano /etc/default/tomcat7</code></pre></figure>
 
 <p>Switch authbind=no to authbind=yes which is located at the end of file.</p>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"># NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"># NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.
 # (yes/no, default: no)
-AUTHBIND=yes</code></pre></div>
+AUTHBIND=yes</code></pre></figure>
 
 <p>The last step is disabling IPv6. You can see the warning just before authbind line saying that “NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.”.
 Open /etc/sysctl.conf with your text editor.</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo nano /etc/sysctl.conf</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo nano /etc/sysctl.conf</code></pre></figure>
 
 <p>And add these three lines to end of the file.</p>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml">net.ipv6.conf.all.disable_ipv6 = 1
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1</code></pre></div>
+net.ipv6.conf.lo.disable_ipv6 = 1</code></pre></figure>
 
 <p>Save the file and close it. To make sure IPv6 is disabled run </p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">sudo sysctl -p</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">sudo sysctl -p</code></pre></figure>
 
 <p>and you will see </p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">net.ipv6.conf.all.disable_ipv6 <span class="o">=</span> 1
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">net.ipv6.conf.all.disable_ipv6 <span class="o">=</span> 1
 net.ipv6.conf.default.disable_ipv6 <span class="o">=</span> 1
-net.ipv6.conf.lo.disable_ipv6 <span class="o">=</span> 1</code></pre></div>
+net.ipv6.conf.lo.disable_ipv6 <span class="o">=</span> 1</code></pre></figure>
 
 <p>After that, if you run:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>cat /proc/sys/net/ipv6/conf/all/disable_ipv6</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>cat /proc/sys/net/ipv6/conf/all/disable_ipv6</code></pre></figure>
 
 <p>It will report: 1 <br />
 Now it is ready to run on port 80. Start your tomcat with </p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo service tomcat7 start</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo service tomcat7 start</code></pre></figure>
 
 <p>If you look at your catalina.out logs it will be written in there as </p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">Mar 21, <span class="m">2015</span> 10:02:44 PM org.apache.coyote.AbstractProtocol init
-INFO: Initializing ProtocolHandler <span class="o">[</span><span class="s2">&quot;http-bio-80&quot;</span><span class="o">]</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">Mar 21, 2015 10:02:44 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler <span class="o">[</span><span class="s2">"http-bio-80"</span><span class="o">]</span></code></pre></figure>
 
 <p>Now you can access your services directly without any port like <br />
 example.com/Services/</p>
@@ -126,6 +126,15 @@ example.com/Services/</p>
 <aside class="related">
   <h2>Related Posts</h2>
   <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
+            Rest API Example with Java Jersey and Tomcat 
+            <small><time datetime="2016-01-03T12:43:32+02:00">03 Jan 2016</time></small>
+          </a>
+        </h3>
+      </li>
     
       <li>
         <h3>
@@ -141,15 +150,6 @@ example.com/Services/</p>
           <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
             Create Exe from a Java Project with Many Jars Included
             <small><time datetime="2015-01-11T21:46:32+02:00">11 Jan 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
-            Java Sqlite Fast Insert with PreparedStatement
-            <small><time datetime="2014-12-11T21:00:00+02:00">11 Dec 2014</time></small>
           </a>
         </h3>
       </li>
@@ -177,7 +177,7 @@ example.com/Services/</p>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2015-07-04T12:55:05+03:00">2015</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>

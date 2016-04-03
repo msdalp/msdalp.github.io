@@ -65,35 +65,35 @@
 
 <p>I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">CONCAT</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="n">KBS</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">CONCAT</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="n">KBS</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span>
 <span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">)))</span><span class="o">+</span><span class="mi">0</span><span class="p">.</span><span class="mi">49999</span><span class="p">),</span>
-<span class="n">SUBSTR</span><span class="p">(</span><span class="s1">&#39; KMG&#39;</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">SUBSTR</span><span class="p">(</span><span class="s1">' KMG'</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
 <span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="n">recommended_innodb_buffer_pool_size</span>
 <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">SUM</span><span class="p">(</span><span class="n">data_length</span><span class="o">+</span><span class="n">index_length</span><span class="p">)</span> <span class="n">KBS</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
-<span class="k">WHERE</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;InnoDB&#39;</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
-<span class="p">(</span><span class="k">SELECT</span> <span class="mi">3</span> <span class="n">PowerOf1024</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></div>
+<span class="k">WHERE</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'InnoDB'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="mi">3</span> <span class="n">PowerOf1024</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
 
 <p>In my system it returns the value:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">recommended_innodb_buffer_pool_size</span>
-<span class="mi">48</span><span class="k">G</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="mi">48</span><span class="k">G</span></code></pre></figure>
 
 <p>Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.</p>
 
 <p>This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let’s assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="p">(</span><span class="n">PagesData</span><span class="o">*</span><span class="n">PageSize</span><span class="p">)</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">DataGB</span> <span class="k">FROM</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="p">(</span><span class="n">PagesData</span><span class="o">*</span><span class="n">PageSize</span><span class="p">)</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">DataGB</span> <span class="k">FROM</span>
 <span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PagesData</span>
 <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
-<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">&#39;Innodb_buffer_pool_pages_data&#39;</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_buffer_pool_pages_data'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
 <span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PageSize</span>
 <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
-<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">&#39;Innodb_page_size&#39;</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></div>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_page_size'</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
 
 <p>For my system it returns:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">DataGB</span>
-<span class="mi">22</span><span class="p">.</span><span class="mi">5</span><span class="k">G</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">DataGB</span>
+<span class="mi">22</span><span class="p">.</span><span class="mi">5</span><span class="k">G</span></code></pre></figure>
 
 <p>It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn’t go up quickly after for a week etc.</p>
 
@@ -119,18 +119,18 @@
     
       <li>
         <h3>
-          <a href="/2015/07/13/Tomcat-Setenv-sh/">
-            Configuring Tomcat SetEnv File
-            <small><time datetime="2015-07-13T23:39:22+03:00">13 Jul 2015</time></small>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
+          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
+            Create Exe from a Java Project with Many Jars Included
+            <small><time datetime="2015-01-11T21:46:32+02:00">11 Jan 2015</time></small>
           </a>
         </h3>
       </li>
@@ -158,7 +158,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>

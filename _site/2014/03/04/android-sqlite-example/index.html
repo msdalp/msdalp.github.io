@@ -59,28 +59,28 @@
 
 <p>To create and upgrade a database you have to create a subclass of the SQLiteOpenHelper so you have to extend SQLiteOpenHelper when you define a database class.Here the simplest example how you create a database named “mydb” and a table in it as “data”.You have to override onCreate() and onUpgrade() methods.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyDb</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java">  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyDb</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{</span>
  
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;MyDb&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">"MyDb"</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">VERSION</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">DATABASENAME</span> <span class="o">=</span> <span class="s">&quot;mydb&quot;</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="nf">MyDb</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">DATABASENAME</span> <span class="o">=</span> <span class="s">"mydb"</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">MyDb</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">DATABASENAME</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">VERSION</span><span class="o">);</span>
     <span class="o">}</span>
  
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;CREATE TABLE IF NOT EXISTS data&quot;</span> <span class="o">+</span>
-            <span class="o">+</span> <span class="s">&quot; (ID INTEGER PRIMARY KEY, &quot;</span>
-            <span class="o">+</span> <span class="s">&quot;DATA_ID TEXT, &quot;</span>
-            <span class="o">+</span> <span class="s">&quot;VALUE TEXT);&quot;</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">"CREATE TABLE IF NOT EXISTS data"</span> <span class="o">+</span>
+            <span class="o">+</span> <span class="s">" (ID INTEGER PRIMARY KEY, "</span>
+            <span class="o">+</span> <span class="s">"DATA_ID TEXT, "</span>
+            <span class="o">+</span> <span class="s">"VALUE TEXT);"</span><span class="o">);</span>
     <span class="o">}</span>
  
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onUpgrade</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">,</span> <span class="kt">int</span> <span class="n">oldVersion</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newVersion</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">onUpgrade</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">,</span> <span class="kt">int</span> <span class="n">oldVersion</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newVersion</span><span class="o">)</span> <span class="o">{</span>
         
     <span class="o">}</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>The SQLiteOpenHelper class provides the getReadableDatabase() and getWriteableDatabase() methods to get access to an SQLiteDatabase object; either in read or write mode.Also SQLiteDatabase provides insert(), update(), delete(), and query methods.To make a query you can use either of rawquery() or query().Also keep this mind that you should always make sure you use methods as synchronized.Here another example of adding data into database and retrieving from it.</p>
 
@@ -88,35 +88,35 @@
 
 <p>REMARK:You will see a commented out code which is db.insertWithOnConflict method that is a very good way to insert with insertion algorithms at the end. I used SQLiteDatabase.CONFLICT_REPLACE which basicly updates the old one with the new one if it’s already in the database. And after the all operations are done always remember to close database otherwise you will get errors saying that database is already opened.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">addData</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">addData</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="k">for</span> <span class="o">(</span><span class="n">YourObject</span> <span class="n">object</span> <span class="o">:</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ContentValues</span><span class="o">();</span>
-                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;ID&quot;</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
-                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;DATA_ID&quot;</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">dataId</span><span class="o">);</span>
-                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;VALUE&quot;</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
-                <span class="n">db</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">&quot;data&quot;</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="n">contentValues</span><span class="o">);</span>
-<span class="c1">//db.insertWithOnConflict(&quot;data&quot;, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);</span>
+                <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"ID"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"DATA_ID"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">dataId</span><span class="o">);</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"VALUE"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+                <span class="n">db</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">"data"</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="n">contentValues</span><span class="o">);</span>
+<span class="c1">//db.insertWithOnConflict("data", null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);</span>
             <span class="o">}</span>
             <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;addData exception&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">"addData exception"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>Queries can be created via the rawQuery() and query() methods or via the SQLiteQueryBuilder class . rawQuery() directly accepts an SQL select statement as input. query() provides a structured interface for specifying the SQL query. SQLiteQueryBuilder is a convenience class that helps to build SQL queries.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">String</span> <span class="nf">getDataValue</span><span class="o">(</span><span class="kt">long</span> <span class="n">_id</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">String</span> <span class="nf">getDataValue</span><span class="p">(</span><span class="kt">long</span> <span class="n">_id</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
         <span class="n">String</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">&quot;data&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;VALUE&quot;</span><span class="o">},</span>
-                    <span class="s">&quot;ID = ?&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">_id</span><span class="o">)},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">"data"</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">"VALUE"</span><span class="o">},</span>
+                    <span class="s">"ID = ?"</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">_id</span><span class="o">)},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToFirst</span><span class="o">())</span> <span class="o">{</span>
                     <span class="k">do</span> <span class="o">{</span>
@@ -126,21 +126,21 @@
             <span class="o">}</span>
         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">retval</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;Cannot get data value:&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">"Cannot get data value:"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>The following gives an example of a rawQuery() and a query() call.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">getReadableDatabase</span><span class="o">().</span>
-  <span class="n">rawQuery</span><span class="o">(</span><span class="s">&quot;select * from data where ID = ?&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">_id</span> <span class="o">});</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">getReadableDatabase</span><span class="o">().</span>
+  <span class="n">rawQuery</span><span class="o">(</span><span class="s">"select * from data where ID = ?"</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">_id</span> <span class="o">});</span>
  
-<span class="n">database</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">&quot;data&quot;</span><span class="o">,</span> 
+<span class="n">database</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">"data"</span><span class="o">,</span> 
   <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">ID</span><span class="o">,</span> <span class="n">DATA_ID</span><span class="o">,</span> <span class="n">VALUE</span> <span class="o">},</span> 
-  <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span></code></pre></div>
+  <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span></code></pre></figure>
 
 <p>Parameters of the query() method</p>
 
@@ -187,7 +187,7 @@
 </table>
 <p>After you have all database create, upgrade, add, and a get method how you will call it from the activity?Here is the how your main activity look like.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">db</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">db</span><span class="o">;</span>
  
 <span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
@@ -197,23 +197,23 @@
  
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
  
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;MyDbActivity&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">"MyDbActivity"</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="n">MyDb</span> <span class="n">MyDb</span><span class="o">;</span>
  
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
         <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
-        <span class="n">MyDb</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MyDb</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="n">MyDb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyDb</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
         <span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;();</span>
-        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2032</span><span class="o">,</span> <span class="s">&quot;data1&quot;</span><span class="o">));</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2032</span><span class="o">,</span> <span class="s">"data1"</span><span class="o">));</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">MyDb</span><span class="o">.</span><span class="na">addData</span><span class="o">(</span><span class="n">data</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&quot;Data value is:&quot;</span><span class="o">,</span> <span class="n">MyDb</span><span class="o">.</span><span class="na">getDataValue</span><span class="o">(</span><span class="mi">1L</span><span class="o">));</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"Data value is:"</span><span class="o">,</span> <span class="n">MyDb</span><span class="o">.</span><span class="na">getDataValue</span><span class="o">(</span><span class="mi">1L</span><span class="o">));</span>
         <span class="o">}</span>
     <span class="o">}</span>
  
     <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onDestroy</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="n">onDestroy</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">onDestroy</span><span class="o">();</span>
         <span class="n">MyDb</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="n">MyDb</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
@@ -225,16 +225,16 @@
         <span class="kd">public</span> <span class="kt">long</span> <span class="n">dataId</span><span class="o">;</span>
         <span class="kd">public</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
  
-        <span class="kd">public</span> <span class="nf">Data</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">Data</span><span class="o">()</span> <span class="o">{</span>
         <span class="o">}</span>
  
-        <span class="kd">public</span> <span class="nf">Data</span><span class="o">(</span><span class="kt">long</span> <span class="n">_id</span><span class="o">,</span> <span class="kt">long</span> <span class="n">_dataId</span><span class="o">,</span> <span class="n">String</span> <span class="n">_value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">Data</span><span class="o">(</span><span class="kt">long</span> <span class="n">_id</span><span class="o">,</span> <span class="kt">long</span> <span class="n">_dataId</span><span class="o">,</span> <span class="n">String</span> <span class="n">_value</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">_id</span><span class="o">;</span>
             <span class="k">this</span><span class="o">.</span><span class="na">dataId</span> <span class="o">=</span> <span class="n">_dataId</span><span class="o">;</span>
             <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">_value</span><span class="o">;</span>
         <span class="o">}</span>
     <span class="o">}</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>You can download both mainactivity and db class from the links given below:
 MainActivity:<a href="https://gist.github.com/msdalp/9297781">Github Link</a>
@@ -257,18 +257,18 @@ Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a></p>
     
       <li>
         <h3>
-          <a href="/2015/07/13/Tomcat-Setenv-sh/">
-            Configuring Tomcat SetEnv File
-            <small><time datetime="2015-07-13T23:39:22+03:00">13 Jul 2015</time></small>
+          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
+            Understanding innodb_buffer_pool_size
+            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -296,7 +296,7 @@ Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a></p>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>

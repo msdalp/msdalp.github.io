@@ -58,15 +58,15 @@ First one is using regular expressions and this is the one I use mostly.This mat
 -?     –&gt; negative sign, could have none or one <br />
 \d+   –&gt; one or more digits</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
-  <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="s">&quot;-?\\d+&quot;</span><span class="o">);</span>
-<span class="o">}</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
+  <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="s">"-?\\d+"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
 
 <p>Using parseInt is possible as well.In this way you should try to parse a String to integer and catch if any exceptions occur.
 If your code creats an NumberFormatException then you should return false.We don’t care about other exceptions here.If there is no exception that means it went okey and your string is indeed an integer.
 Also please be aware that we used parseInt() and not the Integer.valueOf() method.You can check the differences here.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">try</span> <span class="o">{</span>
         <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
         <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
@@ -74,13 +74,13 @@ Also please be aware that we used parseInt() and not the Integer.valueOf() metho
     <span class="k">catch</span><span class="o">(</span><span class="n">NumberFormatException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
     <span class="o">}</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>Another way is more complex  but much faster than Integer.parseInt() or regex method.It’s better to check which works best for you.
 Here some of you may ask why not use java.lang.Character.isDigit() and check the char values itself.isDigit returns true for things like Devanagari digits. While Integer.parseInt() handles these as digits, it may not be what’s expected for most use cases</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Jonas</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Jonas</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span> <span class="o">(</span><span class="n">str</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>
@@ -89,7 +89,7 @@ Here some of you may ask why not use java.lang.Character.isDigit() and check the
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>
 	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-	<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'-'</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 		<span class="o">}</span>
@@ -97,28 +97,28 @@ Here some of you may ask why not use java.lang.Character.isDigit() and check the
 	<span class="o">}</span>
 	<span class="k">for</span> <span class="o">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
 		<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-		<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="sc">&#39;0&#39;</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="sc">&#39;9&#39;</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="sc">'0'</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="sc">'9'</span><span class="o">)</span> <span class="o">{</span>
 			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 		<span class="o">}</span>
 	<span class="o">}</span>
 	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>The last one is using StringUtils or NumberUtils which is not a good idea but it works.You can check the detailed page <a href="http://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isNumeric%28java.lang.CharSequence%29">here</a>.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str</span><span class="o">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str</span><span class="o">);</span></code></pre></figure>
 
 <p>Which one is the best to use?If you need performance you should use the Jonas one.It may look unnecessary but it is really fast.
 Here some test results with these methods.Running many times these methods shows that it may differ a lot.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ByException</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ByException</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
 <span class="n">ByException</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">465</span>
 
 <span class="n">ByRegex</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
 <span class="n">ByRegex</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">26</span>
 
 <span class="n">ByJonas</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">8</span>
-<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">2</span></code></pre></div>
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">2</span></code></pre></figure>
 
 </article>
 <aside class="related">
@@ -136,18 +136,18 @@ Here some test results with these methods.Running many times these methods shows
     
       <li>
         <h3>
-          <a href="/2015/07/13/Tomcat-Setenv-sh/">
-            Configuring Tomcat SetEnv File
-            <small><time datetime="2015-07-13T23:39:22+03:00">13 Jul 2015</time></small>
+          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
+            Understanding innodb_buffer_pool_size
+            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -175,7 +175,7 @@ Here some test results with these methods.Running many times these methods shows
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>

@@ -54,157 +54,65 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2014/03/04/jetty-embedded/">
-        Jetty Embedded Server With Post, Get, and Gson
+      <a href="/2014/03/04/android-sqlite-increase-insertion-speed/">
+        Increase Insertion Speed on Android SQLite
       </a>
     </h1>
 
     <time datetime="2014-03-04T18:40:24+02:00" class="post-date">04 Mar 2014</time>
 
-    <p>Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the <a href="http://www.eclipse.org/jetty/powered">Jetty Powered page</a> for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
-You should first download the required jetty jar files and import them. Basically you can just down <a href="http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar">jetty all</a> and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from <a href="https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&amp;can=2&amp;q=">this</a> link.
-First create a class that extends Server and by giving port to its constructor we will be able to start it easily.</p>
+    <p>I’ve been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it’s a set function so I deleted the datas before inserting anything.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
- 
-<span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.google.gson.GsonBuilder</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.eclipse.jetty.server.Server</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.eclipse.jetty.servlet.ServletContextHandler</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.eclipse.jetty.servlet.ServletHolder</span><span class="o">;</span>
- 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Jetty</span> <span class="kd">extends</span> <span class="n">Server</span> <span class="o">{</span>
- 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">GsonBuilder</span><span class="o">().</span>
-    <span class="n">setDateFormat</span><span class="o">(</span><span class="s">&quot;yyyy-MM-dd HH:mm:ss&quot;</span><span class="o">).</span><span class="na">create</span><span class="o">();</span>
- 
-    <span class="kd">public</span> <span class="nf">Jetty</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
- 
-        <span class="n">ServletContextHandler</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ServletContextHandler</span><span class="o">(</span><span class="n">ServletContextHandler</span>
-        <span class="o">.</span><span class="na">NO_SESSIONS</span><span class="o">);</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">setContextPath</span><span class="o">(</span><span class="s">&quot;/test&quot;</span><span class="o">);</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="nf">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="nf">GetName</span><span class="o">(</span><span class="n">gson</span><span class="o">)),</span> <span class="s">&quot;/GetName/*&quot;</span><span class="o">);</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="nf">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="nf">SaveName</span><span class="o">()),</span> <span class="s">&quot;/SaveName/*&quot;</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">setHandler</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">setStopAtShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="o">}</span>
- 
-<span class="o">}</span></code></pre></div>
-
-<p>By using context.addServlet() method you can add servlets easily.addServlet() takes two parameters and the first one is the class name that will be called when this servlet called and the second one is the name how you will call it.</p>
-
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="nf">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="nf">SaveName</span><span class="o">()),</span> <span class="s">&quot;/SaveName/*&quot;</span><span class="o">);</span></code></pre></div>
-
-<p>will be called as localhost:portNumber/test/SaveName 
-GET methods are defined using doGet and POST methods are defined with doPost.SaveName and GetName classes are</p>
-
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
- 
- 
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
- 
-<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;serial&quot;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SaveName</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
- 
-    <span class="kd">public</span> <span class="nf">SaveName</span><span class="o">()</span> <span class="o">{</span>
-    <span class="o">}</span>
- 
-    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span>
-                                             <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="kt">long</span> <span class="n">timeStamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">surName</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;surName&quot;</span><span class="o">);</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;name:&quot;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s">&quot; surname:&quot;</span><span class="o">+</span><span class="n">surName</span><span class="o">);</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_OK</span><span class="o">);</span>
- 
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_INTERNAL_SERVER_ERROR</span><span class="o">);</span>
- 
-        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;text/html;charset=UTF-8&quot;</span><span class="o">);</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">);</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
- 
-<span class="o">}</span></code></pre></div>
-
-<p>And the get method we will use:</p>
-
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
- 
-<span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.google.gson.JsonObject</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
- 
-<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;serial&quot;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GetName</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
- 
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span><span class="o">;</span>
- 
-    <span class="kd">public</span> <span class="nf">GetTeamDictionary</span><span class="o">(</span><span class="n">Gson</span> <span class="n">gson</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">gson</span> <span class="o">=</span> <span class="n">gson</span><span class="o">;</span>
-    <span class="o">}</span>
- 
-    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> 
-                                            <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="n">JsonObject</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">JsonObject</span><span class="o">();</span>
-            
-            <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;jetty&quot;</span><span class="o">);</span>
-            <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;surname&quot;</span><span class="o">,</span> <span class="s">&quot;is awasome&quot;</span><span class="o">);</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">retVal</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_OK</span><span class="o">);</span>
- 
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_INTERNAL_SERVER_ERROR</span><span class="o">);</span>
- 
-        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;text/html;charset=UTF-8&quot;</span><span class="o">);</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="n">output</span><span class="o">);</span>
-            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
- 
-<span class="o">}</span></code></pre></div>
-
-<p>It’s all that simple and now you only need to start to jetty server from your main class.</p>
-
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
- 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
- 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="n">Jetty</span> <span class="n">jetty</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Jetty</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
-            <span class="n">jetty</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">500</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="kc">false</span> <span class="o">==</span> <span class="n">jetty</span><span class="o">.</span><span class="na">isStarted</span><span class="o">())</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="o">(</span><span class="s">&quot;Cannot start jetty server&quot;</span><span class="o">);</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="s">"table_data"</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="n">YourObject</span> <span class="n">object</span> <span class="o">:</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"ID"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"NAME"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"ABBR"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">abbr</span><span class="o">);</span>
+                <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"FOUND_YEAR"</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">foundYear</span><span class="o">);</span>
+                <span class="n">db</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">"table_data"</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">contentValues</span><span class="o">);</span>
             <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></div>
+            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">"setData exception"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> 
+<span class="o">}</span></code></pre></figure>
 
-<p>When your application is running you can call localhost:8080/test/GetName and it will return to you a json object like this</p>
+<p>After some digging I found nnother method to insert data into the database by using SqliteStatements.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.We had to make sure it is really inserting the data to database and it was successful.</p>
 
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;jetty&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;surname&quot;</span><span class="p">:</span> <span class="s2">&quot;is awesome&quot;</span>
-<span class="p">}</span></code></pre></div>
-
-<p>You can use HTTP:POST to send data to server by using localhost:8080/test/SaveName and your post parameters should be named as “name” and “surName”.It is the simplest thing you can do with jetty embedded server.I use it to get data from database using parameters and posting data into database and it’s really fast and lightweight which makes it really feasible.</p>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">setData</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">YourObject</span><span class="o">&gt;</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">INSERT_DATA</span> <span class="o">=</span> <span class="s">"INSERT INTO table_data VALUES (?,?,?,?);"</span><span class="o">;</span>
+        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="s">"table_data"</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="n">SQLiteStatement</span> <span class="n">statement</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">compileStatement</span><span class="o">(</span><span class="n">INSERT_DATA</span><span class="o">);</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="n">YourObject</span> <span class="n">object</span> <span class="o">:</span> <span class="n">_objects</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">statement</span><span class="o">.</span><span class="na">clearBindings</span><span class="o">();</span>
+                <span class="n">statement</span><span class="o">.</span><span class="na">bindLong</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
+                <span class="n">statement</span><span class="o">.</span><span class="na">bindString</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
+                <span class="n">statement</span><span class="o">.</span><span class="na">bindString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">abbr</span><span class="o">);</span>
+                <span class="n">statement</span><span class="o">.</span><span class="na">bindLong</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">object</span><span class="o">.</span><span class="na">foundYear</span><span class="o">);</span>
+                <span class="n">statement</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">setTransactionSuccessful</span><span class="o">();</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">endTransaction</span><span class="o">();</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">"setData exception"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
 
 
   </article>
@@ -242,7 +150,7 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>

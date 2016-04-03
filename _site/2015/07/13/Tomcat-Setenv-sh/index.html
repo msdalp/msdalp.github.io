@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Configuring Tomcat SetEnv File &middot; msdalp
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="msdalp" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="container content">
+      <header class="masthead">
+      <h3 class="masthead-title">
+<a href="/" title="Home">msdalp</a>
+<small>java, android, etc.</small>
+
+  &nbsp;&nbsp;&nbsp;
+  <small><a href="/about">About</a></small>
+
+  &nbsp;&nbsp;&nbsp;
+  <small><a href="/archive">Archive</a></small>
+
+  &nbsp;&nbsp;&nbsp;
+  <small><a href="/atom.xml">Feed</a></small>
+
+
+</h3>
+
+      </header>
+
+      <main>
+        <article class="post">
+  <h1 class="post-title">Configuring Tomcat SetEnv File</h1>
+  <time datetime="2015-07-13T23:39:22+03:00" class="page-date">13 Jul 2015</time>
+  <blockquote>
+  <p>Very specific details about the set env details.</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#! /bin/sh</span>
+<span class="c"># ==================================================================</span>
+<span class="c">#  ______                           __     _____</span>
+<span class="c"># /_  __/___  ____ ___  _________ _/ /_   /__  /</span>
+<span class="c">#  / / / __ \/ __ `__ \/ ___/ __ `/ __/     / /</span>
+<span class="c"># / / / /_/ / / / / / / /__/ /_/ / /_      / /</span>
+<span class="c">#/_/  \____/_/ /_/ /_/\___/\__,_/\__/     /_/</span>
+
+<span class="c"># Multi-instance Apache Tomcat installation with a focus</span>
+<span class="c"># on best-practices as defined by Apache, SpringSource, and MuleSoft</span>
+<span class="c"># and enterprise use with large-scale deployments.</span>
+
+<span class="c"># Credits:</span>
+<span class="c">#       Google -&gt; Couldn't survive without it</span>
+<span class="c">#       Stackoverflow.com -&gt; Community support</span>
+<span class="c">#       SpringSource -&gt; Specifically best-practices and seminars (Expert Series)</span>
+
+<span class="c"># Based On:</span>
+<span class="c">#       http://www.springsource.com/files/uploads/tomcat/tomcatx-performance-tuning.pdf</span>
+<span class="c">#       http://www.springsource.com/files/u1/PerformanceTuningApacheTomcat-Part2.pdf</span>
+<span class="c">#       http://www.springsource.com/files/uploads/tomcat/tomcatx-large-scale-deployments.pdf</span>
+
+<span class="c"># Created By: Terrance A. Snyder</span>
+<span class="c"># URL: http://www.terranceasnyder.com, http://shutupandcode.net</span>
+
+<span class="c"># Best Practice Documentation:</span>
+<span class="c"># http://terranceasnyder.com/2011/05/tomcat-best-practices/</span>
+
+<span class="c"># Looking for the latest version?</span>
+<span class="c"># github @ https://github.com/terrancesnyder</span>
+
+<span class="c"># ==================================================================</span>
+
+<span class="c"># discourage address map swapping by setting Xms and Xmx to the same value</span>
+<span class="c"># http://confluence.atlassian.com/display/DOC/Garbage+Collector+Performance+Issues</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -Xms64m"</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -Xmx512m"</span>
+
+<span class="c"># Increase maximum perm size for web base applications to 4x the default amount</span>
+<span class="c"># http://wiki.apache.org/tomcat/FAQ/Memoryhttp://wiki.apache.org/tomcat/FAQ/Memory</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -XX:MaxPermSize=256m"</span>
+
+<span class="c"># Reset the default stack size for threads to a lower value (by 1/10th original)</span>
+<span class="c"># By default this can be anywhere between 512k -&gt; 1024k depending on x32 or x64</span>
+<span class="c"># bit Java version.</span>
+<span class="c"># http://www.springsource.com/files/uploads/tomcat/tomcatx-large-scale-deployments.pdf</span>
+<span class="c"># http://www.oracle.com/technetwork/java/hotspotfaq-138619.html</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -Xss192k"</span>
+
+<span class="c"># Oracle Java as default, uses the serial garbage collector on the</span>
+<span class="c"># Full Tenured heap. The Young space is collected in parallel, but the</span>
+<span class="c"># Tenured is not. This means that at a time of load if a full collection</span>
+<span class="c"># event occurs, since the event is a 'stop-the-world' serial event then</span>
+<span class="c"># all application threads other than the garbage collector thread are</span>
+<span class="c"># taken off the CPU. This can have severe consequences if requests continue</span>
+<span class="c"># to accrue during these 'outage' periods. (specifically webservices, webapps)</span>
+<span class="c"># [Also enables adaptive sizing automatically]</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -XX:+UseParallelGC"</span>
+
+<span class="c"># This is interpreted as a hint to the garbage collector that pause times</span>
+<span class="c"># of &lt;nnn&gt; milliseconds or less are desired. The garbage collector will</span>
+<span class="c"># adjust the  Java heap size and other garbage collection related parameters</span>
+<span class="c"># in an attempt to keep garbage collection pauses shorter than &lt;nnn&gt; milliseconds.</span>
+<span class="c"># http://java.sun.com/docs/hotspot/gc5.0/ergo5.html</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -XX:MaxGCPauseMillis=1500"</span>
+
+<span class="c"># A hint to the virtual machine that it.s desirable that not more than:</span>
+<span class="c"># 1 / (1 + GCTimeRation) of the application execution time be spent in</span>
+<span class="c"># the garbage collector.</span>
+<span class="c"># http://themindstorms.wordpress.com/2009/01/21/advanced-jvm-tuning-for-low-pause/</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -XX:GCTimeRatio=9"</span>
+
+<span class="c"># The hotspot server JVM has specific code-path optimizations</span>
+<span class="c"># which yield an approximate 10% gain over the client version.</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -server"</span>
+
+<span class="c"># Disable remote (distributed) garbage collection by Java clients</span>
+<span class="c"># and remove ability for applications to call explicit GC collection</span>
+<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CATALINA_OPTS</span><span class="s2"> -XX:+DisableExplicitGC"</span>
+
+<span class="c"># Check for application specific parameters at startup</span>
+<span class="k">if</span> <span class="o">[</span> -r <span class="s2">"</span><span class="nv">$CATALINA_BASE</span><span class="s2">/bin/appenv.sh"</span> <span class="o">]</span>; <span class="k">then</span>
+  . <span class="s2">"</span><span class="nv">$CATALINA_BASE</span><span class="s2">/bin/appenv.sh"</span>
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"Using CATALINA_OPTS:"</span>
+<span class="k">for </span>arg <span class="k">in</span> <span class="nv">$CATALINA_OPTS</span>
+<span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"&gt;&gt; "</span> <span class="nv">$arg</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"Using JAVA_OPTS:"</span>
+<span class="k">for </span>arg <span class="k">in</span> <span class="nv">$JAVA_OPTS</span>
+<span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"&gt;&gt; "</span> <span class="nv">$arg</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="s2">"_______________________________________________"</span>
+<span class="nb">echo</span> <span class="s2">""</span></code></pre></figure>
+
+
+</article>
+<aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
+            Rest API Example with Java Jersey and Tomcat 
+            <small><time datetime="2016-01-03T12:43:32+02:00">03 Jan 2016</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
+            Understanding innodb_buffer_pool_size
+            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside>
+
+
+      </main>
+      <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    // Required: on line below, replace text in quotes with your forum shortname
+    var disqus_shortname = 'msdalp';
+    // var disqus_developer = 1;
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+      <footer class="footer">
+        <small>
+          &copy; <time datetime="2016-04-03T17:04:13+03:00">2016</time>. All rights reserved.
+        </small>
+      </footer>
+    </div>
+
+  </body>
+</html>

@@ -55,7 +55,7 @@
   <time datetime="2014-12-11T21:00:00+02:00" class="page-date">11 Dec 2014</time>
   <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="o">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="p">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
@@ -65,37 +65,38 @@
             <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
 
                 <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span> 
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;TIMESTAMP&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;HALF&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;MIN&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;SEC&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;OBJECT_TYPE&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;OBJECT_ID&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span> 
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;X_POS&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;Y_POS&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;Z_POS&quot;</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"TIMESTAMP"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"HALF"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"MIN"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"SEC"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"OBJECT_TYPE"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"OBJECT_ID"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span> 
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"X_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Y_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Z_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
                 <span class="n">trans</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">SQL</span><span class="o">.</span><span class="na">TABLE_STAT</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>
 
             <span class="o">}</span>
 
             <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Cannot add  stat data&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Cannot add  stat data"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-    <span class="o">}</span></code></pre></div>
+    <span class="o">}</span> </code></pre></figure>
 
 <p>Doing the same insert with prepared statement.</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"> 
+<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
         <span class="k">try</span> <span class="o">{</span>
             
-            <span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="na">preparedStmt</span><span class="o">(</span><span class="s">&quot;INSERT INTO local_stat VALUES (?,?,?,?,?,?,?,?,?)&quot;</span><span class="o">);</span>
+            <span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="na">preparedStmt</span><span class="o">(</span><span class="s">"INSERT INTO local_stat VALUES (?,?,?,?,?,?,?,?,?)"</span><span class="o">);</span>
        
             <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
@@ -112,12 +113,12 @@
             <span class="n">stmt</span><span class="o">.</span><span class="na">executeBatch</span><span class="o">();</span> 
             <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;Cannot add stat data&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Cannot add stat data"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-    <span class="o">}</span></code></pre></div>
+    <span class="o">}</span></code></pre></figure>
 
 
 </article>
@@ -136,18 +137,18 @@
     
       <li>
         <h3>
-          <a href="/2015/07/13/Tomcat-Setenv-sh/">
-            Configuring Tomcat SetEnv File
-            <small><time datetime="2015-07-13T23:39:22+03:00">13 Jul 2015</time></small>
+          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
+            Understanding innodb_buffer_pool_size
+            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-28T00:54:22+03:00">28 Jun 2015</time></small>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T21:46:32+02:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -175,7 +176,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>

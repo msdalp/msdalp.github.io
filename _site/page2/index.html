@@ -54,117 +54,62 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2015/07/13/Tomcat-Setenv-sh/">
-        Configuring Tomcat SetEnv File
+      <a href="/2015/06/28/Understanding-innodb_buffer_pool_size/">
+        Understanding innodb_buffer_pool_size
       </a>
     </h1>
 
-    <time datetime="2015-07-13T23:39:22+03:00" class="post-date">13 Jul 2015</time>
+    <time datetime="2015-06-28T00:54:22+03:00" class="post-date">28 Jun 2015</time>
 
-    <blockquote>
-  <p>Very specific details about the set env details.</p>
+    <p>There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:</p>
+
+<blockquote>
+  <p>InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer &gt; pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.</p>
 </blockquote>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#! /bin/sh</span>
-<span class="c"># ==================================================================</span>
-<span class="c">#  ______                           __     _____</span>
-<span class="c"># /_  __/___  ____ ___  _________ _/ /_   /__  /</span>
-<span class="c">#  / / / __ \/ __ `__ \/ ___/ __ `/ __/     / /</span>
-<span class="c"># / / / /_/ / / / / / / /__/ /_/ / /_      / /</span>
-<span class="c">#/_/  \____/_/ /_/ /_/\___/\__,_/\__/     /_/</span>
+<p>The idea is keeping innodb_buffer_pool_size bigger as possible that doesn’t block other OS and programs running properly. This will make InnoDB work like a in-memory database and increase the performance a lot. At first InnoDB will take all the required data from disk and access it from memory in the future queries. The default value for InnoDB is 8MB so you might want to update it as a bigger number which fits well for your system.</p>
 
-<span class="c"># Multi-instance Apache Tomcat installation with a focus</span>
-<span class="c"># on best-practices as defined by Apache, SpringSource, and MuleSoft</span>
-<span class="c"># and enterprise use with large-scale deployments.</span>
+<p>Before going exact details there is a wrong assumption about Innodb Buffer Pool. People think that if they give enough space for keys to be in the memory and there will be very low IO accesss. The idea is searching keys fast as much as and retrieve data with index directly. Let’s assume you have a query that runs in 600ms and 450 ms is searching keys, 75 ms is getting data from disk and last 75 ms is fetching data from server. Providing proper innodb_buffer_pool_size will make sure you don’t access disk for index search and that 450 ms will decrease to 30 ms (it really depends on your keys and structure) so total time for query is 180 ms now. You still have IO at this rate but it is only retrieving data from disk which can be acceptable.</p>
 
-<span class="c"># Credits:</span>
-<span class="c">#       Google -&gt; Couldn&#39;t survive without it</span>
-<span class="c">#       Stackoverflow.com -&gt; Community support</span>
-<span class="c">#       SpringSource -&gt; Specifically best-practices and seminars (Expert Series)</span>
+<p>I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:</p>
 
-<span class="c"># Based On:</span>
-<span class="c">#       http://www.springsource.com/files/uploads/tomcat/tomcatx-performance-tuning.pdf</span>
-<span class="c">#       http://www.springsource.com/files/u1/PerformanceTuningApacheTomcat-Part2.pdf</span>
-<span class="c">#       http://www.springsource.com/files/uploads/tomcat/tomcatx-large-scale-deployments.pdf</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">CONCAT</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="n">KBS</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span>
+<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">)))</span><span class="o">+</span><span class="mi">0</span><span class="p">.</span><span class="mi">49999</span><span class="p">),</span>
+<span class="n">SUBSTR</span><span class="p">(</span><span class="s1">' KMG'</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">SUM</span><span class="p">(</span><span class="n">data_length</span><span class="o">+</span><span class="n">index_length</span><span class="p">)</span> <span class="n">KBS</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+<span class="k">WHERE</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'InnoDB'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="mi">3</span> <span class="n">PowerOf1024</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
 
-<span class="c"># Created By: Terrance A. Snyder</span>
-<span class="c"># URL: http://www.terranceasnyder.com, http://shutupandcode.net</span>
+<p>In my system it returns the value:</p>
 
-<span class="c"># Best Practice Documentation:</span>
-<span class="c"># http://terranceasnyder.com/2011/05/tomcat-best-practices/</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="mi">48</span><span class="k">G</span></code></pre></figure>
 
-<span class="c"># Looking for the latest version?</span>
-<span class="c"># github @ https://github.com/terrancesnyder</span>
+<p>Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.</p>
 
-<span class="c"># ==================================================================</span>
+<p>This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let’s assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.</p>
 
-<span class="c"># discourage address map swapping by setting Xms and Xmx to the same value</span>
-<span class="c"># http://confluence.atlassian.com/display/DOC/Garbage+Collector+Performance+Issues</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -Xms64m&quot;</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -Xmx512m&quot;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="p">(</span><span class="n">PagesData</span><span class="o">*</span><span class="n">PageSize</span><span class="p">)</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">DataGB</span> <span class="k">FROM</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PagesData</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_buffer_pool_pages_data'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PageSize</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_page_size'</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
 
-<span class="c"># Increase maximum perm size for web base applications to 4x the default amount</span>
-<span class="c"># http://wiki.apache.org/tomcat/FAQ/Memoryhttp://wiki.apache.org/tomcat/FAQ/Memory</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:MaxPermSize=256m&quot;</span>
+<p>For my system it returns:</p>
 
-<span class="c"># Reset the default stack size for threads to a lower value (by 1/10th original)</span>
-<span class="c"># By default this can be anywhere between 512k -&gt; 1024k depending on x32 or x64</span>
-<span class="c"># bit Java version.</span>
-<span class="c"># http://www.springsource.com/files/uploads/tomcat/tomcatx-large-scale-deployments.pdf</span>
-<span class="c"># http://www.oracle.com/technetwork/java/hotspotfaq-138619.html</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -Xss192k&quot;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">DataGB</span>
+<span class="mi">22</span><span class="p">.</span><span class="mi">5</span><span class="k">G</span></code></pre></figure>
 
-<span class="c"># Oracle Java as default, uses the serial garbage collector on the</span>
-<span class="c"># Full Tenured heap. The Young space is collected in parallel, but the</span>
-<span class="c"># Tenured is not. This means that at a time of load if a full collection</span>
-<span class="c"># event occurs, since the event is a &#39;stop-the-world&#39; serial event then</span>
-<span class="c"># all application threads other than the garbage collector thread are</span>
-<span class="c"># taken off the CPU. This can have severe consequences if requests continue</span>
-<span class="c"># to accrue during these &#39;outage&#39; periods. (specifically webservices, webapps)</span>
-<span class="c"># [Also enables adaptive sizing automatically]</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:+UseParallelGC&quot;</span>
+<p>It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn’t go up quickly after for a week etc.</p>
 
-<span class="c"># This is interpreted as a hint to the garbage collector that pause times</span>
-<span class="c"># of &lt;nnn&gt; milliseconds or less are desired. The garbage collector will</span>
-<span class="c"># adjust the  Java heap size and other garbage collection related parameters</span>
-<span class="c"># in an attempt to keep garbage collection pauses shorter than &lt;nnn&gt; milliseconds.</span>
-<span class="c"># http://java.sun.com/docs/hotspot/gc5.0/ergo5.html</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:MaxGCPauseMillis=1500&quot;</span>
+<p>There are some other parameters that needed to be adjusted as well but I will not get into these details. Let’s assume you run the query for recommended buffer pool and you got 11GB. However you only have 11.5GB data in your database and it seems a bit odd to have such a big number. The reason for this you probably have too much or redundant index for your tables. You should reconsider the indices and adjust them to a proper state which doesn’t make your operations slower and reserve so much space.</p>
 
-<span class="c"># A hint to the virtual machine that it.s desirable that not more than:</span>
-<span class="c"># 1 / (1 + GCTimeRation) of the application execution time be spent in</span>
-<span class="c"># the garbage collector.</span>
-<span class="c"># http://themindstorms.wordpress.com/2009/01/21/advanced-jvm-tuning-for-low-pause/</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:GCTimeRatio=9&quot;</span>
+<p>One other issue primary keys of very big tables. Let’s say we have 20 tables with average 1 million to 5 million rows data but only two of them have 200 million rows data per table. At total you should have 450 million rows and probably with indices it would require around 50GB inno db pool. If you don’t access these tables heavily or they are accessed by a big group (like 1.5 million records of logs  belong to one operation) then you should not need a really big buffer pool. However a small amount of pool will be filled with one group data easily and other operations become slower at that time. At least try to give a proper amount of memory to handle the one big operation and it’s additional queries. Of course it is totally another discussion topic why don’t you use some other systems (Cassandra or a different NOSQL maybe ) to store big tables to create results and put these values into mysql to be access etc.</p>
 
-<span class="c"># The hotspot server JVM has specific code-path optimizations</span>
-<span class="c"># which yield an approximate 10% gain over the client version.</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -server&quot;</span>
-
-<span class="c"># Disable remote (distributed) garbage collection by Java clients</span>
-<span class="c"># and remove ability for applications to call explicit GC collection</span>
-<span class="nb">export </span><span class="nv">CATALINA_OPTS</span><span class="o">=</span><span class="s2">&quot;$CATALINA_OPTS -XX:+DisableExplicitGC&quot;</span>
-
-<span class="c"># Check for application specific parameters at startup</span>
-<span class="k">if</span> <span class="o">[</span> -r <span class="s2">&quot;$CATALINA_BASE/bin/appenv.sh&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  . <span class="s2">&quot;$CATALINA_BASE/bin/appenv.sh&quot;</span>
-<span class="k">fi</span>
-
-<span class="nb">echo</span> <span class="s2">&quot;Using CATALINA_OPTS:&quot;</span>
-<span class="k">for</span> arg in <span class="nv">$CATALINA_OPTS</span>
-<span class="k">do</span>
-    <span class="nb">echo</span> <span class="s2">&quot;&gt;&gt; &quot;</span> <span class="nv">$arg</span>
-<span class="k">done</span>
-<span class="nb">echo</span> <span class="s2">&quot;&quot;</span>
-
-<span class="nb">echo</span> <span class="s2">&quot;Using JAVA_OPTS:&quot;</span>
-<span class="k">for</span> arg in <span class="nv">$JAVA_OPTS</span>
-<span class="k">do</span>
-    <span class="nb">echo</span> <span class="s2">&quot;&gt;&gt; &quot;</span> <span class="nv">$arg</span>
-<span class="k">done</span>
-<span class="nb">echo</span> <span class="s2">&quot;_______________________________________________&quot;</span>
-<span class="nb">echo</span> <span class="s2">&quot;&quot;</span></code></pre></div>
-
+<p>To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.</p>
 
   </article>
   
@@ -201,7 +146,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2016-04-03T16:49:20+03:00">2016</time>. All rights reserved.
+          &copy; <time datetime="2016-04-03T17:05:58+03:00">2016</time>. All rights reserved.
         </small>
       </footer>
     </div>
