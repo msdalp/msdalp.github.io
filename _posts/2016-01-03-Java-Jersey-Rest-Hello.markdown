@@ -316,4 +316,4 @@ Also you may notice that some methods use the same path. Separation of unique me
      @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 {% endhighlight %}
 
-It is all the requirements for you to run the project.
+This is all the things you need for a simple project. I will be adding Redis, PostgreSQL, and Mysql for data access and caching in the next posts.

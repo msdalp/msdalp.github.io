@@ -10,7 +10,7 @@
 
   <title>
     
-      msdalp &middot; java, android, etc.
+      Understanding innodb_buffer_pool_size &middot; msdalp
     
   </title>
 
@@ -50,18 +50,10 @@
       </header>
 
       <main>
-        <div class="posts">
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-        Understanding innodb_buffer_pool_size
-      </a>
-    </h1>
-
-    <time datetime="2015-06-27T23:54:22+02:00" class="post-date">27 Jun 2015</time>
-
-    <p>There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:</p>
+        <article class="post">
+  <h1 class="post-title">Understanding innodb_buffer_pool_size</h1>
+  <time datetime="2015-06-27T23:54:22+02:00" class="page-date">27 Jun 2015</time>
+  <p>There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:</p>
 
 <blockquote>
   <p>InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer &gt; pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.</p>
@@ -111,20 +103,40 @@
 
 <p>To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.</p>
 
-  </article>
-  
-</div>
-
-<div class="pagination">
-  
-    <a class="pagination-item older" href="/page3">Older</a>
-  
-  
+</article>
+<aside class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
     
-      <a class="pagination-item newer" href="/">Newer</a>
+      <li>
+        <h3>
+          <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
+            Rest API Example with Java Jersey and Tomcat 
+            <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
+          </a>
+        </h3>
+      </li>
     
-  
-</div>
+      <li>
+        <h3>
+          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
+            Run Tomcat7 on Port 80
+            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
+            Create Exe from a Java Project with Many Jars Included
+            <small><time datetime="2015-01-11T20:46:32+01:00">11 Jan 2015</time></small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</aside>
 
 
       </main>

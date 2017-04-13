@@ -4,7 +4,7 @@
  <title>msdalp</title>
  <link href="http://msdalp.github.io/atom.xml" rel="self"/>
  <link href="http://msdalp.github.io/"/>
- <updated>2016-04-03T17:05:58+03:00</updated>
+ <updated>2017-04-13T15:57:44+02:00</updated>
  <id>http://msdalp.github.io</id>
  <author>
    <name>Mustafa Alparslan</name>
@@ -15,7 +15,7 @@
  <entry>
    <title>Rest API Example with Java Jersey and Tomcat </title>
    <link href="http://msdalp.github.io//2016/01/03/Java-Jersey-Rest-Hello/"/>
-   <updated>2016-01-03T12:43:32+02:00</updated>
+   <updated>2016-01-03T11:43:32+01:00</updated>
    <id>http://msdalp.github.io/2016/01/03/Java-Jersey-Rest-Hello</id>
    <content type="html">&lt;p&gt;The definition of the Jersey framework from their website:&lt;/p&gt;
 
@@ -305,7 +305,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;Security with Auth Token and others if more needed (like JWT)&lt;/li&gt;
-  &lt;li&gt;Proper request responses and errors  &lt;/li&gt;
+  &lt;li&gt;Proper request responses and errors&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;I will continue the REST specifications in another post and return to the JERSEY.&lt;/p&gt;
@@ -318,15 +318,15 @@
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;     &lt;span class=&quot;nd&quot;&gt;@Produces&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MediaType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;APPLICATION_JSON&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MediaType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;APPLICATION_XML&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;It is all the requirements for you to run the project.&lt;/p&gt;
+&lt;p&gt;This is all the things you need for a simple project. I will be adding Redis, PostgreSQL, and Mysql for data access and caching in the next posts.&lt;/p&gt;
 </content>
  </entry>
  
  <entry>
    <title>Understanding innodb_buffer_pool_size</title>
-   <link href="http://msdalp.github.io//2015/06/28/Understanding-innodb_buffer_pool_size/"/>
-   <updated>2015-06-28T00:54:22+03:00</updated>
-   <id>http://msdalp.github.io/2015/06/28/Understanding-innodb_buffer_pool_size</id>
+   <link href="http://msdalp.github.io//2015/06/27/Understanding-innodb_buffer_pool_size/"/>
+   <updated>2015-06-27T23:54:22+02:00</updated>
+   <id>http://msdalp.github.io/2015/06/27/Understanding-innodb_buffer_pool_size</id>
    <content type="html">&lt;p&gt;There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:&lt;/p&gt;
 
 &lt;blockquote&gt;
@@ -382,7 +382,7 @@
  <entry>
    <title>Run Tomcat7 on Port 80</title>
    <link href="http://msdalp.github.io//2015/03/01/Tomcat-7-Run-on-Port-80/"/>
-   <updated>2015-03-01T21:46:32+02:00</updated>
+   <updated>2015-03-01T20:46:32+01:00</updated>
    <id>http://msdalp.github.io/2015/03/01/Tomcat-7-Run-on-Port-80</id>
    <content type="html">&lt;p&gt;You may need to run Tomcat on port 80 for many reasons. It is possible to accomplish this in three steps. &lt;br /&gt;
 First step is move 8080 to port 80.Find your server.xml file for Tomcat. It is probably under /etc/tomcat/server.xml but still 
@@ -425,11 +425,11 @@ Open /etc/sysctl.conf with your text editor.&lt;/p&gt;
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Save the file and close it. To make sure IPv6 is disabled run &lt;/p&gt;
+&lt;p&gt;Save the file and close it. To make sure IPv6 is disabled run&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;sudo sysctl -p&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;and you will see &lt;/p&gt;
+&lt;p&gt;and you will see&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;net.ipv6.conf.all.disable_ipv6 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1
 net.ipv6.conf.default.disable_ipv6 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1
@@ -440,11 +440,11 @@ net.ipv6.conf.lo.disable_ipv6 &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 1&l
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;cat /proc/sys/net/ipv6/conf/all/disable_ipv6&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;It will report: 1 &lt;br /&gt;
-Now it is ready to run on port 80. Start your tomcat with &lt;/p&gt;
+Now it is ready to run on port 80. Start your tomcat with&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;sudo service tomcat7 start&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;If you look at your catalina.out logs it will be written in there as &lt;/p&gt;
+&lt;p&gt;If you look at your catalina.out logs it will be written in there as&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;Mar 21, 2015 10:02:44 PM org.apache.coyote.AbstractProtocol init
 INFO: Initializing ProtocolHandler &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http-bio-80&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
@@ -458,7 +458,7 @@ example.com/Services/&lt;/p&gt;
  <entry>
    <title>Create Exe from a Java Project with Many Jars Included</title>
    <link href="http://msdalp.github.io//2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/"/>
-   <updated>2015-01-11T21:46:32+02:00</updated>
+   <updated>2015-01-11T20:46:32+01:00</updated>
    <id>http://msdalp.github.io/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included</id>
    <content type="html">&lt;p&gt;With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.&lt;/p&gt;
 
@@ -548,7 +548,7 @@ BUILD SUCCESSFUL (total time: 20 seconds)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt
  <entry>
    <title>Java Sqlite Fast Insert with PreparedStatement</title>
    <link href="http://msdalp.github.io//2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/"/>
-   <updated>2014-12-11T21:00:00+02:00</updated>
+   <updated>2014-12-11T20:00:00+01:00</updated>
    <id>http://msdalp.github.io/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement</id>
    <content type="html">&lt;p&gt;In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.&lt;/p&gt;
 
@@ -623,7 +623,7 @@ BUILD SUCCESSFUL (total time: 20 seconds)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt
  <entry>
    <title>How to Check If a String is Integer</title>
    <link href="http://msdalp.github.io//2014/03/11/How-to-Check-If-a-String-is-Integer/"/>
-   <updated>2014-03-11T21:46:32+02:00</updated>
+   <updated>2014-03-11T20:46:32+01:00</updated>
    <id>http://msdalp.github.io/2014/03/11/How-to-Check-If-a-String-is-Integer</id>
    <content type="html">&lt;p&gt;There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
 First one is using regular expressions and this is the one I use mostly.This matches as &lt;br /&gt; 
@@ -697,7 +697,7 @@ Here some test results with these methods.Running many times these methods shows
  <entry>
    <title>Android Udp Client Example</title>
    <link href="http://msdalp.github.io//2014/03/09/Udp-on-Android/"/>
-   <updated>2014-03-09T21:46:32+02:00</updated>
+   <updated>2014-03-09T20:46:32+01:00</updated>
    <id>http://msdalp.github.io/2014/03/09/Udp-on-Android</id>
    <content type="html">&lt;p&gt;UDP (User Datagram Protocol) is anther commonly used protocol on the Internet. However, UDP is never used to send important data such as webpages,
 database information, etc; UDP is commonly used for streaming audio and video. Streaming media such as Windows Media audio files (.WMA) , Real Player (.RM),
@@ -828,7 +828,7 @@ You should catch the exception which is SocketTimeoutException if there is no an
  <entry>
    <title>Jetty Embedded Server With Post, Get, and Gson</title>
    <link href="http://msdalp.github.io//2014/03/04/jetty-embedded/"/>
-   <updated>2014-03-04T18:40:24+02:00</updated>
+   <updated>2014-03-04T17:40:24+01:00</updated>
    <id>http://msdalp.github.io/2014/03/04/jetty-embedded</id>
    <content type="html">&lt;p&gt;Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the &lt;a href=&quot;http://www.eclipse.org/jetty/powered&quot;&gt;Jetty Powered page&lt;/a&gt; for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
 You should first download the required jetty jar files and import them. Basically you can just down &lt;a href=&quot;http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar&quot;&gt;jetty all&lt;/a&gt; and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from &lt;a href=&quot;https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&amp;amp;can=2&amp;amp;q=&quot;&gt;this&lt;/a&gt; link.
@@ -981,7 +981,7 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
  <entry>
    <title>Increase Insertion Speed on Android SQLite</title>
    <link href="http://msdalp.github.io//2014/03/04/android-sqlite-increase-insertion-speed/"/>
-   <updated>2014-03-04T18:40:24+02:00</updated>
+   <updated>2014-03-04T17:40:24+01:00</updated>
    <id>http://msdalp.github.io/2014/03/04/android-sqlite-increase-insertion-speed</id>
    <content type="html">&lt;p&gt;I’ve been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it’s a set function so I deleted the datas before inserting anything.&lt;/p&gt;
 
@@ -1042,7 +1042,7 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
  <entry>
    <title>Android Sqlite Example</title>
    <link href="http://msdalp.github.io//2014/03/04/android-sqlite-example/"/>
-   <updated>2014-03-04T18:40:24+02:00</updated>
+   <updated>2014-03-04T17:40:24+01:00</updated>
    <id>http://msdalp.github.io/2014/03/04/android-sqlite-example</id>
    <content type="html">&lt;p&gt;SQLite is embedded into every Android device. Using an SQLite database in Android does not require a setup procedure or administration of the database. You only have to define the SQL statements for creating and updating the database. Afterwards the database is automatically managed for you by the Android platform.&lt;/p&gt;
 
