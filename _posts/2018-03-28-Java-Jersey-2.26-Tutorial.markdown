@@ -180,7 +180,7 @@ We can add `web.xml` file and it will empty for now just with the default web-ap
 </web-app>
 ```
 
-Finally all the project structure we have to setup is done. It is time to move on Java files and implementing the rest api. If you are not familiar with Jersey it has an `Application` class where you can initialize your application and have all your settings etc. We will use `ResourceConfig` which extends this Application class and implement `ServerConfig` methods which enables you to set all server settings easily on one place with ease. These are both in Jersey API and we are not implementing or 
+Finally all the project structure we have to setup is done. It is time to move on Java files and implementing the rest api. If you are not familiar with Jersey it has an `Application` class where you can initialize your application and have all your settings etc in it. We will use `ResourceConfig` which extends this Application class and implement `ServerConfig` methods which enables you to set all server settings easily in one place with ease. These are both in Jersey API and we are not implementing or 
 importing something from other sources. Let's create our app which will be under `com.blog.api` for me as `RestApp.java`.
 
 ```java
@@ -191,11 +191,11 @@ public class RestApp extends ResourceConfig {
     }
 }
 ```
-Here we have a `RestApp` class which extends `ResourceConfig` with `@ApplicationPath("")` annotation. It is obvious that the path you give here will be your top path on the url as `host:/api/...`. To utilize the imported settings from the `ResourceConfig` we just need to the default constructor and can access all directly which I will not go into details. But as expected `packages("com.blog.api.rest")`  will scan the `"com.blog.api.rest"` folder for the resources and if have any deploy them automatically. 
+Here we have a `RestApp` class which extends `ResourceConfig` with `@ApplicationPath("")` annotation. It is obvious that the path you give here will be your top path on the url as `host:/api/...`. To utilize the imported settings from the `ResourceConfig` we just need  the default constructor and can access all these directly which I will not go into details. But as expected `packages("com.blog.api.rest")`  will scan the `"com.blog.api.rest"` folder for the resources and if have any deploy them automatically. 
 
 ![Folder structure](/assets/img/4_source_codes.png)
 
-Let's add a resource that returns a JSON response from an object automatically as in packages above. This will be done with jackson as you can see we added the dependency on our pom file. 
+Let's add a resource that returns a JSON response from an object automatically as in the package above. This will be done with jackson as you can see in your pom file, we added it as a dependency. 
 
 ```java
 @Path("")
@@ -218,11 +218,11 @@ public class TestResponse {
 }
 ```
 
-When you add `@Path("")` annotation to the class it will be treated as a resource. However just adding the annotation will give you an error saying `this class doesn't have any jax-rs implementation`. To have that we will add the `getTest()` method which doesn't take any parameters and returns TestResponse. HTTP methods are defined as annotations `@GET`, `@POST`, `@DELETE` etc. The path you defined will be a subpath on the class, meaning if you have `@Path("users")` on class and `@Path("teams")` on the method then you will be accessing it to as `users/teams/`. `@Produces()` defined the return type and you can have multiple return types by just adding it to annotation. 
+When you add `@Path("")` annotation to the class it will be treated as a resource. However just adding the annotation will give you an error saying `this class doesn't have any jax-rs implementation`. To have that we will add the `getTest()` method which doesn't take any parameters and returns TestResponse. HTTP methods are defined as annotations `@GET`, `@POST`, `@DELETE` etc. The path you defined will be a subpath on the class, meaning if you have `@Path("users")` on class and `@Path("teams")` on the method then you will be accessing it to as `users/teams/`. `@Produces()` defines the return type and you can have multiple return types by just adding it to annotation. 
 
 ![Folder structure](/assets/img/5_no_run.png)
 
-That will be all we need to build the project but also I want to run it on Intellij. However it has no default run setting and I will be adding it manually. First click in order on the Edit Configurations, Add (+ sign), Select Tomcat-> local.
+That will be all we need to build the project but also I want to run it on Intellij. However it has no default run setting and I will be adding it manually. In order, first click on the Edit Configurations, Add (+ sign), Select Tomcat-> local.
 
 ![Folder structure](/assets/img/6_prepare_tomcat.png)
 
