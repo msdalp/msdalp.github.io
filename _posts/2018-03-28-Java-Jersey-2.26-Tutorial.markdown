@@ -14,31 +14,31 @@ First start with new maven project and create your pom. It will have nothing spe
 
 ![create project](/assets/img/1_create_project.png)
 
-{% highlight xml %}
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <
+
     <groupId>com.blog.jersey</groupId>
     <artifactId>blog-jersey</artifactId>
     <version>1.0-SNAPSHOT</version>
 </project>
-{% endhighlight %}
+```
 
 Packaging will be war since we will be using Tomcat to run it and can be added as `<packaging>war</packaging>`. Also add a name for the project as `<name>JerseyBlog</name>`. Also it should better have a proper source encoding which can be added as properties.
 
-{% highlight xml %}
+```xml
 <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey.version>2.26</jersey.version>
 </properties>
-{% endhighlight %}
+```
 
 The main difference is the dependencies we use for jersey. After version 2.26 you need to add common and hk2 to your project to have a minimum running Jersey app. 
 
-{% highlight xml %}
+```xml
 <dependencies>
     <dependency>
         <groupId>org.glassfish.jersey.core</groupId>
@@ -61,11 +61,11 @@ The main difference is the dependencies we use for jersey. After version 2.26 yo
         <version>${jersey.version}</version>
     </dependency>
 </dependencies>
-{% endhighlight %}
+```
 
 To build and compile the project we will be using Java 8 and maven war compiler as given below. There is nothing specific about that, it is the default settings when you add war support to your project.
 
-{% highlight xml %}
+```xml
 <build>
     <finalName>JerseyBlog</finalName>
     <plugins>
@@ -87,11 +87,11 @@ To build and compile the project we will be using Java 8 and maven war compiler 
 
     </plugins>
 </build>
-{% endhighlight %}
+```
 
 With the build script I have everything I need for my Jersey project and the final pom file should be something like this. 
 
-{% highlight xml %}
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -156,20 +156,20 @@ With the build script I have everything I need for my Jersey project and the fin
         </plugins>
     </build>
 </project>
-{% endhighlight %}
+```
 
+Now lets move on our source code and start with web.xml file. Since this is a web project it will require to have to web.xml under the folder webapp. When you try to run it without web.xml it will give the error it needs that file.
 
 ![webapp folder](/assets/img/2_web_app.png)
 
-
-Now lets move on our source code and start with web.xml file. Since this is a web project it will require to have to web.xml under the folder webapp. When you try to run it without web.xml it will give the error it needs that file. Create your webapp folder under main along with the java and resources folder. And inside that webapp folder create the WEB-INF folder where we will put the web.xml file. Your folders should look like this after these are created. 
+ Create your webapp folder under main along with the java and resources folder. And inside that webapp folder create the WEB-INF folder where we will put the web.xml file. Your folders should look like this after these are created. 
 
 ![Folder structure](/assets/img/3_folders.png)
 
 We can add `web.xml` file and it will empty for now just with the default web-app definition as given below. 
  
 
-{% highlight xml %}
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -178,7 +178,7 @@ We can add `web.xml` file and it will empty for now just with the default web-ap
          version="3.1"
          id="blog-api">
 </web-app>
-{% endhighlight %}
+```
 
 Finally all the project structure we have to setup is done. It is time to move on Java files and implementing the rest api. If you are not familiar with Jersey it has an `Application` class where you can initialize your application and have all your settings etc. We will use `ResourceConfig` which extends this Application class and implement `ServerConfig` methods which enables you to set all server settings easily on one place with ease. These are both in Jersey API and we are not implementing or 
 importing something from other sources. Let's create our app which will be under `com.blog.api` for me as `RestApp.java`.
