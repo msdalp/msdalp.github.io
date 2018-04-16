@@ -10,7 +10,7 @@ tagline:          java, android, etc.
 url:              https://msdalp.github.io
 comments:         true
 disqus-shortname: msdalp
-baseurl:          /
+baseurl:          ''
 author:
   name:           Mustafa Alparslan
   url:            www.msdalp.github.io
