@@ -10,7 +10,7 @@
 
   <title>
     
-      Java Sqlite Fast Insert with PreparedStatement &middot; msdalp
+      msdalp &middot; java, android, etc.
     
   </title>
 
@@ -59,10 +59,18 @@
       </header>
 
       <main>
-        <article class="post">
-  <h1 class="post-title">Java Sqlite Fast Insert with PreparedStatement</h1>
-  <time datetime="2014-12-11T20:00:00+01:00" class="page-date">11 Dec 2014</time>
-  <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
+        <div class="posts">
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
+        Java Sqlite Fast Insert with PreparedStatement
+      </a>
+    </h1>
+
+    <time datetime="2014-12-11T20:00:00+01:00" class="post-date">11 Dec 2014</time>
+
+    <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="o">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
@@ -130,40 +138,20 @@
     <span class="o">}</span></code></pre></figure>
 
 
-</article>
-<aside class="related">
-  <h2>Related Posts</h2>
-  <ul class="related-posts">
+  </article>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page8">Older</a>
+  
+  
     
-      <li>
-        <h3>
-          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
-            Java Jersey Database with Jersey 2.26 and JDBI
-            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
-          </a>
-        </h3>
-      </li>
+      <a class="pagination-item newer" href="/page6">Newer</a>
     
-      <li>
-        <h3>
-          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
-            Java Jersey Hello World with Jersey 2.26
-            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
-            Rest API Example with Java Jersey and Tomcat 
-            <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-  </ul>
-</aside>
+  
+</div>
 
 
       </main>

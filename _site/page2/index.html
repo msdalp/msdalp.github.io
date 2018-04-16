@@ -63,383 +63,225 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
-        Rest API Example with Java Jersey and Tomcat 
+      <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+        Java Jersey Hello World with Jersey 2.26
       </a>
     </h1>
 
-    <time datetime="2016-01-03T11:43:32+01:00" class="post-date">03 Jan 2016</time>
-
-    The definition of the Jersey framework from their website:
-
-Jersey framework is more than the JAX-RS Reference Implementation. Jersey provides it’s own API that extend the JAX-RS toolkit with additional features and utilities to further simplify RESTful service and client development. Jersey also exposes numerous extension SPIs so that developers may extend Jersey to best suit their needs.
-
-You can read details from <a href="https://jersey.java.net">https://jersey.java.net</a>
-
-What I will try to show is creating a project from beginning and put more in time to make it a whole complete structure in this order:
-
- - Create a project by using HTTP methods.
- - Add database connection to the project and Authentication (tokens, roles)
- - Add error mappings, logging requests and responses
- - Jackson specific settings
-
-I will be using Netbeans 8, Tomcat 7, Jersey 2.9.1, and Java 7.
-
-Firstly create a new project by selecting Maven Web project.
-
-![new project ss](/assets/img/new_maven_project.png)<br>
-
-After creating your project add dependencies as given below and we will be adding other dependencies when it is needed.
-{% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.jersey.test</groupId>
-    <artifactId>JerseyTest</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
-
-    <name>JerseyTest</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <version>2.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-            <version>2.22.1</version>
-        </dependency>
-
-    </dependencies>
-    <build>
-        <finalName>JerseyTest</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
-
-</project>
-{% endhighlight %}
-
-Jersey provides an abstract class Application declaring root resource and provider classes, and root resource and provider singleton instances. A Web service may extend this class to declare root resource and provider classes.
-
-Alternatively it is possible to reuse ResourceConfig - Jersey's own implementations of Application class that we will be using.
-
-Simply you give the packages that you want to include in the project for deployment and register the properties like JSON and GZIP. Also you can register filters, singletons and other things as well.
-
-
-{% highlight java %}
-package com.jersey.test.app;
-
-import javax.ws.rs.ApplicationPath;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-
-/**
- *
- * @author Mustafa Alparslan <msdalp.github.io>
- */
-@ApplicationPath("")
-public class RestApp extends ResourceConfig {
-    public RestApp() {
-        packages(new String[]{
-            "com.jersey.test.data"
-        });
-        register(JacksonFeature.class);
-    }
-}
-{% endhighlight %}
-
-At this stage if your IDE is giving error about web.xml or context.xml then simply put these files and will be used in the future posts.
-
-web.xml
-{% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-
-</web-app>
-{% endhighlight %}
-context.xml
-{% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/JerseyTest"/>
-{% endhighlight %}
-
-The package I included in the main class was "com.jersey.test.data" and for the sake of simplicity I will add User model and the Users service to show methods.
-
-These two classes have no specific property (user model and a map to put users inside while we have no database connection).
-{% highlight java %}
-package com.jersey.test.data;
-
-/**
- *
- * @author Mustafa Alparslan <msdalp.github.io>
- */
-public class User {
-    public long id;
-    public String name;
-    public String password;
-
-    public User() {
-    }
-
-    public User(long id, String name, String password) {
-        this.id = id;
-        this.name = name;
-        this.password = password;
-    }
-}
-{% endhighlight %}
-
-{% highlight java %}
-package com.jersey.test.app;
-
-import com.jersey.test.data.User;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- *
- * @author Mustafa Alparslan <msdalp.github.io>
- */
-public class Data {
-
-    public static Map<Long,User> users = new HashMap<>();
-
-}
-{% endhighlight %}
-
-
-
-
-{% highlight java %}
-package com.jersey.test.data;
-
-import com.jersey.test.app.Data;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-/**
- *
- * @author Mustafa Alparslan <msdalp.github.io>
- */
-@Path("/users")
-public class Users {
-
-    @Context
-    ServletContext servletContext;
-    @Context
-    HttpServletRequest servletRequest;
-
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path("{userId}")
-    @GET
-    public Response processGet(@PathParam("userId") Long userId) {
-        if (Data.users.containsKey(userId)) {
-            return Response.status(Response.Status.OK)
-                    .entity(Data.users.get(userId)).type("application/json").build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new Msg(Msg.Cond.error, "Not Found")).type("application/json").build();
-        }
-    }
-
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path("{userId}")
-    @DELETE
-    public Response processDel(@PathParam("userId") long userId) {
-        if (Data.users.containsKey(userId)) {
-            Data.users.remove(userId);
-            return Response.status(Response.Status.OK)
-                    .entity(new Msg(Msg.Cond.success, "Operation successful")).type("application/json").build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new Msg(Msg.Cond.error, "Not Found")).type("application/json").build();
-        }
-    }
-
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path("")
-    @POST
-    public Response processAdd(User user) {
-        Data.users.put(user.id, user);
-        return Response.status(Response.Status.OK)
-                .entity(Data.users.values()).type("application/json").build();
-    }
-
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path("")
-    @PUT
-    public Response processUpdate(User user) {
-        Data.users.put(user.id, user);
-        return Response.status(Response.Status.OK)
-                .entity(Data.users.values()).type("application/json").build();
-    }
-
-}
-{% endhighlight %}
-
-Your service definition starts with a "@Path("/users")" annotation which defines the root path of the class. You can add more lower levels before the methods like "@Path("{userId}/orders")" which will take user id as parameter and return the orders of that user. However be aware that adding conflicting classes will broke the URL schema and calling these URLs will give some runtime Exceptions.
-
-You define the name of HTTP method with annotations  as well (by using @GET, @POST, @PUT, @DELETE).
-
-For the requests with @GET and @DELETE methods PathParam (directly in url like /users/14) or QueryParam (by using ? and values behind like /users?id=14) can be used (together or only one of them). However I highly recommend that if it is a REST-API then use PathParams to make it more readable.
-
-Also you should read about REST a bit from
-<a href="http://stackoverflow.com/questions/671118/what-exactly-is-restful-programming"> this stackoverflow link</a>. Honestly I don't care about the talk 'your api should match 100% to the rules otherwise your api is not a rest' crap. The main idea is creating a standard that allows developers (for both server and client side) to make their jobs with ease. At the end call your api 'like REST' and then everyone will be happy.
-
-Even though I said that is not important but at least you should be able to provide these properties.
-
-- Proper url naming: It is quite easy and important thing since creating urls properly would make much easier to use you API.
-
-Please do not use sentences at the urls and at least it should match the form of
-
-{% highlight bash %}
-/users -> to add or update the user
-/users/{userId} -> to get or delete the user
-/users/{userId}/orders -> to get the orders of the user
-{% endhighlight %}
-
-- Proper usage of HTTP methods:
-
-It should use @GET to retrieve data, @POST-@PUT to add and update data, and @DELETE to delete data. It may change with the specific methods but using this in your main models should be quite easy.
-
-- Proper usage of HTTP Codes:
-
-It is quite important to send proper HTTP Codes in your responses. It would be much easier to manage to responses and take action according to these codes (like if the code is 401 and can not refresh token then redirect to the login page). Again there are many codes but:
-
-{% highlight bash %}
-200 -> successful request
-400 -> bad request
-401 -> auth is not valid or expired
-403 -> forbidden
-500 -> internal error
-{% endhighlight %}
-
-- Security with Auth Token and others if more needed (like JWT)
-- Proper request responses and errors  
-
-
-I will continue the REST specifications in another post and return to the JERSEY.
-
-For the requests with @POST and @PUT methods FormParam (like usual form parameter with username=msd&password=alp) or directly the object representation of request as it is used in the example (User user). However you must define the '    @Consumes(MediaType.APPLICATION_JSON)' annotation for the method.
-
-Also you may notice that some methods use the same path. Separation of unique methods are done by classical java method name and parameters on the compile time,  path and http method on the runtime. Therefore you can define two methods with the same path and parameter but different HTTP method (GET or DELETE).
-
-@Produces({MediaType.APPLICATION_JSON}) annotation takes a list of MediaType (or string like 'application/json') that defines the possible return types. It is possible to use two different response type in one method like
-{% highlight java %}
-     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-{% endhighlight %}
-
-This is all the things you need for a simple project. I will be adding Redis, PostgreSQL, and Mysql for data access and caching in the next posts.
-
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-        Understanding innodb_buffer_pool_size
-      </a>
-    </h1>
-
-    <time datetime="2015-06-27T23:54:22+02:00" class="post-date">27 Jun 2015</time>
-
-    There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let's first check the definition given from MYSQL:
-
-> InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer > pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.
-
-The idea is keeping innodb_buffer_pool_size bigger as possible that doesn't block other OS and programs running properly. This will make InnoDB work like a in-memory database and increase the performance a lot. At first InnoDB will take all the required data from disk and access it from memory in the future queries. The default value for InnoDB is 8MB so you might want to update it as a bigger number which fits well for your system.
-
-Before going exact details there is a wrong assumption about Innodb Buffer Pool. People think that if they give enough space for keys to be in the memory and there will be very low IO accesss. The idea is searching keys fast as much as and retrieve data with index directly. Let's assume you have a query that runs in 600ms and 450 ms is searching keys, 75 ms is getting data from disk and last 75 ms is fetching data from server. Providing proper innodb_buffer_pool_size will make sure you don't access disk for index search and that 450 ms will decrease to 30 ms (it really depends on your keys and structure) so total time for query is 180 ms now. You still have IO at this rate but it is only retrieving data from disk which can be acceptable.
-
-I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:
-{% highlight sql %}
-SELECT CONCAT(ROUND(KBS/POWER(1024,
-IF(PowerOf1024<0,0,IF(PowerOf1024>3,0,PowerOf1024)))+0.49999),
-SUBSTR(' KMG',IF(PowerOf1024<0,0,
-IF(PowerOf1024>3,0,PowerOf1024))+1,1)) recommended_innodb_buffer_pool_size
-FROM (SELECT SUM(data_length+index_length) KBS FROM information_schema.tables
-WHERE engine='InnoDB') A,
-(SELECT 3 PowerOf1024) B;
-{% endhighlight %}
-In my system it returns the value:
-{% highlight sql %}
-recommended_innodb_buffer_pool_size
-48G
-{% endhighlight %}
-Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.
-
-This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let's assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.
-{% highlight sql %}
-SELECT (PagesData*PageSize)/POWER(1024,3) DataGB FROM
-(SELECT variable_value PagesData
-FROM information_schema.global_status
-WHERE variable_name='Innodb_buffer_pool_pages_data') A,
-(SELECT variable_value PageSize
-FROM information_schema.global_status
-WHERE variable_name='Innodb_page_size') B;
-{% endhighlight %}
-For my system it returns:
-{% highlight sql %}
-DataGB
-22.5G
-{% endhighlight %}
-It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn't go up quickly after for a week etc.
-
-There are some other parameters that needed to be adjusted as well but I will not get into these details. Let's assume you run the query for recommended buffer pool and you got 11GB. However you only have 11.5GB data in your database and it seems a bit odd to have such a big number. The reason for this you probably have too much or redundant index for your tables. You should reconsider the indices and adjust them to a proper state which doesn't make your operations slower and reserve so much space.
-
-One other issue primary keys of very big tables. Let's say we have 20 tables with average 1 million to 5 million rows data but only two of them have 200 million rows data per table. At total you should have 450 million rows and probably with indices it would require around 50GB inno db pool. If you don't access these tables heavily or they are accessed by a big group (like 1.5 million records of logs  belong to one operation) then you should not need a really big buffer pool. However a small amount of pool will be filled with one group data easily and other operations become slower at that time. At least try to give a proper amount of memory to handle the one big operation and it's additional queries. Of course it is totally another discussion topic why don't you use some other systems (Cassandra or a different NOSQL maybe ) to store big tables to create results and put these values into mysql to be access etc.
-
-To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.
+    <time datetime="2018-03-28T12:03:21+02:00" class="post-date">28 Mar 2018</time>
+
+    <p>I was creating new projects with Jersey and noticed my template is broken with the last 2.26 version.
+Api was changed and you might need to add new stuff to the your project. Again as the previous one I will setup a
+new template for myself and in the meantime go through step by step for this post.</p>
+
+<p>My setup is openjdk version “1.8.0_162” on Manjaro Linux and Intellij Ultimate 2017.3.</p>
+
+<p>First start with new maven project and create your pom. It will have nothing specific at start and we will and jersey dependencies in a second.</p>
+
+<p><img src="/assets/img/1_create_project.png" alt="create project" /></p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+    <span class="nt">&lt;groupId&gt;</span>com.blog.jersey<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>blog-jersey<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/project&gt;</span></code></pre></figure>
+
+<p>Packaging will be war since we will be using Tomcat to run it and can be added as <code class="highlighter-rouge">&lt;packaging&gt;war&lt;/packaging&gt;</code>. Also add a name for the project as <code class="highlighter-rouge">&lt;name&gt;JerseyBlog&lt;/name&gt;</code>. Also it should better have a proper source encoding which can be added as properties.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+        <span class="nt">&lt;jersey.version&gt;</span>2.26<span class="nt">&lt;/jersey.version&gt;</span>
+<span class="nt">&lt;/properties&gt;</span></code></pre></figure>
+
+<p>The main difference is the dependencies we use for jersey. After version 2.26 you need to add common and hk2 to your project to have a minimum running Jersey app.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.core<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jersey-common<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.inject<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jersey-hk2<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.containers<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jersey-container-servlet<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.media<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jersey-media-json-jackson<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span></code></pre></figure>
+
+<p>To build and compile the project we will be using Java 8 and maven war compiler as given below. There is nothing specific about that, it is the default settings when you add war support to your project.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;finalName&gt;</span>JerseyBlog<span class="nt">&lt;/finalName&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+        <span class="nt">&lt;plugin&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>maven-war-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.6<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+
+        <span class="nt">&lt;plugin&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;configuration&gt;</span>
+                <span class="nt">&lt;source&gt;</span>1.8<span class="nt">&lt;/source&gt;</span>
+                <span class="nt">&lt;target&gt;</span>1.8<span class="nt">&lt;/target&gt;</span>
+            <span class="nt">&lt;/configuration&gt;</span>
+        <span class="nt">&lt;/plugin&gt;</span>
+
+    <span class="nt">&lt;/plugins&gt;</span>
+<span class="nt">&lt;/build&gt;</span></code></pre></figure>
+
+<p>With the build script I have everything I need for my Jersey project and the final pom file should be something like this.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+
+    <span class="nt">&lt;groupId&gt;</span>com.blog.jersey<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>blog-jersey<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;name&gt;</span>JerseyBlog<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+        <span class="nt">&lt;jersey.version&gt;</span>2.26<span class="nt">&lt;/jersey.version&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+
+            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.core<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jersey-common<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.inject<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jersey-hk2<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.containers<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jersey-container-servlet<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.media<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jersey-media-json-jackson<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${jersey.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+
+    <span class="nt">&lt;/dependencies&gt;</span>
+
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;finalName&gt;</span>JerseyBlog<span class="nt">&lt;/finalName&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-war-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.6<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;configuration&gt;</span>
+                    <span class="nt">&lt;source&gt;</span>1.8<span class="nt">&lt;/source&gt;</span>
+                    <span class="nt">&lt;target&gt;</span>1.8<span class="nt">&lt;/target&gt;</span>
+                <span class="nt">&lt;/configuration&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+<span class="nt">&lt;/project&gt;</span></code></pre></figure>
+
+<p>Now lets move on our source code and start with web.xml file. Since this is a web project it will require to have to web.xml under the folder webapp. When you try to run it without web.xml it will give the error it needs that file.</p>
+
+<p><img src="/assets/img/2_web_app.png" alt="webapp folder" /></p>
+
+<p>Create your webapp folder under main along with the java and resources folder. And inside that webapp folder create the WEB-INF folder where we will put the web.xml file. Your folders should look like this after these are created.</p>
+
+<p><img src="/assets/img/3_folders.png" alt="Folder structure" /></p>
+
+<p>We can add <code class="highlighter-rouge">web.xml</code> file and it will empty for now just with the default web-app definition as given below.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+
+<span class="nt">&lt;web-app</span> <span class="na">xmlns=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"</span>
+         <span class="na">version=</span><span class="s">"3.1"</span>
+         <span class="na">id=</span><span class="s">"blog-api"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span></code></pre></figure>
+
+<p>Finally all the project structure we have to setup is done. It is time to move on Java files and implementing the rest api. If you are not familiar with Jersey it has an <code class="highlighter-rouge">Application</code> class where you can initialize your application and have all your settings etc in it. We will use <code class="highlighter-rouge">ResourceConfig</code> which extends this Application class and implement <code class="highlighter-rouge">ServerConfig</code> methods which enables you to set all server settings easily in one place with ease. These are both in Jersey API and we are not implementing or 
+importing something from other sources. Let’s create our app which will be under <code class="highlighter-rouge">com.blog.api</code> for me as <code class="highlighter-rouge">RestApp.java</code>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ApplicationPath</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestApp</span> <span class="kd">extends</span> <span class="n">ResourceConfig</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">RestApp</span><span class="o">(){</span>
+        <span class="n">packages</span><span class="o">(</span><span class="s">"com.blog.api.rest"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Here we have a <code class="highlighter-rouge">RestApp</code> class which extends <code class="highlighter-rouge">ResourceConfig</code> with <code class="highlighter-rouge">@ApplicationPath("")</code> annotation. It is obvious that the path you give here will be your top path on the url as <code class="highlighter-rouge">host:/api/...</code>. To utilize the imported settings from the <code class="highlighter-rouge">ResourceConfig</code> we just need  the default constructor and can access all these directly which I will not go into details. But as expected <code class="highlighter-rouge">packages("com.blog.api.rest")</code>  will scan the <code class="highlighter-rouge">"com.blog.api.rest"</code> folder for the resources and if have any deploy them automatically.</p>
+
+<p><img src="/assets/img/4_source_codes.png" alt="Folder structure" /></p>
+
+<p>Let’s add a resource that returns a JSON response from an object automatically as in the package above. This will be done with jackson as you can see in your pom file, we added it as a dependency.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+
+    <span class="nd">@GET</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"/test"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">TestResponse</span>	 <span class="nf">getTest</span><span class="o">(){</span>
+    	<span class="k">return</span> <span class="k">new</span> <span class="nf">TestResponse</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestResponse</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">value</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nf">TestResponse</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">){</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When you add <code class="highlighter-rouge">@Path("")</code> annotation to the class it will be treated as a resource. However just adding the annotation will give you an error saying <code class="highlighter-rouge">this class doesn't have any jax-rs implementation</code>. To have that we will add the <code class="highlighter-rouge">getTest()</code> method which doesn’t take any parameters and returns TestResponse. HTTP methods are defined as annotations <code class="highlighter-rouge">@GET</code>, <code class="highlighter-rouge">@POST</code>, <code class="highlighter-rouge">@DELETE</code> etc. The path you defined will be a subpath on the class, meaning if you have <code class="highlighter-rouge">@Path("users")</code> on class and <code class="highlighter-rouge">@Path("teams")</code> on the method then you will be accessing it to as <code class="highlighter-rouge">users/teams/</code>. <code class="highlighter-rouge">@Produces()</code> defines the return type and you can have multiple return types by just adding it to annotation.</p>
+
+<p><img src="/assets/img/5_no_run.png" alt="Folder structure" /></p>
+
+<p>That will be all we need to build the project but also I want to run it on Intellij. However it has no default run setting and I will be adding it manually. In order, first click on the Edit Configurations, Add (+ sign), Select Tomcat-&gt; local.</p>
+
+<p><img src="/assets/img/6_prepare_tomcat.png" alt="Folder structure" /></p>
+
+<p>You will notice it says there is an error with the project as we didn’t specify what we are deploying. Now click on Fix button and select :exploded options for the war and it should be good to go.</p>
+
+<p><img src="/assets/img/7_fix_deploy.png" alt="Folder structure" /></p>
+
+<p>Save the setting as it is and click on Run which should bring you the first service you implemented with Jersey.</p>
+
+<p><img src="/assets/img/8_result.png" alt="Folder structure" /></p>
 
   </article>
   
@@ -476,7 +318,7 @@ To sum up; run the query and get a recommended value for your innodb_buffer_pool
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2018-04-16T19:53:39+02:00">2018</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:58:53+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

@@ -63,268 +63,94 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2014/03/04/android-sqlite-increase-insertion-speed/">
-        Increase Insertion Speed on Android SQLite
+      <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
+        Create Exe from a Java Project with Many Jars Included
       </a>
     </h1>
 
-    <time datetime="2014-03-04T17:40:24+01:00" class="post-date">04 Mar 2014</time>
+    <time datetime="2015-01-11T20:46:32+01:00" class="post-date">11 Jan 2015</time>
 
-    I've been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it's a set function so I deleted the datas before inserting anything.
+    <p>With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.</p>
 
-{% highlight java %}
-public synchronized boolean setData(List<YourObject> _objects) {
-        final SQLiteDatabase db = this.getWritableDatabase();
-        boolean retval = false;
-        try {
-            db.delete("table_data", null, null);
-            for (YourObject object : _objects) {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put("ID", object.id);
-                contentValues.put("NAME", object.name);
-                contentValues.put("ABBR", object.abbr);
-                contentValues.put("FOUND_YEAR", object.foundYear);
-                db.insert("table_data", null, contentValues);
-            }
-            retval = true;
-        } catch (Exception ex) {
-            Log.e(TAG, "setData exception", ex);
-        } finally {
-            db.close();
-        }
-        return 
-}
-{% endhighlight %}
-After some digging I found nnother method to insert data into the database by using SqliteStatements.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.We had to make sure it is really inserting the data to database and it was successful.
+<p>1) Create your xml file with launch4j: It is required on the build level and will be done only one time. Simple details will be enough like min jre level and name etc.Here what I use as xml file for launch4j.It just takes icon file and min jre.</p>
 
-{% highlight java %}
-public synchronized boolean setData(List<YourObject> _objects) {
-        final SQLiteDatabase db = this.getWritableDatabase();
-        final String INSERT_DATA = "INSERT INTO table_data VALUES (?,?,?,?);";
-        boolean retval = false;
-        try {
-            db.delete("table_data", null, null);
-            SQLiteStatement statement = db.compileStatement(INSERT_DATA);
-            db.beginTransaction();
-            for (YourObject object : _objects) {
-                statement.clearBindings();
-                statement.bindLong(1, object.id);
-                statement.bindString(2, object.name);
-                statement.bindString(3, object.abbr);
-                statement.bindLong(4, object.foundYear);
-                statement.execute();
-            }
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            retval = true;
-        } catch (Exception ex) {
-            Log.e(TAG, "setData exception", ex);
-        } finally {
-            db.close();
-        }
-        return retval;
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;launch4jConfig&gt;</span>
+  <span class="nt">&lt;dontWrapJar&gt;</span>false<span class="nt">&lt;/dontWrapJar&gt;</span>
+  <span class="nt">&lt;headerType&gt;</span>gui<span class="nt">&lt;/headerType&gt;</span>
+  <span class="nt">&lt;jar&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyAppJarName.jar<span class="nt">&lt;/jar&gt;</span>
+  <span class="nt">&lt;outfile&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe<span class="nt">&lt;/outfile&gt;</span>
+  <span class="nt">&lt;errTitle&gt;&lt;/errTitle&gt;</span>
+  <span class="nt">&lt;cmdLine&gt;&lt;/cmdLine&gt;</span>
+  <span class="nt">&lt;chdir&gt;</span>.<span class="nt">&lt;/chdir&gt;</span>
+  <span class="nt">&lt;priority&gt;</span>normal<span class="nt">&lt;/priority&gt;</span>
+  <span class="nt">&lt;downloadUrl&gt;</span>http://java.com/download<span class="nt">&lt;/downloadUrl&gt;</span>
+  <span class="nt">&lt;supportUrl&gt;&lt;/supportUrl&gt;</span>
+  <span class="nt">&lt;stayAlive&gt;</span>false<span class="nt">&lt;/stayAlive&gt;</span>
+  <span class="nt">&lt;restartOnCrash&gt;</span>false<span class="nt">&lt;/restartOnCrash&gt;</span>
+  <span class="nt">&lt;manifest&gt;&lt;/manifest&gt;</span>
+  <span class="nt">&lt;icon&gt;</span>/home/mstf/Pictures/S.ico<span class="nt">&lt;/icon&gt;</span>
+  <span class="nt">&lt;jre&gt;</span>
+    <span class="nt">&lt;path&gt;&lt;/path&gt;</span>
+    <span class="nt">&lt;bundledJre64Bit&gt;</span>false<span class="nt">&lt;/bundledJre64Bit&gt;</span>
+    <span class="nt">&lt;bundledJreAsFallback&gt;</span>false<span class="nt">&lt;/bundledJreAsFallback&gt;</span>
+    <span class="nt">&lt;minVersion&gt;</span>1.6.0<span class="nt">&lt;/minVersion&gt;</span>
+    <span class="nt">&lt;maxVersion&gt;&lt;/maxVersion&gt;</span>
+    <span class="nt">&lt;jdkPreference&gt;</span>preferJre<span class="nt">&lt;/jdkPreference&gt;</span>
+    <span class="nt">&lt;runtimeBits&gt;</span>64/32<span class="nt">&lt;/runtimeBits&gt;</span>
+  <span class="nt">&lt;/jre&gt;</span>
+<span class="nt">&lt;/launch4jConfig&gt;</span></code></pre></figure>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2014/03/04/android-sqlite-example/">
-        Android Sqlite Example
-      </a>
-    </h1>
+<p>Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml</p>
 
-    <time datetime="2014-03-04T17:40:24+01:00" class="post-date">04 Mar 2014</time>
+<p>2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br />
+<img src="/assets/img/l4j_build_xml.png" alt="My helpful screenshot" /><br />
+Open build.xml and add these target code before the &lt;/project&gt; closing. You need to update your lauch4j folder by using location after the &lt;property name=”launch4jexe.dir”  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.</p>
 
-    SQLite is embedded into every Android device. Using an SQLite database in Android does not require a setup procedure or administration of the database. You only have to define the SQL statements for creating and updating the database. Afterwards the database is automatically managed for you by the Android platform.
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"> <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">"package-for-launch4j"</span> <span class="na">depends=</span><span class="s">"clean,compile,jar"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4jexe.dir"</span> <span class="na">location=</span><span class="s">"/home/mstf/Downloads/launch4j"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">"launch4j"</span>
+             <span class="na">classname=</span><span class="s">"net.sf.launch4j.ant.Launch4jTask"</span>
+             <span class="na">classpath=</span><span class="s">"${launch4jexe.dir}/launch4j.jar
+            :${launch4jexe.dir}/lib/xstream.jar"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.jar.name"</span> <span class="na">value=</span><span class="s">"YourOneJarName"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.dir"</span> <span class="na">value=</span><span class="s">"exe"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.jar"</span> <span class="na">value=</span><span class="s">"${launch4j.dir}/${launch4j.jar.name}.jar"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;echo</span> <span class="na">message=</span><span class="s">"Packaging ${application.title} into a single JAR at ${launch4j.jar}"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">"${launch4j.dir}"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">"${launch4j.dir}"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;jar</span> <span class="na">destfile=</span><span class="s">"${launch4j.dir}/temp_final.jar"</span> <span class="na">filesetmanifest=</span><span class="s">"skip"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">"dist"</span> <span class="na">includes=</span><span class="s">"*.jar"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">"dist/lib"</span> <span class="na">includes=</span><span class="s">"*.jar"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;manifest&gt;</span>
+        <span class="nt">&lt;attribute</span> <span class="na">name=</span><span class="s">"Main-Class"</span> <span class="na">value=</span><span class="s">"${main.class}"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/manifest&gt;</span>
+    <span class="nt">&lt;/jar&gt;</span>
+    <span class="nt">&lt;zip</span> <span class="na">destfile=</span><span class="s">"${launch4j.jar}"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;zipfileset</span> <span class="na">src=</span><span class="s">"${launch4j.dir}/temp_final.jar"</span>
+            <span class="na">excludes=</span><span class="s">"META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/zip&gt;</span>
+    <span class="nt">&lt;delete</span> <span class="na">file=</span><span class="s">"${launch4j.dir}/temp_final.jar"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;launch4j</span> <span class="na">configFile=</span><span class="s">"misc/l4j-myapp.xml"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/target&gt;</span></code></pre></figure>
 
-If your application creates a database, this database is by default saved in the directory DATA/data/APP\_NAME/databases/FILENAME. The parts of the above directory are constructed based on the following rules. DATA is the path which the Environment.getDataDirectory() method returns. APP\_NAME is your application name. FILENAME is the name you specify in your application code for the database.
+<p>3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -&gt; Other Targets -&gt; package-for-lauch4j <br /><br />
+<img src="/assets/img/l4j_build_target.png" alt="My helpful screenshot" /><br /></p>
 
-To create and upgrade a database you have to create a subclass of the SQLiteOpenHelper so you have to extend SQLiteOpenHelper when you define a database class.Here the simplest example how you create a database named "mydb" and a table in it as "data".You have to override onCreate() and onUpgrade() methods.
+<p>Compile output will be like this  and if there is no error you can get your exe under exe folder.</p>
 
-
-{% highlight java %}
-  public class MyDb extends SQLiteOpenHelper {
- 
-    public static final String TAG = "MyDb";
-    public static final int VERSION = 1;
-    public static final String DATABASENAME = "mydb";
-    public MyDb(Context context) {
-        super(context, DATABASENAME, null, VERSION);
-    }
- 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS data" +
-            + " (ID INTEGER PRIMARY KEY, "
-            + "DATA_ID TEXT, "
-            + "VALUE TEXT);");
-    }
- 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        
-    }
-}
-{% endhighlight %}
-
-The SQLiteOpenHelper class provides the getReadableDatabase() and getWriteableDatabase() methods to get access to an SQLiteDatabase object; either in read or write mode.Also SQLiteDatabase provides insert(), update(), delete(), and query methods.To make a query you can use either of rawquery() or query().Also keep this mind that you should always make sure you use methods as synchronized.Here another example of adding data into database and retrieving from it.
-
-We want to use synchronized for every database operation method to avoid from getting database locked errors. I used a list of objects which are "Data" objects that make things more readable but you can use just an object or even use only the areas like objects that make things more readable but you can use just an object or even use only the areas like (long \_id, long \_dataId, String \_value).All the database operations are done in try-catch-finally block and returning a boolean value to show if the insertion was successful or not is the convenient way to do it. ContentValues is the class given by Android and its required for any database operation.
-
-REMARK:You will see a commented out code which is db.insertWithOnConflict method that is a very good way to insert with insertion algorithms at the end. I used SQLiteDatabase.CONFLICT\_REPLACE which basicly updates the old one with the new one if it's already in the database. And after the all operations are done always remember to close database otherwise you will get errors saying that database is already opened.
-{% highlight java %}
-public synchronized boolean addData(List<YourObject> _objects) {
-        final SQLiteDatabase db = this.getWritableDatabase();
-        boolean retval = false;
-        try {
-            for (YourObject object : _objects) {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put("ID", object.id);
-                contentValues.put("DATA_ID", object.dataId);
-                contentValues.put("VALUE", object.value);
-                db.insert("data",null,contentValues);
-//db.insertWithOnConflict("data", null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
-            }
-            retval = true;
-        } catch (Exception ex) {
-            Log.e(TAG, "addData exception", ex);
-        } finally {
-            db.close();
-        }
-        return retval;
-}
-{% endhighlight %}
-Queries can be created via the rawQuery() and query() methods or via the SQLiteQueryBuilder class . rawQuery() directly accepts an SQL select statement as input. query() provides a structured interface for specifying the SQL query. SQLiteQueryBuilder is a convenience class that helps to build SQL queries.
-{% highlight java %}
-public synchronized String getDataValue(long _id) {
-        final SQLiteDatabase db = this.getReadableDatabase();
-        String retval = null;
-        try {
-            Cursor cursor = db.query("data", new String[]{"VALUE"},
-                    "ID = ?", new String[]{String.valueOf(_id)}, null, null, null);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    do {
-                        retval = cursor.getString(0);
-                    } while (cursor.moveToNext());
-                }
-            }
-        } catch (Exception ex) {
-            retval = null;
-            Log.e(TAG, "Cannot get data value:", ex);
-        } finally {
-            db.close();
-        }
-        return retval;
-}
-{% endhighlight %}
-The following gives an example of a rawQuery() and a query() call.
-{% highlight java %}
-Cursor cursor = getReadableDatabase().
-  rawQuery("select * from data where ID = ?", new String[] { _id });
- 
-database.query("data", 
-  new String[] { ID, DATA_ID, VALUE }, 
-  null, null, null, null, null);
-{% endhighlight %}
-Parameters of the query() method
-
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;border-color:#aaa;}
-.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aaa;color:#333;background-color:#fff;}
-.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#aaa;color:#fff;background-color:#f38630;}
-</style>
-<table class="tg">
-  <tr>
-    <th class="tg-031e">Parameters</th>
-    <th class="tg-031e">Values</th>
-  </tr>
-  <tr>
-    <td class="tg-031e">String dbName</td>
-    <td class="tg-031e">The table name to compile the query against.</td>
-  </tr>
-  <tr>
-    <td class="tg-031e">String[] columnNames</td>
-    <td class="tg-031e">A list of which table columns to return. Passing "null" will return all columns.</td>
-  </tr>
-  <tr>
-    <td class="tg-031e">String whereClause</td>
-    <td class="tg-031e">Where-clause, i.e. filter for the selection of data, null will select all data.</td>
-  </tr>
-  <tr>
-    <td class="tg-031e">String[] selectionArgs</td>
-    <td class="tg-031e">You may include ?s in the "whereClause"". These placeholders will get replaced by the values
- from the selectionArgs array.</td>
-  </tr>
-  <tr>
-    <td class="tg-031e">String[] groupBy</td>
-    <td class="tg-031e">A filter declaring how to group rows, null will cause the rows to not be grouped.</td>
-  </tr>
-  <tr>
-    <td class="tg-031e">String[] having</td>
-    <td class="tg-031e">Filter for the groups, null means no filter.</td>
-  </tr>
-  <tr>
-    <td class="tg-031e">String[] orderBy</td>
-    <td class="tg-031e">Table columns which will be used to order the data, null means no ordering.</td>
-  </tr>
-</table>
-After you have all database create, upgrade, add, and a get method how you will call it from the activity?Here is the how your main activity look like.
-{% highlight java %}
-package com.test.db;
- 
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-import java.util.LinkedList;
-import java.util.List;
- 
-public class MainActivity extends Activity {
- 
-    public static String TAG = "MyDbActivity";
-    public static MyDb MyDb;
- 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        MyDb = new MyDb(this);
-        List<Data> data = new LinkedList<Data>();
-        data.add(new Data(1, 2032, "data1"));
-        if (MyDb.addData(data)) {
-            Log.d("Data value is:", MyDb.getDataValue(1L));
-        }
-    }
- 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        MyDb.close();
-        MyDb = null;
-    }
- 
-    public class Data {
- 
-        public long id;
-        public long dataId;
-        public String value;
- 
-        public Data() {
-        }
- 
-        public Data(long _id, long _dataId, String _value) {
-            this.id = _id;
-            this.dataId = _dataId;
-            this.value = _value;
-        }
-    }
-}
-{% endhighlight %}
-You can download both mainactivity and db class from the links given below:
-MainActivity:<a href="https://gist.github.com/msdalp/9297781">Github Link</a>
-Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a>
+<figure class="highlight"><pre><code class="language-console" data-lang="console"><span class="go">package-for-launch4j:
+Packaging MyProject into a single JAR at exe/MyAppJarName.jar
+Deleting directory /home/mstf/NetBeansProjects/MyProject/exe
+Created dir: /home/mstf/NetBeansProjects/MyProject/exe
+Building jar: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar
+Building zip: /home/mstf/NetBeansProjects/SentioSync/exe/MyAppJarName.jar
+Deleting: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar
+Compiling resources
+Linking
+Wrapping
+Successfully created /home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe
+BUILD SUCCESSFUL (total time: 20 seconds)</span></code></pre></figure>
 
 
   </article>
@@ -333,7 +159,7 @@ Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a>
 
 <div class="pagination">
   
-    <span class="pagination-item older">Older</span>
+    <a class="pagination-item older" href="/page7">Older</a>
   
   
     
@@ -362,7 +188,7 @@ Db Class: <a href="https://gist.github.com/msdalp/9297983">Github Link</a>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2018-04-16T19:53:39+02:00">2018</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:58:53+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

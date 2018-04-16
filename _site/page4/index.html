@@ -63,164 +63,63 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
-        Java Sqlite Fast Insert with PreparedStatement
+      <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
+        Understanding innodb_buffer_pool_size
       </a>
     </h1>
 
-    <time datetime="2014-12-11T20:00:00+01:00" class="post-date">11 Dec 2014</time>
+    <time datetime="2015-06-27T23:54:22+02:00" class="post-date">27 Jun 2015</time>
 
-    In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.
+    <p>There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:</p>
 
+<blockquote>
+  <p>InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer &gt; pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.</p>
+</blockquote>
 
-{% highlight java %}
+<p>The idea is keeping innodb_buffer_pool_size bigger as possible that doesn’t block other OS and programs running properly. This will make InnoDB work like a in-memory database and increase the performance a lot. At first InnoDB will take all the required data from disk and access it from memory in the future queries. The default value for InnoDB is 8MB so you might want to update it as a bigger number which fits well for your system.</p>
 
-public synchronized boolean insertTfStats( List<RawDataObject> playerObj) {
-        final Transaction trans = this.getWritableDatabase();
-        boolean retval = false;
+<p>Before going exact details there is a wrong assumption about Innodb Buffer Pool. People think that if they give enough space for keys to be in the memory and there will be very low IO accesss. The idea is searching keys fast as much as and retrieve data with index directly. Let’s assume you have a query that runs in 600ms and 450 ms is searching keys, 75 ms is getting data from disk and last 75 ms is fetching data from server. Providing proper innodb_buffer_pool_size will make sure you don’t access disk for index search and that 450 ms will decrease to 30 ms (it really depends on your keys and structure) so total time for query is 180 ms now. You still have IO at this rate but it is only retrieving data from disk which can be acceptable.</p>
 
-       
-        try { 
+<p>I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:</p>
 
-            for (RawDataObject obj : playerObj) {
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">CONCAT</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="n">KBS</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span>
+<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">)))</span><span class="o">+</span><span class="mi">0</span><span class="p">.</span><span class="mi">49999</span><span class="p">),</span>
+<span class="n">SUBSTR</span><span class="p">(</span><span class="s1">' KMG'</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">SUM</span><span class="p">(</span><span class="n">data_length</span><span class="o">+</span><span class="n">index_length</span><span class="p">)</span> <span class="n">KBS</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+<span class="k">WHERE</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'InnoDB'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="mi">3</span> <span class="n">PowerOf1024</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
 
-                HashMap<String, Object> values = new HashMap<>(); 
-                values.put("TIMESTAMP", obj.timestamp);
-                values.put("HALF", obj.half);
-                values.put("MIN", obj.min);
-                values.put("SEC", obj.sec);
-                values.put("OBJECT_TYPE", obj.type);
-                values.put("OBJECT_ID", obj.objectId); 
-                values.put("X_POS", obj.x);
-                values.put("Y_POS", obj.y);
-                values.put("Z_POS", obj.z);
-                trans.insert(SQL.TABLE_STAT, null, values);
+<p>In my system it returns the value:</p>
 
-            }
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">recommended_innodb_buffer_pool_size</span>
+<span class="mi">48</span><span class="k">G</span></code></pre></figure>
 
-            retval = true;
-        } catch (Exception ex) {
-            logger.error("Cannot add  stat data", ex);
-        } finally {
-            trans.close();
-        }
-        return retval;
-    } 
+<p>Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.</p>
 
-{% endhighlight %}
-Doing the same insert with prepared statement.
-{% highlight java %} 
-public synchronized boolean InsertTfStats(List<RawDataObject> playerObj) {
-        final Transaction trans = this.getWritableDatabase();
-        boolean retval = false;
+<p>This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let’s assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.</p>
 
-        try {
-            
-            PreparedStatement stmt = trans.preparedStmt("INSERT INTO local_stat VALUES (?,?,?,?,?,?,?,?,?)");
-       
-            for (RawDataObject obj : playerObj) {
-                stmt.setObject(1, obj.timestamp);
-                stmt.setObject(2, obj.half);
-                stmt.setObject(3, obj.min);
-                stmt.setObject(4, obj.sec);
-                stmt.setObject(5, obj.type);
-                stmt.setObject(6, obj.objectId);
-                stmt.setObject(7, obj.x);
-                stmt.setObject(8, obj.y);
-                stmt.setObject(9, obj.z);
-                stmt.addBatch();
-            }
-            stmt.executeBatch(); 
-            retval = true;
-        } catch (Exception ex) {
-            logger.error("Cannot add stat data", ex);
-        } finally {
-            trans.close();
-        }
-        return retval;
-    }
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="p">(</span><span class="n">PagesData</span><span class="o">*</span><span class="n">PageSize</span><span class="p">)</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">DataGB</span> <span class="k">FROM</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PagesData</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_buffer_pool_pages_data'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
+<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PageSize</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
+<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_page_size'</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2014/03/11/How-to-Check-If-a-String-is-Integer/">
-        How to Check If a String is Integer
-      </a>
-    </h1>
+<p>For my system it returns:</p>
 
-    <time datetime="2014-03-11T20:46:32+01:00" class="post-date">11 Mar 2014</time>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">DataGB</span>
+<span class="mi">22</span><span class="p">.</span><span class="mi">5</span><span class="k">G</span></code></pre></figure>
 
-    There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
-First one is using regular expressions and this is the one I use mostly.This matches as <br> 
--?     --> negative sign, could have none or one <br>
-\\d+   --> one or more digits
-{% highlight java %}
-public boolean isInteger(String str){
-  return str.matches("-?\\d+");
-}
-{% endhighlight %}
-Using parseInt is possible as well.In this way you should try to parse a String to integer and catch if any exceptions occur.
-If your code creats an NumberFormatException then you should return false.We don't care about other exceptions here.If there is no exception that means it went okey and your string is indeed an integer.
-Also please be aware that we used parseInt() and not the Integer.valueOf() method.You can check the differences here.
-{% highlight java %}
-public boolean isInteger(String str) {
-    try {
-        Integer.parseInt(str);
-        return true;
-    }
-    catch(NumberFormatException e) {
-        return false;
-    }
-}
-{% endhighlight %}
-Another way is more complex  but much faster than Integer.parseInt() or regex method.It's better to check which works best for you.
-Here some of you may ask why not use java.lang.Character.isDigit() and check the char values itself.isDigit returns true for things like Devanagari digits. While Integer.parseInt() handles these as digits, it may not be what's expected for most use cases
+<p>It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn’t go up quickly after for a week etc.</p>
 
-{% highlight java %}
-//Jonas
-public static boolean isInteger(String str) {
-	if (str == null) {
-		return false;
-	}
-	int length = str.length();
-	if (length == 0) {
-		return false;
-	}
-	int i = 0;
-	if (str.charAt(0) == '-') {
-		if (length == 1) {
-			return false;
-		}
-		i = 1;
-	}
-	for (; i < length; i++) {
-		char c = str.charAt(i);
-		if (c < '0' || c > '9') {
-			return false;
-		}
-	}
-	return true;
-}
-{% endhighlight %}
-The last one is using StringUtils or NumberUtils which is not a good idea but it works.You can check the detailed page <a href="http://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isNumeric%28java.lang.CharSequence%29">here</a>.
-{% highlight java %}
-StringUtils.isNumeric(str);
-{% endhighlight %}
-Which one is the best to use?If you need performance you should use the Jonas one.It may look unnecessary but it is really fast.
-Here some test results with these methods.Running many times these methods shows that it may differ a lot.
+<p>There are some other parameters that needed to be adjusted as well but I will not get into these details. Let’s assume you run the query for recommended buffer pool and you got 11GB. However you only have 11.5GB data in your database and it seems a bit odd to have such a big number. The reason for this you probably have too much or redundant index for your tables. You should reconsider the indices and adjust them to a proper state which doesn’t make your operations slower and reserve so much space.</p>
 
-{% highlight java %}
-ByException - integer data: 45
-ByException - non-integer data: 465
+<p>One other issue primary keys of very big tables. Let’s say we have 20 tables with average 1 million to 5 million rows data but only two of them have 200 million rows data per table. At total you should have 450 million rows and probably with indices it would require around 50GB inno db pool. If you don’t access these tables heavily or they are accessed by a big group (like 1.5 million records of logs  belong to one operation) then you should not need a really big buffer pool. However a small amount of pool will be filled with one group data easily and other operations become slower at that time. At least try to give a proper amount of memory to handle the one big operation and it’s additional queries. Of course it is totally another discussion topic why don’t you use some other systems (Cassandra or a different NOSQL maybe ) to store big tables to create results and put these values into mysql to be access etc.</p>
 
-ByRegex - integer data: 45
-ByRegex - non-integer data: 26
+<p>To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.</p>
 
-ByJonas - integer data: 8
-ByJonas - non-integer data: 2
-{% endhighlight %}
   </article>
   
 </div>
@@ -256,7 +155,7 @@ ByJonas - non-integer data: 2
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2018-04-16T19:53:39+02:00">2018</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:58:53+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

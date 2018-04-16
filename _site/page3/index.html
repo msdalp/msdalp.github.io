@@ -63,192 +63,315 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-        Run Tomcat7 on Port 80
+      <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
+        Rest API Example with Java Jersey and Tomcat 
       </a>
     </h1>
 
-    <time datetime="2015-03-01T20:46:32+01:00" class="post-date">01 Mar 2015</time>
+    <time datetime="2016-01-03T11:43:32+01:00" class="post-date">03 Jan 2016</time>
 
-    You may need to run Tomcat on port 80 for many reasons. It is possible to accomplish this in three steps. <br>
-First step is move 8080 to port 80.Find your server.xml file for Tomcat. It is probably under /etc/tomcat/server.xml but still 
-you can find it by using: <br>
-{% highlight bash %}
-$ locate server.xml
-/etc/tomcat7/server.xml
-{% endhighlight %}
-Open server.xml file with an avaliable text editor (I will use nano).
-{% highlight bash %}
-$ sudo nano /etc/tomcat7/server.xml
-{% endhighlight %}
-Find the part where port is defined as 8080 and change it to 80.
-{% highlight xml %}
- <Connector port="80" protocol="HTTP/1.1"
-               connectionTimeout="20000"
-               URIEncoding="UTF-8"
-               redirectPort="8443" />
-{% endhighlight %}
-Close the file by saving it. If you run tomcat now it will complain about some authentication errors. It happens because we are trying to run 
-Tomcat under 1023 ports. So the next step is enable authbind for tomcat. If you run Tomcat on port numbers that are all higher than 1023, then you
- do not need authbind.  It is used for binding Tomcat to lower port numbers. Open /etc/default/tomcat with your text editor.
-{% highlight bash %}
-$ sudo nano /etc/default/tomcat7
-{% endhighlight %}
-Switch authbind=no to authbind=yes which is located at the end of file.
-{% highlight xml %}
-# NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.
-# (yes/no, default: no)
-AUTHBIND=yes
-{% endhighlight %}
-The last step is disabling IPv6. You can see the warning just before authbind line saying that "NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.".
-Open /etc/sysctl.conf with your text editor.
-{% highlight bash %}
-$ sudo nano /etc/sysctl.conf
-{% endhighlight %}
-And add these three lines to end of the file.
-{% highlight xml %}
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-{% endhighlight %}
-Save the file and close it. To make sure IPv6 is disabled run 
-{% highlight bash %}
-sudo sysctl -p
-{% endhighlight %}
-and you will see 
-{% highlight bash %}
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-{% endhighlight %}
-After that, if you run:
-{% highlight bash %}
-$ cat /proc/sys/net/ipv6/conf/all/disable_ipv6
-{% endhighlight %}
-It will report: 1 <br>
-Now it is ready to run on port 80. Start your tomcat with 
-{% highlight bash %}
-$ sudo service tomcat7 start
-{% endhighlight %}
-If you look at your catalina.out logs it will be written in there as 
-{% highlight bash %}
-Mar 21, 2015 10:02:44 PM org.apache.coyote.AbstractProtocol init
-INFO: Initializing ProtocolHandler ["http-bio-80"]
-{% endhighlight %}
+    <p>The definition of the Jersey framework from their website:</p>
 
-Now you can access your services directly without any port like <br>
-example.com/Services/
+<p>Jersey framework is more than the JAX-RS Reference Implementation. Jersey provides it’s own API that extend the JAX-RS toolkit with additional features and utilities to further simplify RESTful service and client development. Jersey also exposes numerous extension SPIs so that developers may extend Jersey to best suit their needs.</p>
 
+<p>You can read details from <a href="https://jersey.java.net">https://jersey.java.net</a></p>
 
- 
+<p>What I will try to show is creating a project from beginning and put more in time to make it a whole complete structure in this order:</p>
 
-  </article>
-  
-  <article class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-        Create Exe from a Java Project with Many Jars Included
-      </a>
-    </h1>
+<ul>
+  <li>Create a project by using HTTP methods.</li>
+  <li>Add database connection to the project and Authentication (tokens, roles)</li>
+  <li>Add error mappings, logging requests and responses</li>
+  <li>Jackson specific settings</li>
+</ul>
 
-    <time datetime="2015-01-11T20:46:32+01:00" class="post-date">11 Jan 2015</time>
+<p>I will be using Netbeans 8, Tomcat 7, Jersey 2.9.1, and Java 7.</p>
 
-    With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.
+<p>Firstly create a new project by selecting Maven Web project.</p>
 
-1) Create your xml file with launch4j: It is required on the build level and will be done only one time. Simple details will be enough like min jre level and name etc.Here what I use as xml file for launch4j.It just takes icon file and min jre.
-{% highlight xml %}
-<?xml version="1.0" encoding="UTF-8"?>
-<launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
-  <headerType>gui</headerType>
-  <jar>/home/mstf/NetBeansProjects/MyProject/exe/MyAppJarName.jar</jar>
-  <outfile>/home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe</outfile>
-  <errTitle></errTitle>
-  <cmdLine></cmdLine>
-  <chdir>.</chdir>
-  <priority>normal</priority>
-  <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl></supportUrl>
-  <stayAlive>false</stayAlive>
-  <restartOnCrash>false</restartOnCrash>
-  <manifest></manifest>
-  <icon>/home/mstf/Pictures/S.ico</icon>
-  <jre>
-    <path></path>
-    <bundledJre64Bit>false</bundledJre64Bit>
-    <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion>1.6.0</minVersion>
-    <maxVersion></maxVersion>
-    <jdkPreference>preferJre</jdkPreference>
-    <runtimeBits>64/32</runtimeBits>
-  </jre>
-</launch4jConfig>
-{% endhighlight %}
+<p><img src="/assets/img/new_maven_project.png" alt="new project ss" /><br /></p>
 
-Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml
+<p>After creating your project add dependencies as given below and we will be adding other dependencies when it is needed.</p>
 
-2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br>
-![My helpful screenshot](/assets/img/l4j_build_xml.png)<br>
-Open build.xml and add these target code before the </project> closing. You need to update your lauch4j folder by using location after the <property name="launch4jexe.dir"  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
 
+    <span class="nt">&lt;groupId&gt;</span>com.jersey.test<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>JerseyTest<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
 
-{% highlight xml %}
- <target name="package-for-launch4j" depends="clean,compile,jar">
-    <property name="launch4jexe.dir" location="/home/mstf/Downloads/launch4j" />
-    <taskdef name="launch4j"
-             classname="net.sf.launch4j.ant.Launch4jTask"
-             classpath="${launch4jexe.dir}/launch4j.jar
-            :${launch4jexe.dir}/lib/xstream.jar" />
-    <property name="launch4j.jar.name" value="YourOneJarName"/>
-    <property name="launch4j.dir" value="exe"/>
-    <property name="launch4j.jar" value="${launch4j.dir}/${launch4j.jar.name}.jar"/>
-    <echo message="Packaging ${application.title} into a single JAR at ${launch4j.jar}"/>
-    <delete dir="${launch4j.dir}"/>
-    <mkdir dir="${launch4j.dir}"/>
-    <jar destfile="${launch4j.dir}/temp_final.jar" filesetmanifest="skip">
-        <zipgroupfileset dir="dist" includes="*.jar"/>
-        <zipgroupfileset dir="dist/lib" includes="*.jar"/>
-        <manifest>
-        <attribute name="Main-Class" value="${main.class}"/>
-        </manifest>
-    </jar>
-    <zip destfile="${launch4j.jar}">
-        <zipfileset src="${launch4j.dir}/temp_final.jar"
-            excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
-    </zip>
-    <delete file="${launch4j.dir}/temp_final.jar"/>
-    <launch4j configFile="misc/l4j-myapp.xml" />
-</target>
-{% endhighlight %} 
+    <span class="nt">&lt;name&gt;</span>JerseyTest<span class="nt">&lt;/name&gt;</span>
 
-3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -> Other Targets -> package-for-lauch4j <br><br>
-![My helpful screenshot](/assets/img/l4j_build_target.png)<br>
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
 
-Compile output will be like this  and if there is no error you can get your exe under exe folder.
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>javax.servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>3.1.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>log4j<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>log4j<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>1.2.17<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.containers<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jersey-container-servlet<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.9.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.media<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>jersey-media-json-jackson<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.22.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
 
-{% highlight console %}
-package-for-launch4j:
-Packaging MyProject into a single JAR at exe/MyAppJarName.jar
-Deleting directory /home/mstf/NetBeansProjects/MyProject/exe
-Created dir: /home/mstf/NetBeansProjects/MyProject/exe
-Building jar: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar
-Building zip: /home/mstf/NetBeansProjects/SentioSync/exe/MyAppJarName.jar
-Deleting: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar
-Compiling resources
-Linking
-Wrapping
-Successfully created /home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe
-BUILD SUCCESSFUL (total time: 20 seconds)
-{% endhighlight %} 
+    <span class="nt">&lt;/dependencies&gt;</span>
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;finalName&gt;</span>JerseyTest<span class="nt">&lt;/finalName&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-war-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>2.6<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
 
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;configuration&gt;</span>
+                    <span class="nt">&lt;source&gt;</span>1.7<span class="nt">&lt;/source&gt;</span>
+                    <span class="nt">&lt;target&gt;</span>1.7<span class="nt">&lt;/target&gt;</span>
+                <span class="nt">&lt;/configuration&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
 
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
 
+<span class="nt">&lt;/project&gt;</span></code></pre></figure>
 
+<p>Jersey provides an abstract class Application declaring root resource and provider classes, and root resource and provider singleton instances. A Web service may extend this class to declare root resource and provider classes.</p>
 
+<p>Alternatively it is possible to reuse ResourceConfig - Jersey’s own implementations of Application class that we will be using.</p>
 
+<p>Simply you give the packages that you want to include in the project for deployment and register the properties like JSON and GZIP. Also you can register filters, singletons and other things as well.</p>
 
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
 
- 
+<span class="kn">import</span> <span class="nn">javax.ws.rs.ApplicationPath</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.glassfish.jersey.jackson.JacksonFeature</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.glassfish.jersey.server.ResourceConfig</span><span class="o">;</span>
+
+<span class="cm">/**
+ *
+ * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
+ */</span>
+<span class="nd">@ApplicationPath</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestApp</span> <span class="kd">extends</span> <span class="n">ResourceConfig</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">RestApp</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">packages</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span>
+            <span class="s">"com.jersey.test.data"</span>
+        <span class="o">});</span>
+        <span class="n">register</span><span class="o">(</span><span class="n">JacksonFeature</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>At this stage if your IDE is giving error about web.xml or context.xml then simply put these files and will be used in the future posts.</p>
+
+<p>web.xml</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">"3.1"</span> <span class="na">xmlns=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;/web-app&gt;</span></code></pre></figure>
+
+<p>context.xml</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;Context</span> <span class="na">antiJARLocking=</span><span class="s">"true"</span> <span class="na">path=</span><span class="s">"/JerseyTest"</span><span class="nt">/&gt;</span></code></pre></figure>
+
+<p>The package I included in the main class was “com.jersey.test.data” and for the sake of simplicity I will add User model and the Users service to show methods.</p>
+
+<p>These two classes have no specific property (user model and a map to put users inside while we have no database connection).</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">data</span><span class="o">;</span>
+
+<span class="cm">/**
+ *
+ * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">long</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">(</span><span class="kt">long</span> <span class="n">id</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.jersey.test.data.User</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="cm">/**
+ *
+ * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Data</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">data</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.jersey.test.app.Data</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.Consumes</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.DELETE</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.GET</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.POST</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.PUT</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.Path</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.PathParam</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.Produces</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.core.Context</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.core.MediaType</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ws.rs.core.Response</span><span class="o">;</span>
+
+<span class="cm">/**
+ *
+ * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
+ */</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"/users"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Users</span> <span class="o">{</span>
+
+    <span class="nd">@Context</span>
+    <span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">;</span>
+    <span class="nd">@Context</span>
+    <span class="n">HttpServletRequest</span> <span class="n">servletRequest</span><span class="o">;</span>
+
+    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"{userId}"</span><span class="o">)</span>
+    <span class="nd">@GET</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processGet</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="n">Long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">userId</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">userId</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">NOT_FOUND</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="k">new</span> <span class="n">Msg</span><span class="o">(</span><span class="n">Msg</span><span class="o">.</span><span class="na">Cond</span><span class="o">.</span><span class="na">error</span><span class="o">,</span> <span class="s">"Not Found"</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"{userId}"</span><span class="o">)</span>
+    <span class="nd">@DELETE</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processDel</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">userId</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="k">new</span> <span class="n">Msg</span><span class="o">(</span><span class="n">Msg</span><span class="o">.</span><span class="na">Cond</span><span class="o">.</span><span class="na">success</span><span class="o">,</span> <span class="s">"Operation successful"</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">NOT_FOUND</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="k">new</span> <span class="n">Msg</span><span class="o">(</span><span class="n">Msg</span><span class="o">.</span><span class="na">Cond</span><span class="o">.</span><span class="na">error</span><span class="o">,</span> <span class="s">"Not Found"</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Consumes</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+    <span class="nd">@POST</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processAdd</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">values</span><span class="o">()).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Consumes</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
+    <span class="nd">@PUT</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processUpdate</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">values</span><span class="o">()).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre></figure>
+
+<p>Your service definition starts with a “@Path(“/users”)” annotation which defines the root path of the class. You can add more lower levels before the methods like “@Path(“{userId}/orders”)” which will take user id as parameter and return the orders of that user. However be aware that adding conflicting classes will broke the URL schema and calling these URLs will give some runtime Exceptions.</p>
+
+<p>You define the name of HTTP method with annotations  as well (by using @GET, @POST, @PUT, @DELETE).</p>
+
+<p>For the requests with @GET and @DELETE methods PathParam (directly in url like /users/14) or QueryParam (by using ? and values behind like /users?id=14) can be used (together or only one of them). However I highly recommend that if it is a REST-API then use PathParams to make it more readable.</p>
+
+<p>Also you should read about REST a bit from
+<a href="http://stackoverflow.com/questions/671118/what-exactly-is-restful-programming"> this stackoverflow link</a>. Honestly I don’t care about the talk ‘your api should match 100% to the rules otherwise your api is not a rest’ crap. The main idea is creating a standard that allows developers (for both server and client side) to make their jobs with ease. At the end call your api ‘like REST’ and then everyone will be happy.</p>
+
+<p>Even though I said that is not important but at least you should be able to provide these properties.</p>
+
+<ul>
+  <li>Proper url naming: It is quite easy and important thing since creating urls properly would make much easier to use you API.</li>
+</ul>
+
+<p>Please do not use sentences at the urls and at least it should match the form of</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/users -&gt; to add or update the user
+/users/<span class="o">{</span>userId<span class="o">}</span> -&gt; to get or delete the user
+/users/<span class="o">{</span>userId<span class="o">}</span>/orders -&gt; to get the orders of the user</code></pre></figure>
+
+<ul>
+  <li>Proper usage of HTTP methods:</li>
+</ul>
+
+<p>It should use @GET to retrieve data, @POST-@PUT to add and update data, and @DELETE to delete data. It may change with the specific methods but using this in your main models should be quite easy.</p>
+
+<ul>
+  <li>Proper usage of HTTP Codes:</li>
+</ul>
+
+<p>It is quite important to send proper HTTP Codes in your responses. It would be much easier to manage to responses and take action according to these codes (like if the code is 401 and can not refresh token then redirect to the login page). Again there are many codes but:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">200 -&gt; successful request
+400 -&gt; bad request
+401 -&gt; auth is not valid or expired
+403 -&gt; forbidden
+500 -&gt; internal error</code></pre></figure>
+
+<ul>
+  <li>Security with Auth Token and others if more needed (like JWT)</li>
+  <li>Proper request responses and errors</li>
+</ul>
+
+<p>I will continue the REST specifications in another post and return to the JERSEY.</p>
+
+<p>For the requests with @POST and @PUT methods FormParam (like usual form parameter with username=msd&amp;password=alp) or directly the object representation of request as it is used in the example (User user). However you must define the ‘    @Consumes(MediaType.APPLICATION_JSON)’ annotation for the method.</p>
+
+<p>Also you may notice that some methods use the same path. Separation of unique methods are done by classical java method name and parameters on the compile time,  path and http method on the runtime. Therefore you can define two methods with the same path and parameter but different HTTP method (GET or DELETE).</p>
+
+<p>@Produces({MediaType.APPLICATION_JSON}) annotation takes a list of MediaType (or string like ‘application/json’) that defines the possible return types. It is possible to use two different response type in one method like</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">     <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_XML</span><span class="o">})</span></code></pre></figure>
+
+<p>This is all the things you need for a simple project. I will be adding Redis, PostgreSQL, and Mysql for data access and caching in the next posts.</p>
 
   </article>
   
@@ -285,7 +408,7 @@ BUILD SUCCESSFUL (total time: 20 seconds)
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2018-04-16T19:53:39+02:00">2018</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:58:53+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>
