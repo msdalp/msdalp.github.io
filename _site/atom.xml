@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
  <title>msdalp</title>
- <link href="http://localhost:4000/atom.xml" rel="self"/>
- <link href="http://localhost:4000/"/>
- <updated>2018-04-16T19:30:33+02:00</updated>
- <id>http://localhost:4000</id>
+ <link href="https://msdalp.github.io/atom.xml" rel="self"/>
+ <link href="https://msdalp.github.io/"/>
+ <updated>2018-04-16T19:53:32+02:00</updated>
+ <id>https://msdalp.github.io</id>
  <author>
    <name>Mustafa Alparslan</name>
    <email>msdalp@gmail.com</email>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>Java Jersey Database with Jersey 2.26 and JDBI</title>
-   <link href="http://localhost:4000//2018/04/07/Java-Jersey-2.26-JDBI/"/>
+   <link href="https://msdalp.github.io//2018/04/07/Java-Jersey-2.26-JDBI/"/>
    <updated>2018-04-07T23:32:52+02:00</updated>
-   <id>http://localhost:4000/2018/04/07/Java-Jersey-2.26-JDBI</id>
+   <id>https://msdalp.github.io/2018/04/07/Java-Jersey-2.26-JDBI</id>
    <content type="html">&lt;p&gt;In the previous blog we just created an empty Jersey project to have a hello world service but it is quite useless. To make it more realistic I will add database connection and implement some methods with JDBI. You can utilize other options like MyBatis or Hibernate but I really don’t like giving all control to the ORM and have a system that increases productivity compare to having raw JDBC. If you haven’t used JDBI before it is the default JDBC Api on Dropwizard and actually it is quite similar to the Spring JDBC Template. Since we will be using simple stuff you will get the idea very quickly so don’t worry about that.&lt;/p&gt;
 
 &lt;p&gt;How does this really work? We don’t have a database connection at this stage and how do we start the db connection with application start and close it when the application is closed?&lt;/p&gt;
@@ -264,9 +264,9 @@
  
  <entry>
    <title>Java Jersey Hello World with Jersey 2.26</title>
-   <link href="http://localhost:4000//2018/03/28/Java-Jersey-2.26-Tutorial/"/>
+   <link href="https://msdalp.github.io//2018/03/28/Java-Jersey-2.26-Tutorial/"/>
    <updated>2018-03-28T12:03:21+02:00</updated>
-   <id>http://localhost:4000/2018/03/28/Java-Jersey-2.26-Tutorial</id>
+   <id>https://msdalp.github.io/2018/03/28/Java-Jersey-2.26-Tutorial</id>
    <content type="html">&lt;p&gt;I was creating new projects with Jersey and noticed my template is broken with the last 2.26 version.
 Api was changed and you might need to add new stuff to the your project. Again as the previous one I will setup a
 new template for myself and in the meantime go through step by step for this post.&lt;/p&gt;
@@ -484,9 +484,9 @@ importing something from other sources. Let’s create our app which will be und
  
  <entry>
    <title>Rest API Example with Java Jersey and Tomcat </title>
-   <link href="http://localhost:4000//2016/01/03/Java-Jersey-Rest-Hello/"/>
+   <link href="https://msdalp.github.io//2016/01/03/Java-Jersey-Rest-Hello/"/>
    <updated>2016-01-03T11:43:32+01:00</updated>
-   <id>http://localhost:4000/2016/01/03/Java-Jersey-Rest-Hello</id>
+   <id>https://msdalp.github.io/2016/01/03/Java-Jersey-Rest-Hello</id>
    <content type="html">&lt;p&gt;The definition of the Jersey framework from their website:&lt;/p&gt;
 
 &lt;p&gt;Jersey framework is more than the JAX-RS Reference Implementation. Jersey provides it’s own API that extend the JAX-RS toolkit with additional features and utilities to further simplify RESTful service and client development. Jersey also exposes numerous extension SPIs so that developers may extend Jersey to best suit their needs.&lt;/p&gt;
@@ -794,9 +794,9 @@ importing something from other sources. Let’s create our app which will be und
  
  <entry>
    <title>Understanding innodb_buffer_pool_size</title>
-   <link href="http://localhost:4000//2015/06/27/Understanding-innodb_buffer_pool_size/"/>
+   <link href="https://msdalp.github.io//2015/06/27/Understanding-innodb_buffer_pool_size/"/>
    <updated>2015-06-27T23:54:22+02:00</updated>
-   <id>http://localhost:4000/2015/06/27/Understanding-innodb_buffer_pool_size</id>
+   <id>https://msdalp.github.io/2015/06/27/Understanding-innodb_buffer_pool_size</id>
    <content type="html">&lt;p&gt;There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:&lt;/p&gt;
 
 &lt;blockquote&gt;
@@ -851,9 +851,9 @@ importing something from other sources. Let’s create our app which will be und
  
  <entry>
    <title>Run Tomcat7 on Port 80</title>
-   <link href="http://localhost:4000//2015/03/01/Tomcat-7-Run-on-Port-80/"/>
+   <link href="https://msdalp.github.io//2015/03/01/Tomcat-7-Run-on-Port-80/"/>
    <updated>2015-03-01T20:46:32+01:00</updated>
-   <id>http://localhost:4000/2015/03/01/Tomcat-7-Run-on-Port-80</id>
+   <id>https://msdalp.github.io/2015/03/01/Tomcat-7-Run-on-Port-80</id>
    <content type="html">&lt;p&gt;You may need to run Tomcat on port 80 for many reasons. It is possible to accomplish this in three steps. &lt;br /&gt;
 First step is move 8080 to port 80.Find your server.xml file for Tomcat. It is probably under /etc/tomcat/server.xml but still 
 you can find it by using: &lt;br /&gt;&lt;/p&gt;
@@ -927,9 +927,9 @@ example.com/Services/&lt;/p&gt;
  
  <entry>
    <title>Create Exe from a Java Project with Many Jars Included</title>
-   <link href="http://localhost:4000//2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/"/>
+   <link href="https://msdalp.github.io//2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/"/>
    <updated>2015-01-11T20:46:32+01:00</updated>
-   <id>http://localhost:4000/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included</id>
+   <id>https://msdalp.github.io/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included</id>
    <content type="html">&lt;p&gt;With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.&lt;/p&gt;
 
 &lt;p&gt;1) Create your xml file with launch4j: It is required on the build level and will be done only one time. Simple details will be enough like min jre level and name etc.Here what I use as xml file for launch4j.It just takes icon file and min jre.&lt;/p&gt;
@@ -1017,9 +1017,9 @@ BUILD SUCCESSFUL (total time: 20 seconds)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&
  
  <entry>
    <title>Java Sqlite Fast Insert with PreparedStatement</title>
-   <link href="http://localhost:4000//2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/"/>
+   <link href="https://msdalp.github.io//2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/"/>
    <updated>2014-12-11T20:00:00+01:00</updated>
-   <id>http://localhost:4000/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement</id>
+   <id>https://msdalp.github.io/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement</id>
    <content type="html">&lt;p&gt;In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;insertTfStats&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RawDataObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;playerObj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -1092,9 +1092,9 @@ BUILD SUCCESSFUL (total time: 20 seconds)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&
  
  <entry>
    <title>How to Check If a String is Integer</title>
-   <link href="http://localhost:4000//2014/03/11/How-to-Check-If-a-String-is-Integer/"/>
+   <link href="https://msdalp.github.io//2014/03/11/How-to-Check-If-a-String-is-Integer/"/>
    <updated>2014-03-11T20:46:32+01:00</updated>
-   <id>http://localhost:4000/2014/03/11/How-to-Check-If-a-String-is-Integer</id>
+   <id>https://msdalp.github.io/2014/03/11/How-to-Check-If-a-String-is-Integer</id>
    <content type="html">&lt;p&gt;There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
 First one is using regular expressions and this is the one I use mostly.This matches as &lt;br /&gt; 
 -?     –&amp;gt; negative sign, could have none or one &lt;br /&gt;
@@ -1166,9 +1166,9 @@ Here some test results with these methods.Running many times these methods shows
  
  <entry>
    <title>Android Udp Client Example</title>
-   <link href="http://localhost:4000//2014/03/09/Udp-on-Android/"/>
+   <link href="https://msdalp.github.io//2014/03/09/Udp-on-Android/"/>
    <updated>2014-03-09T20:46:32+01:00</updated>
-   <id>http://localhost:4000/2014/03/09/Udp-on-Android</id>
+   <id>https://msdalp.github.io/2014/03/09/Udp-on-Android</id>
    <content type="html">&lt;p&gt;UDP (User Datagram Protocol) is anther commonly used protocol on the Internet. However, UDP is never used to send important data such as webpages,
 database information, etc; UDP is commonly used for streaming audio and video. Streaming media such as Windows Media audio files (.WMA) , Real Player (.RM),
 and others use UDP because it offers speed! The reason UDP is faster than TCP is because there is no form of flow control or error correction. 
@@ -1297,9 +1297,9 @@ You should catch the exception which is SocketTimeoutException if there is no an
  
  <entry>
    <title>Jetty Embedded Server With Post, Get, and Gson</title>
-   <link href="http://localhost:4000//2014/03/04/jetty-embedded/"/>
+   <link href="https://msdalp.github.io//2014/03/04/jetty-embedded/"/>
    <updated>2014-03-04T17:40:24+01:00</updated>
-   <id>http://localhost:4000/2014/03/04/jetty-embedded</id>
+   <id>https://msdalp.github.io/2014/03/04/jetty-embedded</id>
    <content type="html">&lt;p&gt;Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the &lt;a href=&quot;http://www.eclipse.org/jetty/powered&quot;&gt;Jetty Powered page&lt;/a&gt; for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
 You should first download the required jetty jar files and import them. Basically you can just down &lt;a href=&quot;http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar&quot;&gt;jetty all&lt;/a&gt; and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from &lt;a href=&quot;https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&amp;amp;can=2&amp;amp;q=&quot;&gt;this&lt;/a&gt; link.
 First create a class that extends Server and by giving port to its constructor we will be able to start it easily.&lt;/p&gt;
@@ -1450,9 +1450,9 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
  
  <entry>
    <title>Increase Insertion Speed on Android SQLite</title>
-   <link href="http://localhost:4000//2014/03/04/android-sqlite-increase-insertion-speed/"/>
+   <link href="https://msdalp.github.io//2014/03/04/android-sqlite-increase-insertion-speed/"/>
    <updated>2014-03-04T17:40:24+01:00</updated>
-   <id>http://localhost:4000/2014/03/04/android-sqlite-increase-insertion-speed</id>
+   <id>https://msdalp.github.io/2014/03/04/android-sqlite-increase-insertion-speed</id>
    <content type="html">&lt;p&gt;I’ve been doing some insert operations on Android with 3000 rows to 15000 rows.A service was planned to update for every one hour and insert all over again.The problem with that it was so slow.Inserting 3000 rows took 150 seconds and there was many tables with that kind of data it will not be able to insert even in one hour.I was using the usual way to do it with ContentValues.Please be aware it’s a set function so I deleted the datas before inserting anything.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;YourObject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_objects&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -1511,9 +1511,9 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
  
  <entry>
    <title>Android Sqlite Example</title>
-   <link href="http://localhost:4000//2014/03/04/android-sqlite-example/"/>
+   <link href="https://msdalp.github.io//2014/03/04/android-sqlite-example/"/>
    <updated>2014-03-04T17:40:24+01:00</updated>
-   <id>http://localhost:4000/2014/03/04/android-sqlite-example</id>
+   <id>https://msdalp.github.io/2014/03/04/android-sqlite-example</id>
    <content type="html">&lt;p&gt;SQLite is embedded into every Android device. Using an SQLite database in Android does not require a setup procedure or administration of the database. You only have to define the SQL statements for creating and updating the database. Afterwards the database is automatically managed for you by the Android platform.&lt;/p&gt;
 
 &lt;p&gt;If your application creates a database, this database is by default saved in the directory DATA/data/APP_NAME/databases/FILENAME. The parts of the above directory are constructed based on the following rules. DATA is the path which the Environment.getDataDirectory() method returns. APP_NAME is your application name. FILENAME is the name you specify in your application code for the database.&lt;/p&gt;

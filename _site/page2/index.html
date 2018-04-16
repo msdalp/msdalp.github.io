@@ -70,308 +70,317 @@
 
     <time datetime="2016-01-03T11:43:32+01:00" class="post-date">03 Jan 2016</time>
 
-    <p>The definition of the Jersey framework from their website:</p>
+    The definition of the Jersey framework from their website:
 
-<p>Jersey framework is more than the JAX-RS Reference Implementation. Jersey provides it’s own API that extend the JAX-RS toolkit with additional features and utilities to further simplify RESTful service and client development. Jersey also exposes numerous extension SPIs so that developers may extend Jersey to best suit their needs.</p>
+Jersey framework is more than the JAX-RS Reference Implementation. Jersey provides it’s own API that extend the JAX-RS toolkit with additional features and utilities to further simplify RESTful service and client development. Jersey also exposes numerous extension SPIs so that developers may extend Jersey to best suit their needs.
 
-<p>You can read details from <a href="https://jersey.java.net">https://jersey.java.net</a></p>
+You can read details from <a href="https://jersey.java.net">https://jersey.java.net</a>
 
-<p>What I will try to show is creating a project from beginning and put more in time to make it a whole complete structure in this order:</p>
+What I will try to show is creating a project from beginning and put more in time to make it a whole complete structure in this order:
 
-<ul>
-  <li>Create a project by using HTTP methods.</li>
-  <li>Add database connection to the project and Authentication (tokens, roles)</li>
-  <li>Add error mappings, logging requests and responses</li>
-  <li>Jackson specific settings</li>
-</ul>
+ - Create a project by using HTTP methods.
+ - Add database connection to the project and Authentication (tokens, roles)
+ - Add error mappings, logging requests and responses
+ - Jackson specific settings
 
-<p>I will be using Netbeans 8, Tomcat 7, Jersey 2.9.1, and Java 7.</p>
+I will be using Netbeans 8, Tomcat 7, Jersey 2.9.1, and Java 7.
 
-<p>Firstly create a new project by selecting Maven Web project.</p>
+Firstly create a new project by selecting Maven Web project.
 
-<p><img src="/assets/img/new_maven_project.png" alt="new project ss" /><br /></p>
+![new project ss](/assets/img/new_maven_project.png)<br>
 
-<p>After creating your project add dependencies as given below and we will be adding other dependencies when it is needed.</p>
+After creating your project add dependencies as given below and we will be adding other dependencies when it is needed.
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+    <groupId>com.jersey.test</groupId>
+    <artifactId>JerseyTest</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
-    <span class="nt">&lt;groupId&gt;</span>com.jersey.test<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>JerseyTest<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;packaging&gt;</span>war<span class="nt">&lt;/packaging&gt;</span>
+    <name>JerseyTest</name>
 
-    <span class="nt">&lt;name&gt;</span>JerseyTest<span class="nt">&lt;/name&gt;</span>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-    <span class="nt">&lt;properties&gt;</span>
-        <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-    <span class="nt">&lt;/properties&gt;</span>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.22.1</version>
+        </dependency>
 
-    <span class="nt">&lt;dependencies&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>javax.servlet-api<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>3.1.0<span class="nt">&lt;/version&gt;</span>
-            <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>log4j<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>log4j<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>1.2.17<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.containers<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>jersey-container-servlet<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>2.9.1<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.glassfish.jersey.media<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>jersey-media-json-jackson<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>2.22.1<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
+    </dependencies>
+    <build>
+        <finalName>JerseyTest</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
 
-    <span class="nt">&lt;/dependencies&gt;</span>
-    <span class="nt">&lt;build&gt;</span>
-        <span class="nt">&lt;finalName&gt;</span>JerseyTest<span class="nt">&lt;/finalName&gt;</span>
-        <span class="nt">&lt;plugins&gt;</span>
-            <span class="nt">&lt;plugin&gt;</span>
-                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-                <span class="nt">&lt;artifactId&gt;</span>maven-war-plugin<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;version&gt;</span>2.6<span class="nt">&lt;/version&gt;</span>
-            <span class="nt">&lt;/plugin&gt;</span>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
 
-            <span class="nt">&lt;plugin&gt;</span>
-                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
-                <span class="nt">&lt;configuration&gt;</span>
-                    <span class="nt">&lt;source&gt;</span>1.7<span class="nt">&lt;/source&gt;</span>
-                    <span class="nt">&lt;target&gt;</span>1.7<span class="nt">&lt;/target&gt;</span>
-                <span class="nt">&lt;/configuration&gt;</span>
-            <span class="nt">&lt;/plugin&gt;</span>
+        </plugins>
+    </build>
 
-        <span class="nt">&lt;/plugins&gt;</span>
-    <span class="nt">&lt;/build&gt;</span>
+</project>
+{% endhighlight %}
 
-<span class="nt">&lt;/project&gt;</span></code></pre></figure>
+Jersey provides an abstract class Application declaring root resource and provider classes, and root resource and provider singleton instances. A Web service may extend this class to declare root resource and provider classes.
 
-<p>Jersey provides an abstract class Application declaring root resource and provider classes, and root resource and provider singleton instances. A Web service may extend this class to declare root resource and provider classes.</p>
+Alternatively it is possible to reuse ResourceConfig - Jersey's own implementations of Application class that we will be using.
 
-<p>Alternatively it is possible to reuse ResourceConfig - Jersey’s own implementations of Application class that we will be using.</p>
+Simply you give the packages that you want to include in the project for deployment and register the properties like JSON and GZIP. Also you can register filters, singletons and other things as well.
 
-<p>Simply you give the packages that you want to include in the project for deployment and register the properties like JSON and GZIP. Also you can register filters, singletons and other things as well.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
+{% highlight java %}
+package com.jersey.test.app;
 
-<span class="kn">import</span> <span class="nn">javax.ws.rs.ApplicationPath</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.glassfish.jersey.jackson.JacksonFeature</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.glassfish.jersey.server.ResourceConfig</span><span class="o">;</span>
+import javax.ws.rs.ApplicationPath;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 
-<span class="cm">/**
+/**
  *
- * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
- */</span>
-<span class="nd">@ApplicationPath</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestApp</span> <span class="kd">extends</span> <span class="n">ResourceConfig</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="nf">RestApp</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">packages</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span>
-            <span class="s">"com.jersey.test.data"</span>
-        <span class="o">});</span>
-        <span class="n">register</span><span class="o">(</span><span class="n">JacksonFeature</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+ * @author Mustafa Alparslan <msdalp.github.io>
+ */
+@ApplicationPath("")
+public class RestApp extends ResourceConfig {
+    public RestApp() {
+        packages(new String[]{
+            "com.jersey.test.data"
+        });
+        register(JacksonFeature.class);
+    }
+}
+{% endhighlight %}
 
-<p>At this stage if your IDE is giving error about web.xml or context.xml then simply put these files and will be used in the future posts.</p>
+At this stage if your IDE is giving error about web.xml or context.xml then simply put these files and will be used in the future posts.
 
-<p>web.xml</p>
+web.xml
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">"3.1"</span> <span class="na">xmlns=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee"</span>
-         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-         <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"</span><span class="nt">&gt;</span>
+</web-app>
+{% endhighlight %}
+context.xml
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/JerseyTest"/>
+{% endhighlight %}
 
-<span class="nt">&lt;/web-app&gt;</span></code></pre></figure>
+The package I included in the main class was "com.jersey.test.data" and for the sake of simplicity I will add User model and the Users service to show methods.
 
-<p>context.xml</p>
+These two classes have no specific property (user model and a map to put users inside while we have no database connection).
+{% highlight java %}
+package com.jersey.test.data;
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;Context</span> <span class="na">antiJARLocking=</span><span class="s">"true"</span> <span class="na">path=</span><span class="s">"/JerseyTest"</span><span class="nt">/&gt;</span></code></pre></figure>
-
-<p>The package I included in the main class was “com.jersey.test.data” and for the sake of simplicity I will add User model and the Users service to show methods.</p>
-
-<p>These two classes have no specific property (user model and a map to put users inside while we have no database connection).</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">data</span><span class="o">;</span>
-
-<span class="cm">/**
+/**
  *
- * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
- */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kt">long</span> <span class="n">id</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+ * @author Mustafa Alparslan <msdalp.github.io>
+ */
+public class User {
+    public long id;
+    public String name;
+    public String password;
 
-    <span class="kd">public</span> <span class="nf">User</span><span class="o">()</span> <span class="o">{</span>
-    <span class="o">}</span>
+    public User() {
+    }
 
-    <span class="kd">public</span> <span class="nf">User</span><span class="o">(</span><span class="kt">long</span> <span class="n">id</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+    public User(long id, String name, String password) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+    }
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">app</span><span class="o">;</span>
+{% highlight java %}
+package com.jersey.test.app;
 
-<span class="kn">import</span> <span class="nn">com.jersey.test.data.User</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+import com.jersey.test.data.User;
+import java.util.HashMap;
+import java.util.Map;
 
-<span class="cm">/**
+/**
  *
- * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
- */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Data</span> <span class="o">{</span>
+ * @author Mustafa Alparslan <msdalp.github.io>
+ */
+public class Data {
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+    public static Map<Long,User> users = new HashMap<>();
 
-<span class="o">}</span></code></pre></figure>
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jersey</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">data</span><span class="o">;</span>
 
-<span class="kn">import</span> <span class="nn">com.jersey.test.app.Data</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.ServletContext</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.Consumes</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.DELETE</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.GET</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.POST</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.PUT</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.Path</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.PathParam</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.Produces</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.core.Context</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.core.MediaType</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.ws.rs.core.Response</span><span class="o">;</span>
 
-<span class="cm">/**
+
+{% highlight java %}
+package com.jersey.test.data;
+
+import com.jersey.test.app.Data;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+/**
  *
- * @author Mustafa Alparslan &lt;msdalp.github.io&gt;
- */</span>
-<span class="nd">@Path</span><span class="o">(</span><span class="s">"/users"</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Users</span> <span class="o">{</span>
+ * @author Mustafa Alparslan <msdalp.github.io>
+ */
+@Path("/users")
+public class Users {
 
-    <span class="nd">@Context</span>
-    <span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">;</span>
-    <span class="nd">@Context</span>
-    <span class="n">HttpServletRequest</span> <span class="n">servletRequest</span><span class="o">;</span>
+    @Context
+    ServletContext servletContext;
+    @Context
+    HttpServletRequest servletRequest;
 
-    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
-    <span class="nd">@Path</span><span class="o">(</span><span class="s">"{userId}"</span><span class="o">)</span>
-    <span class="nd">@GET</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processGet</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="n">Long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">userId</span><span class="o">))</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
-                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">userId</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">NOT_FOUND</span><span class="o">)</span>
-                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="k">new</span> <span class="n">Msg</span><span class="o">(</span><span class="n">Msg</span><span class="o">.</span><span class="na">Cond</span><span class="o">.</span><span class="na">error</span><span class="o">,</span> <span class="s">"Not Found"</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("{userId}")
+    @GET
+    public Response processGet(@PathParam("userId") Long userId) {
+        if (Data.users.containsKey(userId)) {
+            return Response.status(Response.Status.OK)
+                    .entity(Data.users.get(userId)).type("application/json").build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new Msg(Msg.Cond.error, "Not Found")).type("application/json").build();
+        }
+    }
 
-    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
-    <span class="nd">@Path</span><span class="o">(</span><span class="s">"{userId}"</span><span class="o">)</span>
-    <span class="nd">@DELETE</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processDel</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">userId</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
-            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
-                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="k">new</span> <span class="n">Msg</span><span class="o">(</span><span class="n">Msg</span><span class="o">.</span><span class="na">Cond</span><span class="o">.</span><span class="na">success</span><span class="o">,</span> <span class="s">"Operation successful"</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">NOT_FOUND</span><span class="o">)</span>
-                    <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="k">new</span> <span class="n">Msg</span><span class="o">(</span><span class="n">Msg</span><span class="o">.</span><span class="na">Cond</span><span class="o">.</span><span class="na">error</span><span class="o">,</span> <span class="s">"Not Found"</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("{userId}")
+    @DELETE
+    public Response processDel(@PathParam("userId") long userId) {
+        if (Data.users.containsKey(userId)) {
+            Data.users.remove(userId);
+            return Response.status(Response.Status.OK)
+                    .entity(new Msg(Msg.Cond.success, "Operation successful")).type("application/json").build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new Msg(Msg.Cond.error, "Not Found")).type("application/json").build();
+        }
+    }
 
-    <span class="nd">@Consumes</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
-    <span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
-    <span class="nd">@POST</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processAdd</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">values</span><span class="o">()).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("")
+    @POST
+    public Response processAdd(User user) {
+        Data.users.put(user.id, user);
+        return Response.status(Response.Status.OK)
+                .entity(Data.users.values()).type("application/json").build();
+    }
 
-    <span class="nd">@Consumes</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-    <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
-    <span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
-    <span class="nd">@PUT</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processUpdate</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">values</span><span class="o">()).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("")
+    @PUT
+    public Response processUpdate(User user) {
+        Data.users.put(user.id, user);
+        return Response.status(Response.Status.OK)
+                .entity(Data.users.values()).type("application/json").build();
+    }
 
-<span class="o">}</span></code></pre></figure>
+}
+{% endhighlight %}
 
-<p>Your service definition starts with a “@Path(“/users”)” annotation which defines the root path of the class. You can add more lower levels before the methods like “@Path(“{userId}/orders”)” which will take user id as parameter and return the orders of that user. However be aware that adding conflicting classes will broke the URL schema and calling these URLs will give some runtime Exceptions.</p>
+Your service definition starts with a "@Path("/users")" annotation which defines the root path of the class. You can add more lower levels before the methods like "@Path("{userId}/orders")" which will take user id as parameter and return the orders of that user. However be aware that adding conflicting classes will broke the URL schema and calling these URLs will give some runtime Exceptions.
 
-<p>You define the name of HTTP method with annotations  as well (by using @GET, @POST, @PUT, @DELETE).</p>
+You define the name of HTTP method with annotations  as well (by using @GET, @POST, @PUT, @DELETE).
 
-<p>For the requests with @GET and @DELETE methods PathParam (directly in url like /users/14) or QueryParam (by using ? and values behind like /users?id=14) can be used (together or only one of them). However I highly recommend that if it is a REST-API then use PathParams to make it more readable.</p>
+For the requests with @GET and @DELETE methods PathParam (directly in url like /users/14) or QueryParam (by using ? and values behind like /users?id=14) can be used (together or only one of them). However I highly recommend that if it is a REST-API then use PathParams to make it more readable.
 
-<p>Also you should read about REST a bit from
-<a href="http://stackoverflow.com/questions/671118/what-exactly-is-restful-programming"> this stackoverflow link</a>. Honestly I don’t care about the talk ‘your api should match 100% to the rules otherwise your api is not a rest’ crap. The main idea is creating a standard that allows developers (for both server and client side) to make their jobs with ease. At the end call your api ‘like REST’ and then everyone will be happy.</p>
+Also you should read about REST a bit from
+<a href="http://stackoverflow.com/questions/671118/what-exactly-is-restful-programming"> this stackoverflow link</a>. Honestly I don't care about the talk 'your api should match 100% to the rules otherwise your api is not a rest' crap. The main idea is creating a standard that allows developers (for both server and client side) to make their jobs with ease. At the end call your api 'like REST' and then everyone will be happy.
 
-<p>Even though I said that is not important but at least you should be able to provide these properties.</p>
+Even though I said that is not important but at least you should be able to provide these properties.
 
-<ul>
-  <li>Proper url naming: It is quite easy and important thing since creating urls properly would make much easier to use you API.</li>
-</ul>
+- Proper url naming: It is quite easy and important thing since creating urls properly would make much easier to use you API.
 
-<p>Please do not use sentences at the urls and at least it should match the form of</p>
+Please do not use sentences at the urls and at least it should match the form of
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/users -&gt; to add or update the user
-/users/<span class="o">{</span>userId<span class="o">}</span> -&gt; to get or delete the user
-/users/<span class="o">{</span>userId<span class="o">}</span>/orders -&gt; to get the orders of the user</code></pre></figure>
+{% highlight bash %}
+/users -> to add or update the user
+/users/{userId} -> to get or delete the user
+/users/{userId}/orders -> to get the orders of the user
+{% endhighlight %}
 
-<ul>
-  <li>Proper usage of HTTP methods:</li>
-</ul>
+- Proper usage of HTTP methods:
 
-<p>It should use @GET to retrieve data, @POST-@PUT to add and update data, and @DELETE to delete data. It may change with the specific methods but using this in your main models should be quite easy.</p>
+It should use @GET to retrieve data, @POST-@PUT to add and update data, and @DELETE to delete data. It may change with the specific methods but using this in your main models should be quite easy.
 
-<ul>
-  <li>Proper usage of HTTP Codes:</li>
-</ul>
+- Proper usage of HTTP Codes:
 
-<p>It is quite important to send proper HTTP Codes in your responses. It would be much easier to manage to responses and take action according to these codes (like if the code is 401 and can not refresh token then redirect to the login page). Again there are many codes but:</p>
+It is quite important to send proper HTTP Codes in your responses. It would be much easier to manage to responses and take action according to these codes (like if the code is 401 and can not refresh token then redirect to the login page). Again there are many codes but:
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">200 -&gt; successful request
-400 -&gt; bad request
-401 -&gt; auth is not valid or expired
-403 -&gt; forbidden
-500 -&gt; internal error</code></pre></figure>
+{% highlight bash %}
+200 -> successful request
+400 -> bad request
+401 -> auth is not valid or expired
+403 -> forbidden
+500 -> internal error
+{% endhighlight %}
 
-<ul>
-  <li>Security with Auth Token and others if more needed (like JWT)</li>
-  <li>Proper request responses and errors</li>
-</ul>
+- Security with Auth Token and others if more needed (like JWT)
+- Proper request responses and errors  
 
-<p>I will continue the REST specifications in another post and return to the JERSEY.</p>
 
-<p>For the requests with @POST and @PUT methods FormParam (like usual form parameter with username=msd&amp;password=alp) or directly the object representation of request as it is used in the example (User user). However you must define the ‘    @Consumes(MediaType.APPLICATION_JSON)’ annotation for the method.</p>
+I will continue the REST specifications in another post and return to the JERSEY.
 
-<p>Also you may notice that some methods use the same path. Separation of unique methods are done by classical java method name and parameters on the compile time,  path and http method on the runtime. Therefore you can define two methods with the same path and parameter but different HTTP method (GET or DELETE).</p>
+For the requests with @POST and @PUT methods FormParam (like usual form parameter with username=msd&password=alp) or directly the object representation of request as it is used in the example (User user). However you must define the '    @Consumes(MediaType.APPLICATION_JSON)' annotation for the method.
 
-<p>@Produces({MediaType.APPLICATION_JSON}) annotation takes a list of MediaType (or string like ‘application/json’) that defines the possible return types. It is possible to use two different response type in one method like</p>
+Also you may notice that some methods use the same path. Separation of unique methods are done by classical java method name and parameters on the compile time,  path and http method on the runtime. Therefore you can define two methods with the same path and parameter but different HTTP method (GET or DELETE).
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java">     <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_XML</span><span class="o">})</span></code></pre></figure>
+@Produces({MediaType.APPLICATION_JSON}) annotation takes a list of MediaType (or string like 'application/json') that defines the possible return types. It is possible to use two different response type in one method like
+{% highlight java %}
+     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+{% endhighlight %}
 
-<p>This is all the things you need for a simple project. I will be adding Redis, PostgreSQL, and Mysql for data access and caching in the next posts.</p>
+This is all the things you need for a simple project. I will be adding Redis, PostgreSQL, and Mysql for data access and caching in the next posts.
 
   </article>
   
@@ -384,55 +393,53 @@
 
     <time datetime="2015-06-27T23:54:22+02:00" class="post-date">27 Jun 2015</time>
 
-    <p>There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let’s first check the definition given from MYSQL:</p>
+    There are lots of parameters when you try to optimize your mysql but the most important one is Innodb Buffer Pool. It is defined as %70 of the your server total RAM but we need more details. Let's first check the definition given from MYSQL:
 
-<blockquote>
-  <p>InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer &gt; pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.</p>
-</blockquote>
+> InnoDB maintains a storage area called the buffer pool for caching data and indexes in memory. Knowing how the InnoDB buffer > pool works, and taking advantage of it to keep frequently accessed data in memory, is an important aspect of MySQL tuning.
 
-<p>The idea is keeping innodb_buffer_pool_size bigger as possible that doesn’t block other OS and programs running properly. This will make InnoDB work like a in-memory database and increase the performance a lot. At first InnoDB will take all the required data from disk and access it from memory in the future queries. The default value for InnoDB is 8MB so you might want to update it as a bigger number which fits well for your system.</p>
+The idea is keeping innodb_buffer_pool_size bigger as possible that doesn't block other OS and programs running properly. This will make InnoDB work like a in-memory database and increase the performance a lot. At first InnoDB will take all the required data from disk and access it from memory in the future queries. The default value for InnoDB is 8MB so you might want to update it as a bigger number which fits well for your system.
 
-<p>Before going exact details there is a wrong assumption about Innodb Buffer Pool. People think that if they give enough space for keys to be in the memory and there will be very low IO accesss. The idea is searching keys fast as much as and retrieve data with index directly. Let’s assume you have a query that runs in 600ms and 450 ms is searching keys, 75 ms is getting data from disk and last 75 ms is fetching data from server. Providing proper innodb_buffer_pool_size will make sure you don’t access disk for index search and that 450 ms will decrease to 30 ms (it really depends on your keys and structure) so total time for query is 180 ms now. You still have IO at this rate but it is only retrieving data from disk which can be acceptable.</p>
+Before going exact details there is a wrong assumption about Innodb Buffer Pool. People think that if they give enough space for keys to be in the memory and there will be very low IO accesss. The idea is searching keys fast as much as and retrieve data with index directly. Let's assume you have a query that runs in 600ms and 450 ms is searching keys, 75 ms is getting data from disk and last 75 ms is fetching data from server. Providing proper innodb_buffer_pool_size will make sure you don't access disk for index search and that 450 ms will decrease to 30 ms (it really depends on your keys and structure) so total time for query is 180 ms now. You still have IO at this rate but it is only retrieving data from disk which can be acceptable.
 
-<p>I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:</p>
+I will not get into details how InnoDB manages the pool and LRU algorithm but directly give info about what value we should choose. Run this query to get an recommended memory:
+{% highlight sql %}
+SELECT CONCAT(ROUND(KBS/POWER(1024,
+IF(PowerOf1024<0,0,IF(PowerOf1024>3,0,PowerOf1024)))+0.49999),
+SUBSTR(' KMG',IF(PowerOf1024<0,0,
+IF(PowerOf1024>3,0,PowerOf1024))+1,1)) recommended_innodb_buffer_pool_size
+FROM (SELECT SUM(data_length+index_length) KBS FROM information_schema.tables
+WHERE engine='InnoDB') A,
+(SELECT 3 PowerOf1024) B;
+{% endhighlight %}
+In my system it returns the value:
+{% highlight sql %}
+recommended_innodb_buffer_pool_size
+48G
+{% endhighlight %}
+Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">CONCAT</span><span class="p">(</span><span class="n">ROUND</span><span class="p">(</span><span class="n">KBS</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span>
-<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">)))</span><span class="o">+</span><span class="mi">0</span><span class="p">.</span><span class="mi">49999</span><span class="p">),</span>
-<span class="n">SUBSTR</span><span class="p">(</span><span class="s1">' KMG'</span><span class="p">,</span><span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
-<span class="n">IF</span><span class="p">(</span><span class="n">PowerOf1024</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">PowerOf1024</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="n">recommended_innodb_buffer_pool_size</span>
-<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="k">SUM</span><span class="p">(</span><span class="n">data_length</span><span class="o">+</span><span class="n">index_length</span><span class="p">)</span> <span class="n">KBS</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
-<span class="k">WHERE</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'InnoDB'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
-<span class="p">(</span><span class="k">SELECT</span> <span class="mi">3</span> <span class="n">PowerOf1024</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
+This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let's assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.
+{% highlight sql %}
+SELECT (PagesData*PageSize)/POWER(1024,3) DataGB FROM
+(SELECT variable_value PagesData
+FROM information_schema.global_status
+WHERE variable_name='Innodb_buffer_pool_pages_data') A,
+(SELECT variable_value PageSize
+FROM information_schema.global_status
+WHERE variable_name='Innodb_page_size') B;
+{% endhighlight %}
+For my system it returns:
+{% highlight sql %}
+DataGB
+22.5G
+{% endhighlight %}
+It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn't go up quickly after for a week etc.
 
-<p>In my system it returns the value:</p>
+There are some other parameters that needed to be adjusted as well but I will not get into these details. Let's assume you run the query for recommended buffer pool and you got 11GB. However you only have 11.5GB data in your database and it seems a bit odd to have such a big number. The reason for this you probably have too much or redundant index for your tables. You should reconsider the indices and adjust them to a proper state which doesn't make your operations slower and reserve so much space.
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">recommended_innodb_buffer_pool_size</span>
-<span class="mi">48</span><span class="k">G</span></code></pre></figure>
+One other issue primary keys of very big tables. Let's say we have 20 tables with average 1 million to 5 million rows data but only two of them have 200 million rows data per table. At total you should have 450 million rows and probably with indices it would require around 50GB inno db pool. If you don't access these tables heavily or they are accessed by a big group (like 1.5 million records of logs  belong to one operation) then you should not need a really big buffer pool. However a small amount of pool will be filled with one group data easily and other operations become slower at that time. At least try to give a proper amount of memory to handle the one big operation and it's additional queries. Of course it is totally another discussion topic why don't you use some other systems (Cassandra or a different NOSQL maybe ) to store big tables to create results and put these values into mysql to be access etc.
 
-<p>Be careful with these values since InnoDB reserves additional memory for buffers and control structures, so that the total allocated space is approximately 10% greater than the specified size. When you have 50 GB RAM and you give 48GB as pool, you will probably get OS paging problems.</p>
-
-<p>This is a simple value that you should better have this value to reach all data properly with the help of Innodb Buffer Pool. Let’s assume you set the value 45GB and you want to make sure that these resources are not wasted and buffer pool is used. At this point we should check the buffer pool usage value. It must be run after the all the heavy operations are done for your system. If your system is on high load only on weekends then you should wait for the run this query at least one or two week so you would get at least a minimal idea how the system will respond on load.</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="p">(</span><span class="n">PagesData</span><span class="o">*</span><span class="n">PageSize</span><span class="p">)</span><span class="o">/</span><span class="n">POWER</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="n">DataGB</span> <span class="k">FROM</span>
-<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PagesData</span>
-<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
-<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_buffer_pool_pages_data'</span><span class="p">)</span> <span class="n">A</span><span class="p">,</span>
-<span class="p">(</span><span class="k">SELECT</span> <span class="n">variable_value</span> <span class="n">PageSize</span>
-<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">global_status</span>
-<span class="k">WHERE</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'Innodb_page_size'</span><span class="p">)</span> <span class="n">B</span><span class="p">;</span></code></pre></figure>
-
-<p>For my system it returns:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="n">DataGB</span>
-<span class="mi">22</span><span class="p">.</span><span class="mi">5</span><span class="k">G</span></code></pre></figure>
-
-<p>It might be %100 (45G) or some other value depending on the system and you should take action according to this value. It means that even though your system has 45GB of indices you only access 22GB of it at this time area. Hence lowering the value as 25GB should be okay the system to run at almost the same performance. However be careful with the value and keep observing the value for some time and make sure it doesn’t go up quickly after for a week etc.</p>
-
-<p>There are some other parameters that needed to be adjusted as well but I will not get into these details. Let’s assume you run the query for recommended buffer pool and you got 11GB. However you only have 11.5GB data in your database and it seems a bit odd to have such a big number. The reason for this you probably have too much or redundant index for your tables. You should reconsider the indices and adjust them to a proper state which doesn’t make your operations slower and reserve so much space.</p>
-
-<p>One other issue primary keys of very big tables. Let’s say we have 20 tables with average 1 million to 5 million rows data but only two of them have 200 million rows data per table. At total you should have 450 million rows and probably with indices it would require around 50GB inno db pool. If you don’t access these tables heavily or they are accessed by a big group (like 1.5 million records of logs  belong to one operation) then you should not need a really big buffer pool. However a small amount of pool will be filled with one group data easily and other operations become slower at that time. At least try to give a proper amount of memory to handle the one big operation and it’s additional queries. Of course it is totally another discussion topic why don’t you use some other systems (Cassandra or a different NOSQL maybe ) to store big tables to create results and put these values into mysql to be access etc.</p>
-
-<p>To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.</p>
+To sum up; run the query and get a recommended value for your innodb_buffer_pool_size. If you think it is enormous for your database then try to optimize your indices and lower the number of key values. Also be careful with the very high values since it might throttle the system and cause bigger problems like uptimes. Also check other parameters to use the memory you attached more efficiently.
 
   </article>
   
@@ -469,7 +476,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:53:39+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>
