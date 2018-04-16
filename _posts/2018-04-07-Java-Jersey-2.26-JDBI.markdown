@@ -58,7 +58,7 @@ You web.xml file only had a simple webapp definition before and now it includes 
 ```
 You can try running the app and see where these methods print the messages we put for now temporarily. 
 
-We can't use a single db connection for a real application. It would require to have a proper connection pool which we will use HikariCP for that. Details for HikariCP can be found at https://github.com/brettwooldridge/HikariCP. Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
+We can't use a single db connection for a real application. It would require to have a proper connection pool which we will use HikariCP for that. Details for HikariCP can be found at [https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP). Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
 
 ```xml
 <dependency>
@@ -191,7 +191,7 @@ public class User {
     private String name;
 }
 ```
-`UserDao` is the JDBI interface where you just define your application logic. You can read JDBI specific details from http://jdbi.org. 
+`UserDao` is the JDBI interface where you just define your application logic. You can read JDBI specific details from [http://jdbi.org](http://jdbi.org). 
 ```java
 public interface UserDao{
 
@@ -259,4 +259,4 @@ Next you can check all the users with `/users/` call and see the list of users.
 [{"id":1,"name":"John"},{"id":2,"name":"Repa"},{"id":3,"name":"Smith"}]
 ```
 
-You can check the project from https://github.com/msdalp/jersey-jdbi-sample. Next I will convert Dao classes to annotation and inject it to resources automatically. 
+You can check the project from [https://github.com/msdalp/jersey-jdbi-sample](https://github.com/msdalp/jersey-jdbi-sample). Next I will convert Dao classes to annotation and inject it to resources automatically. 
