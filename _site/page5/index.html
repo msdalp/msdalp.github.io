@@ -63,79 +63,292 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
-        Java Sqlite Fast Insert with PreparedStatement
+      <a href="/2014/03/09/Udp-on-Android/">
+        Android Udp Client Example
       </a>
     </h1>
 
-    <time datetime="2014-12-11T20:00:00+01:00" class="post-date">11 Dec 2014</time>
+    <time datetime="2014-03-09T20:46:32+01:00" class="post-date">09 Mar 2014</time>
 
-    <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
+    <p>UDP (User Datagram Protocol) is anther commonly used protocol on the Internet. However, UDP is never used to send important data such as webpages,
+database information, etc; UDP is commonly used for streaming audio and video. Streaming media such as Windows Media audio files (.WMA) , Real Player (.RM),
+and others use UDP because it offers speed! The reason UDP is faster than TCP is because there is no form of flow control or error correction. 
+The data sent over the Internet is affected by collisions, and errors will be present. Remember that UDP is only concerned with speed.
+This is the main reason why streaming media is not high quality.<br />
+Besides UDP a is connectionless protocol. Communication is datagram oriented. The integrity is guaranteed only on the single datagram.
+Datagrams reach destination and can arrive out of order or don’t arrive at all. Is more efficient than TCP because it uses non ack.
+It’s generally used for real time communication, where a little percentage of packet loss rate is preferable to the overhead of a TCP connection.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="p">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
-        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+<p>These are the general details of the UDP you can find anywhere.I assume you decided that it’s better to use UDP on you Android application here some ways to implement 
+client for UDP.A client can send data to server, can listen for coming data from a port or send a data to server and wait for answer.<br /></p>
 
-       
-        <span class="k">try</span> <span class="o">{</span> 
+<p>First we start with sending data to server.You need datagramsocket and datagrampacket to send data to server.DatagramSocket is the port we will send and DatagramPacket is the data
+we will send represented as bytes.It may throw SocketException when you try to create a new DatagramSocket object or IOException when you try to send data.</p>
 
-            <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
-
-                <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span> 
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"TIMESTAMP"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"HALF"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"MIN"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"SEC"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"OBJECT_TYPE"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"OBJECT_ID"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span> 
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"X_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Y_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
-                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Z_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
-                <span class="n">trans</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">SQL</span><span class="o">.</span><span class="na">TABLE_STAT</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>
-
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSend</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+                <span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ip</span><span class="o">);</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="o">(</span><span class="s">"The String to Send"</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+                <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">,</span><span class="n">serverAddr</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                <span class="n">udpSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"Udp:"</span><span class="o">,</span> <span class="s">"Socket Error:"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"Udp Send:"</span><span class="o">,</span> <span class="s">"IO Error:"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
             <span class="o">}</span>
-
-            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Cannot add  stat data"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
-        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-    <span class="o">}</span> </code></pre></figure>
+<span class="o">}</span></code></pre></figure>
 
-<p>Doing the same insert with prepared statement.</p>
+<p>Just sending data may not be enough.You can listen a port as well.Listening a port is done by infinite loops since you don’t know when to stop listening.
+We should prefer run flags for this than can close the loop when the job is done.If you just use while(true) you can see on your logcat it is still listening even the application
+is not open on the main screen.The data size will be defined first as byte here so use a reasonable number.If you choose a small number it will give unexpected errors.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"> 
-<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
-        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+	  <span class="k">try</span> <span class="o">{</span>
+	    <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+	    <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8000</span><span class="o">];</span>
+	    <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">message</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">"UDP client: "</span><span class="o">,</span> <span class="s">"about to wait to receive"</span><span class="o">);</span>
+	    <span class="n">udpSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+	    <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">message</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">packet</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"Received data"</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>
+	  <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+	    <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"UDP client has IOException"</span><span class="o">,</span> <span class="s">"error: "</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+	    <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	  <span class="o">}</span>
+	<span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>	</code></pre></figure>
 
+<p>There is also another way to write listener by giving it listening time.How can we use such an implementmation?
+It may work first you send a data to server like “FILES” asking for files on the server.And set the listening time with setSoTimeout() method and start listening.
+You should catch the exception which is SocketTimeoutException if there is no answer.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSendAndListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">(</span><span class="n">portVal</span><span class="o">);</span>
+		<span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ipVal</span><span class="o">);</span>
+                <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="o">(</span><span class="s">"FILES"</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+                <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">buf</span><span class="o">.</span><span class="na">length</span><span class="o">,</span><span class="n">serverAddr</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+                <span class="n">udpSocket</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+                <span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">try</span> <span class="o">{</span>
+                        <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8000</span><span class="o">];</span>
+                        <span class="n">DatagramPacket</span> <span class="n">packet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramPacket</span><span class="o">(</span><span class="n">message</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">"UDP client: "</span><span class="o">,</span> <span class="s">"about to wait to receive"</span><span class="o">);</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">setSoTimeout</span><span class="o">(</span><span class="mi">10000</span><span class="o">);</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">packet</span><span class="o">);</span>
+                        <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">message</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"Received text"</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>                        
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">" UDP client has IOException"</span><span class="o">,</span> <span class="s">"error: "</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                        <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketTimeoutException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"Timeout Exception"</span><span class="o">,</span><span class="s">"UDP Connection:"</span><span class="o">,</span><span class="n">e</span><span class="o">);</span>
+                        <span class="n">run</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                        <span class="n">udpSocket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SocketException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"Socket Open:"</span><span class="o">,</span> <span class="s">"Error:"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The last thing is how to call these Clients from you main activity.Remember these were Runnable so you should start these with Thread.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">msd</span><span class="o">.</span><span class="na">udp</span><span class="o">.</span><span class="na">test</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.view.View</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.widget.EditText</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramPacket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.DatagramSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.InetAddress</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.SocketTimeoutException</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">ip</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+        <span class="n">udpConnect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">ClientSendAndListen</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/04/jetty-embedded/">
+        Jetty Embedded Server With Post, Get, and Gson
+      </a>
+    </h1>
+
+    <time datetime="2014-03-04T17:40:24+01:00" class="post-date">04 Mar 2014</time>
+
+    <p>Jetty is used in a wide variety of projects and products, both in development and production. Jetty can be easily embedded in devices, tools, frameworks, application servers, and clusters. See the <a href="http://www.eclipse.org/jetty/powered">Jetty Powered page</a> for more uses of Jetty.Here we want to use it as an embedded web server that runs with our application.
+You should first download the required jetty jar files and import them. Basically you can just down <a href="http://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.1.0.v20131115/jetty-all-9.1.0.v20131115.jar">jetty all</a> and use it there will no problem. For now the latest version is the 9.1 and it is the one we will use.Also Gson will be used and you should download it from <a href="https://code.google.com/p/google-gson/downloads/detail?name=google-gson-2.2.4-release.zip&amp;can=2&amp;q=">this</a> link.
+First create a class that extends Server and by giving port to its constructor we will be able to start it easily.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+ 
+<span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.google.gson.GsonBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.eclipse.jetty.server.Server</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.eclipse.jetty.servlet.ServletContextHandler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.eclipse.jetty.servlet.ServletHolder</span><span class="o">;</span>
+ 
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Jetty</span> <span class="kd">extends</span> <span class="n">Server</span> <span class="o">{</span>
+ 
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GsonBuilder</span><span class="o">().</span>
+    <span class="n">setDateFormat</span><span class="o">(</span><span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">).</span><span class="na">create</span><span class="o">();</span>
+ 
+    <span class="kd">public</span> <span class="nf">Jetty</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
+ 
+        <span class="n">ServletContextHandler</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletContextHandler</span><span class="o">(</span><span class="n">ServletContextHandler</span>
+        <span class="o">.</span><span class="na">NO_SESSIONS</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">setContextPath</span><span class="o">(</span><span class="s">"/test"</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="n">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="n">GetName</span><span class="o">(</span><span class="n">gson</span><span class="o">)),</span> <span class="s">"/GetName/*"</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="n">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="n">SaveName</span><span class="o">()),</span> <span class="s">"/SaveName/*"</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">setHandler</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">setStopAtShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="o">}</span>
+ 
+<span class="o">}</span></code></pre></figure>
+
+<p>By using context.addServlet() method you can add servlets easily.addServlet() takes two parameters and the first one is the class name that will be called when this servlet called and the second one is the name how you will call it.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">context</span><span class="o">.</span><span class="na">addServlet</span><span class="o">(</span><span class="k">new</span> <span class="n">ServletHolder</span><span class="o">(</span><span class="k">new</span> <span class="n">SaveName</span><span class="o">()),</span> <span class="s">"/SaveName/*"</span><span class="o">);</span></code></pre></figure>
+
+<p>will be called as localhost:portNumber/test/SaveName 
+GET methods are defined using doGet and POST methods are defined with doPost.SaveName and GetName classes are</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+ 
+ 
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+ 
+<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"serial"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SaveName</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+ 
+    <span class="kd">public</span> <span class="nf">SaveName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span>
+                                             <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
-            
-            <span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="na">preparedStmt</span><span class="o">(</span><span class="s">"INSERT INTO local_stat VALUES (?,?,?,?,?,?,?,?,?)"</span><span class="o">);</span>
-       
-            <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">9</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">addBatch</span><span class="o">();</span>
-            <span class="o">}</span>
-            <span class="n">stmt</span><span class="o">.</span><span class="na">executeBatch</span><span class="o">();</span> 
-            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="kd">final</span> <span class="kt">long</span> <span class="n">timeStamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"name"</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">surName</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"surName"</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"name:"</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s">" surname:"</span><span class="o">+</span><span class="n">surName</span><span class="o">);</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_OK</span><span class="o">);</span>
+ 
         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Cannot add stat data"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_INTERNAL_SERVER_ERROR</span><span class="o">);</span>
+ 
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">"text/html;charset=UTF-8"</span><span class="o">);</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">""</span><span class="o">);</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
         <span class="o">}</span>
-        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
-    <span class="o">}</span></code></pre></figure>
+    <span class="o">}</span>
+ 
+<span class="o">}</span></code></pre></figure>
+
+<p>And the get method we will use:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+ 
+<span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.google.gson.JsonObject</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+ 
+<span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"serial"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GetName</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+ 
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span><span class="o">;</span>
+ 
+    <span class="kd">public</span> <span class="nf">GetTeamDictionary</span><span class="o">(</span><span class="n">Gson</span> <span class="n">gson</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">gson</span> <span class="o">=</span> <span class="n">gson</span><span class="o">;</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> 
+                                            <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">output</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="n">JsonObject</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JsonObject</span><span class="o">();</span>
+            
+            <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"jetty"</span><span class="o">);</span>
+            <span class="n">retVal</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"surname"</span><span class="o">,</span> <span class="s">"is awasome"</span><span class="o">);</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">retVal</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_OK</span><span class="o">);</span>
+ 
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_INTERNAL_SERVER_ERROR</span><span class="o">);</span>
+ 
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">"text/html;charset=UTF-8"</span><span class="o">);</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="n">output</span><span class="o">);</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+ 
+<span class="o">}</span></code></pre></figure>
+
+<p>It’s all that simple and now you only need to start to jetty server from your main class.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">msd</span><span class="o">.</span><span class="na">jetty</span><span class="o">;</span>
+ 
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
+ 
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="n">Jetty</span> <span class="n">jetty</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jetty</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
+            <span class="n">jetty</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">500</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="kc">false</span> <span class="o">==</span> <span class="n">jetty</span><span class="o">.</span><span class="na">isStarted</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="o">(</span><span class="s">"Cannot start jetty server"</span><span class="o">);</span>
+            <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When your application is running you can call localhost:8080/test/GetName and it will return to you a json object like this</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jetty"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"surname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"is awesome"</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>You can use HTTP:POST to send data to server by using localhost:8080/test/SaveName and your post parameters should be named as “name” and “surName”.It is the simplest thing you can do with jetty embedded server.I use it to get data from database using parameters and posting data into database and it’s really fast and lightweight which makes it really feasible.</p>
 
 
   </article>
@@ -173,7 +386,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

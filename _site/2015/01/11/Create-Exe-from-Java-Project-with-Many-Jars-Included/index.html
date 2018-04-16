@@ -103,8 +103,8 @@ Open build.xml and add these target code before the &lt;/project&gt; closing. Yo
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4jexe.dir"</span> <span class="na">location=</span><span class="s">"/home/mstf/Downloads/launch4j"</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">"launch4j"</span>
              <span class="na">classname=</span><span class="s">"net.sf.launch4j.ant.Launch4jTask"</span>
-             <span class="na">classpath=</span><span class="s">"${launch4jexe.dir}/launch4j.jar</span>
-            <span class="err">:${launch4jexe.dir}/lib/xstream.jar"</span> <span class="nt">/&gt;</span>
+             <span class="na">classpath=</span><span class="s">"${launch4jexe.dir}/launch4j.jar
+            :${launch4jexe.dir}/lib/xstream.jar"</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.jar.name"</span> <span class="na">value=</span><span class="s">"YourOneJarName"</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.dir"</span> <span class="na">value=</span><span class="s">"exe"</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.jar"</span> <span class="na">value=</span><span class="s">"${launch4j.dir}/${launch4j.jar.name}.jar"</span><span class="nt">/&gt;</span>
@@ -131,7 +131,7 @@ Open build.xml and add these target code before the &lt;/project&gt; closing. Yo
 
 <p>Compile output will be like this  and if there is no error you can get your exe under exe folder.</p>
 
-<figure class="highlight"><pre><code class="language-console" data-lang="console">package-for-launch4j:
+<figure class="highlight"><pre><code class="language-console" data-lang="console"><span class="go">package-for-launch4j:
 Packaging MyProject into a single JAR at exe/MyAppJarName.jar
 Deleting directory /home/mstf/NetBeansProjects/MyProject/exe
 Created dir: /home/mstf/NetBeansProjects/MyProject/exe
@@ -142,7 +142,7 @@ Compiling resources
 Linking
 Wrapping
 Successfully created /home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe
-BUILD SUCCESSFUL (total time: 20 seconds)</code></pre></figure>
+BUILD SUCCESSFUL (total time: 20 seconds)</span></code></pre></figure>
 
 
 </article>
@@ -152,27 +152,27 @@ BUILD SUCCESSFUL (total time: 20 seconds)</code></pre></figure>
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
             Rest API Example with Java Jersey and Tomcat 
             <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -200,7 +200,7 @@ BUILD SUCCESSFUL (total time: 20 seconds)</code></pre></figure>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

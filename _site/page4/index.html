@@ -63,95 +63,158 @@
   
   <article class="post">
     <h1 class="post-title">
-      <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-        Create Exe from a Java Project with Many Jars Included
+      <a href="/2014/12/11/Java-Sqlite-Fast-Insert-with-PreparedStatement/">
+        Java Sqlite Fast Insert with PreparedStatement
       </a>
     </h1>
 
-    <time datetime="2015-01-11T20:46:32+01:00" class="post-date">11 Jan 2015</time>
+    <time datetime="2014-12-11T20:00:00+01:00" class="post-date">11 Dec 2014</time>
 
-    <p>With 3  steps you can easily create an exe file from your project that may have many included jar libraries (mine had 14 jars). I used Netbeans 8.0.2, lauch4j 3.16, and Linux Netrunner 14 for this process.</p>
+    <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
 
-<p>1) Create your xml file with launch4j: It is required on the build level and will be done only one time. Simple details will be enough like min jre level and name etc.Here what I use as xml file for launch4j.It just takes icon file and min jre.</p>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="o">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;launch4jConfig&gt;</span>
-  <span class="nt">&lt;dontWrapJar&gt;</span>false<span class="nt">&lt;/dontWrapJar&gt;</span>
-  <span class="nt">&lt;headerType&gt;</span>gui<span class="nt">&lt;/headerType&gt;</span>
-  <span class="nt">&lt;jar&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyAppJarName.jar<span class="nt">&lt;/jar&gt;</span>
-  <span class="nt">&lt;outfile&gt;</span>/home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe<span class="nt">&lt;/outfile&gt;</span>
-  <span class="nt">&lt;errTitle&gt;&lt;/errTitle&gt;</span>
-  <span class="nt">&lt;cmdLine&gt;&lt;/cmdLine&gt;</span>
-  <span class="nt">&lt;chdir&gt;</span>.<span class="nt">&lt;/chdir&gt;</span>
-  <span class="nt">&lt;priority&gt;</span>normal<span class="nt">&lt;/priority&gt;</span>
-  <span class="nt">&lt;downloadUrl&gt;</span>http://java.com/download<span class="nt">&lt;/downloadUrl&gt;</span>
-  <span class="nt">&lt;supportUrl&gt;&lt;/supportUrl&gt;</span>
-  <span class="nt">&lt;stayAlive&gt;</span>false<span class="nt">&lt;/stayAlive&gt;</span>
-  <span class="nt">&lt;restartOnCrash&gt;</span>false<span class="nt">&lt;/restartOnCrash&gt;</span>
-  <span class="nt">&lt;manifest&gt;&lt;/manifest&gt;</span>
-  <span class="nt">&lt;icon&gt;</span>/home/mstf/Pictures/S.ico<span class="nt">&lt;/icon&gt;</span>
-  <span class="nt">&lt;jre&gt;</span>
-    <span class="nt">&lt;path&gt;&lt;/path&gt;</span>
-    <span class="nt">&lt;bundledJre64Bit&gt;</span>false<span class="nt">&lt;/bundledJre64Bit&gt;</span>
-    <span class="nt">&lt;bundledJreAsFallback&gt;</span>false<span class="nt">&lt;/bundledJreAsFallback&gt;</span>
-    <span class="nt">&lt;minVersion&gt;</span>1.6.0<span class="nt">&lt;/minVersion&gt;</span>
-    <span class="nt">&lt;maxVersion&gt;&lt;/maxVersion&gt;</span>
-    <span class="nt">&lt;jdkPreference&gt;</span>preferJre<span class="nt">&lt;/jdkPreference&gt;</span>
-    <span class="nt">&lt;runtimeBits&gt;</span>64/32<span class="nt">&lt;/runtimeBits&gt;</span>
-  <span class="nt">&lt;/jre&gt;</span>
-<span class="nt">&lt;/launch4jConfig&gt;</span></code></pre></figure>
+       
+        <span class="k">try</span> <span class="o">{</span> 
 
-<p>Create a folder and name it misc under your project folder (Mine is /home/mstf/NetbeansProjects/MyProject/misc).Your one jar file will be exported to exe folder ( which you don’t have to create since it will be created automatically) and put this temporary xml to misc folder with the name l4j-myapp.xml</p>
+            <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
 
-<p>2) Add a new build target to your build.xml to run Launch4j automatically.It can found under your project on the Files tab.<br />
-<img src="/assets/img/l4j_build_xml.png" alt="My helpful screenshot" /><br />
-Open build.xml and add these target code before the &lt;/project&gt; closing. You need to update your lauch4j folder by using location after the &lt;property name=”launch4jexe.dir”  tag. Also you can give any name to your one jar output file but it is not important.Save the build.xml file and close it.</p>
+                <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span> 
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"TIMESTAMP"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"HALF"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"MIN"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"SEC"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"OBJECT_TYPE"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"OBJECT_ID"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span> 
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"X_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Y_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+                <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Z_POS"</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
+                <span class="n">trans</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">SQL</span><span class="o">.</span><span class="na">TABLE_STAT</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"> <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">"package-for-launch4j"</span> <span class="na">depends=</span><span class="s">"clean,compile,jar"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4jexe.dir"</span> <span class="na">location=</span><span class="s">"/home/mstf/Downloads/launch4j"</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;taskdef</span> <span class="na">name=</span><span class="s">"launch4j"</span>
-             <span class="na">classname=</span><span class="s">"net.sf.launch4j.ant.Launch4jTask"</span>
-             <span class="na">classpath=</span><span class="s">"${launch4jexe.dir}/launch4j.jar</span>
-            <span class="err">:${launch4jexe.dir}/lib/xstream.jar"</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.jar.name"</span> <span class="na">value=</span><span class="s">"YourOneJarName"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.dir"</span> <span class="na">value=</span><span class="s">"exe"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"launch4j.jar"</span> <span class="na">value=</span><span class="s">"${launch4j.dir}/${launch4j.jar.name}.jar"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;echo</span> <span class="na">message=</span><span class="s">"Packaging ${application.title} into a single JAR at ${launch4j.jar}"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;delete</span> <span class="na">dir=</span><span class="s">"${launch4j.dir}"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;mkdir</span> <span class="na">dir=</span><span class="s">"${launch4j.dir}"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;jar</span> <span class="na">destfile=</span><span class="s">"${launch4j.dir}/temp_final.jar"</span> <span class="na">filesetmanifest=</span><span class="s">"skip"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">"dist"</span> <span class="na">includes=</span><span class="s">"*.jar"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;zipgroupfileset</span> <span class="na">dir=</span><span class="s">"dist/lib"</span> <span class="na">includes=</span><span class="s">"*.jar"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;manifest&gt;</span>
-        <span class="nt">&lt;attribute</span> <span class="na">name=</span><span class="s">"Main-Class"</span> <span class="na">value=</span><span class="s">"${main.class}"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/manifest&gt;</span>
-    <span class="nt">&lt;/jar&gt;</span>
-    <span class="nt">&lt;zip</span> <span class="na">destfile=</span><span class="s">"${launch4j.jar}"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;zipfileset</span> <span class="na">src=</span><span class="s">"${launch4j.dir}/temp_final.jar"</span>
-            <span class="na">excludes=</span><span class="s">"META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;/zip&gt;</span>
-    <span class="nt">&lt;delete</span> <span class="na">file=</span><span class="s">"${launch4j.dir}/temp_final.jar"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;launch4j</span> <span class="na">configFile=</span><span class="s">"misc/l4j-myapp.xml"</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/target&gt;</span></code></pre></figure>
+            <span class="o">}</span>
 
-<p>3) The last step is creating your exe. Now again using the same Files tab click right on the build.xml and click on Run Target -&gt; Other Targets -&gt; package-for-lauch4j <br /><br />
-<img src="/assets/img/l4j_build_target.png" alt="My helpful screenshot" /><br /></p>
+            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Cannot add  stat data"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
+    <span class="o">}</span> </code></pre></figure>
 
-<p>Compile output will be like this  and if there is no error you can get your exe under exe folder.</p>
+<p>Doing the same insert with prepared statement.</p>
 
-<figure class="highlight"><pre><code class="language-console" data-lang="console">package-for-launch4j:
-Packaging MyProject into a single JAR at exe/MyAppJarName.jar
-Deleting directory /home/mstf/NetBeansProjects/MyProject/exe
-Created dir: /home/mstf/NetBeansProjects/MyProject/exe
-Building jar: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar
-Building zip: /home/mstf/NetBeansProjects/SentioSync/exe/MyAppJarName.jar
-Deleting: /home/mstf/NetBeansProjects/MyProject/exe/temp_final.jar
-Compiling resources
-Linking
-Wrapping
-Successfully created /home/mstf/NetBeansProjects/MyProject/exe/MyProject.exe
-BUILD SUCCESSFUL (total time: 20 seconds)</code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"> 
+<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+        <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
+        <span class="k">try</span> <span class="o">{</span>
+            
+            <span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="n">trans</span><span class="o">.</span><span class="na">preparedStmt</span><span class="o">(</span><span class="s">"INSERT INTO local_stat VALUES (?,?,?,?,?,?,?,?,?)"</span><span class="o">);</span>
+       
+            <span class="k">for</span> <span class="o">(</span><span class="n">RawDataObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">timestamp</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">half</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">min</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">sec</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">objectId</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">8</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">9</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">z</span><span class="o">);</span>
+                <span class="n">stmt</span><span class="o">.</span><span class="na">addBatch</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="n">stmt</span><span class="o">.</span><span class="na">executeBatch</span><span class="o">();</span> 
+            <span class="n">retval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Cannot add stat data"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">trans</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">retval</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></figure>
+
+
+  </article>
+  
+  <article class="post">
+    <h1 class="post-title">
+      <a href="/2014/03/11/How-to-Check-If-a-String-is-Integer/">
+        How to Check If a String is Integer
+      </a>
+    </h1>
+
+    <time datetime="2014-03-11T20:46:32+01:00" class="post-date">11 Mar 2014</time>
+
+    <p>There are a few ways to check if a string is integer or not.Here I will try to implement some of these methods.
+First one is using regular expressions and this is the one I use mostly.This matches as <br /> 
+-?     –&gt; negative sign, could have none or one <br />
+\d+   –&gt; one or more digits</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
+  <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="s">"-?\\d+"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Using parseInt is possible as well.In this way you should try to parse a String to integer and catch if any exceptions occur.
+If your code creats an NumberFormatException then you should return false.We don’t care about other exceptions here.If there is no exception that means it went okey and your string is indeed an integer.
+Also please be aware that we used parseInt() and not the Integer.valueOf() method.You can check the differences here.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NumberFormatException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Another way is more complex  but much faster than Integer.parseInt() or regex method.It’s better to check which works best for you.
+Here some of you may ask why not use java.lang.Character.isDigit() and check the char values itself.isDigit returns true for things like Devanagari digits. While Integer.parseInt() handles these as digits, it may not be what’s expected for most use cases</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Jonas</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'-'</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">for</span> <span class="o">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+		<span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="sc">'0'</span> <span class="o">||</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="sc">'9'</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The last one is using StringUtils or NumberUtils which is not a good idea but it works.You can check the detailed page <a href="http://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isNumeric%28java.lang.CharSequence%29">here</a>.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str</span><span class="o">);</span></code></pre></figure>
+
+<p>Which one is the best to use?If you need performance you should use the Jonas one.It may look unnecessary but it is really fast.
+Here some test results with these methods.Running many times these methods shows that it may differ a lot.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ByException</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<span class="n">ByException</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">465</span>
+
+<span class="n">ByRegex</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">45</span>
+<span class="n">ByRegex</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">26</span>
+
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">integer</span> <span class="nl">data:</span> <span class="mi">8</span>
+<span class="n">ByJonas</span> <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="n">integer</span> <span class="nl">data:</span> <span class="mi">2</span></code></pre></figure>
 
   </article>
   
@@ -188,7 +251,7 @@ BUILD SUCCESSFUL (total time: 20 seconds)</code></pre></figure>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

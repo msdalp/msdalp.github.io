@@ -79,7 +79,7 @@ we will send represented as bytes.It may throw SocketException when you try to c
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSend</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
         <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
             <span class="k">try</span> <span class="o">{</span>
                 <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
                 <span class="n">InetAddress</span> <span class="n">serverAddr</span> <span class="o">=</span> <span class="n">InetAddress</span><span class="o">.</span><span class="na">getByName</span><span class="o">(</span><span class="n">ip</span><span class="o">);</span>
@@ -100,7 +100,7 @@ is not open on the main screen.The data size will be defined first as byte here 
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
   <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
   <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
 	<span class="k">while</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
 	  <span class="k">try</span> <span class="o">{</span>
@@ -125,7 +125,7 @@ You should catch the exception which is SocketTimeoutException if there is no an
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientSendAndListen</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
         <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
             <span class="kt">boolean</span> <span class="n">run</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
             <span class="k">try</span> <span class="o">{</span>
                 <span class="n">DatagramSocket</span> <span class="n">udpSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatagramSocket</span><span class="o">(</span><span class="n">portVal</span><span class="o">);</span>
@@ -178,7 +178,7 @@ You should catch the exception which is SocketTimeoutException if there is no an
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">port</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="n">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
         <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
         <span class="n">udpConnect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">ClientSendAndListen</span><span class="o">()).</span><span class="na">start</span><span class="o">();</span>
@@ -193,27 +193,27 @@ You should catch the exception which is SocketTimeoutException if there is no an
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
             Rest API Example with Java Jersey and Tomcat 
             <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -241,7 +241,7 @@ You should catch the exception which is SocketTimeoutException if there is no an
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

@@ -166,7 +166,7 @@
  */</span>
 <span class="nd">@ApplicationPath</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestApp</span> <span class="kd">extends</span> <span class="n">ResourceConfig</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="n">RestApp</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">RestApp</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">packages</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span>
             <span class="s">"com.jersey.test.data"</span>
         <span class="o">});</span>
@@ -205,10 +205,10 @@
     <span class="kd">public</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
     <span class="kd">public</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">User</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">()</span> <span class="o">{</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">User</span><span class="o">(</span><span class="kt">long</span> <span class="n">id</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">(</span><span class="kt">long</span> <span class="n">id</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
@@ -263,7 +263,7 @@
     <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
     <span class="nd">@Path</span><span class="o">(</span><span class="s">"{userId}"</span><span class="o">)</span>
     <span class="nd">@GET</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="n">processGet</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="n">Long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processGet</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="n">Long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">userId</span><span class="o">))</span> <span class="o">{</span>
             <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
                     <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">userId</span><span class="o">)).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
@@ -276,7 +276,7 @@
     <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
     <span class="nd">@Path</span><span class="o">(</span><span class="s">"{userId}"</span><span class="o">)</span>
     <span class="nd">@DELETE</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="n">processDel</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processDel</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"userId"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">userId</span><span class="o">))</span> <span class="o">{</span>
             <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
             <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
@@ -291,7 +291,7 @@
     <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
     <span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
     <span class="nd">@POST</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="n">processAdd</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processAdd</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
                 <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">values</span><span class="o">()).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
@@ -301,7 +301,7 @@
     <span class="nd">@Produces</span><span class="o">({</span><span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">})</span>
     <span class="nd">@Path</span><span class="o">(</span><span class="s">""</span><span class="o">)</span>
     <span class="nd">@PUT</span>
-    <span class="kd">public</span> <span class="n">Response</span> <span class="n">processUpdate</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">processUpdate</span><span class="o">(</span><span class="n">User</span> <span class="n">user</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">OK</span><span class="o">)</span>
                 <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">Data</span><span class="o">.</span><span class="na">users</span><span class="o">.</span><span class="na">values</span><span class="o">()).</span><span class="na">type</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
@@ -372,27 +372,27 @@
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
             Understanding innodb_buffer_pool_size
             <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-            Create Exe from a Java Project with Many Jars Included
-            <small><time datetime="2015-01-11T20:46:32+01:00">11 Jan 2015</time></small>
           </a>
         </h3>
       </li>
@@ -420,7 +420,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

@@ -66,12 +66,12 @@
 First step is move 8080 to port 80.Find your server.xml file for Tomcat. It is probably under /etc/tomcat/server.xml but still 
 you can find it by using: <br /></p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>locate server.xml
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>locate server.xml
 /etc/tomcat7/server.xml</code></pre></figure>
 
 <p>Open server.xml file with an avaliable text editor (I will use nano).</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo nano /etc/tomcat7/server.xml</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">sudo </span>nano /etc/tomcat7/server.xml</code></pre></figure>
 
 <p>Find the part where port is defined as 8080 and change it to 80.</p>
 
@@ -84,7 +84,7 @@ you can find it by using: <br /></p>
 Tomcat under 1023 ports. So the next step is enable authbind for tomcat. If you run Tomcat on port numbers that are all higher than 1023, then you
  do not need authbind.  It is used for binding Tomcat to lower port numbers. Open /etc/default/tomcat with your text editor.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo nano /etc/default/tomcat7</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">sudo </span>nano /etc/default/tomcat7</code></pre></figure>
 
 <p>Switch authbind=no to authbind=yes which is located at the end of file.</p>
 
@@ -95,7 +95,7 @@ AUTHBIND=yes</code></pre></figure>
 <p>The last step is disabling IPv6. You can see the warning just before authbind line saying that “NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.”.
 Open /etc/sysctl.conf with your text editor.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo nano /etc/sysctl.conf</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">sudo </span>nano /etc/sysctl.conf</code></pre></figure>
 
 <p>And add these three lines to end of the file.</p>
 
@@ -105,7 +105,7 @@ net.ipv6.conf.lo.disable_ipv6 = 1</code></pre></figure>
 
 <p>Save the file and close it. To make sure IPv6 is disabled run</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">sudo sysctl -p</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">sudo </span>sysctl <span class="nt">-p</span></code></pre></figure>
 
 <p>and you will see</p>
 
@@ -115,12 +115,12 @@ net.ipv6.conf.lo.disable_ipv6 <span class="o">=</span> 1</code></pre></figure>
 
 <p>After that, if you run:</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>cat /proc/sys/net/ipv6/conf/all/disable_ipv6</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cat</span> /proc/sys/net/ipv6/conf/all/disable_ipv6</code></pre></figure>
 
 <p>It will report: 1 <br />
 Now it is ready to run on port 80. Start your tomcat with</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>sudo service tomcat7 start</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">sudo </span>service tomcat7 start</code></pre></figure>
 
 <p>If you look at your catalina.out logs it will be written in there as</p>
 
@@ -138,27 +138,27 @@ example.com/Services/</p>
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
             Rest API Example with Java Jersey and Tomcat 
             <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/01/11/Create-Exe-from-Java-Project-with-Many-Jars-Included/">
-            Create Exe from a Java Project with Many Jars Included
-            <small><time datetime="2015-01-11T20:46:32+01:00">11 Jan 2015</time></small>
           </a>
         </h3>
       </li>
@@ -186,7 +186,7 @@ example.com/Services/</p>
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

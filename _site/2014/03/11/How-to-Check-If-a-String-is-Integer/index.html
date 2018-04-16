@@ -67,7 +67,7 @@ First one is using regular expressions and this is the one I use mostly.This mat
 -?     –&gt; negative sign, could have none or one <br />
 \d+   –&gt; one or more digits</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">){</span>
   <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="s">"-?\\d+"</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -75,7 +75,7 @@ First one is using regular expressions and this is the one I use mostly.This mat
 If your code creats an NumberFormatException then you should return false.We don’t care about other exceptions here.If there is no exception that means it went okey and your string is indeed an integer.
 Also please be aware that we used parseInt() and not the Integer.valueOf() method.You can check the differences here.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">try</span> <span class="o">{</span>
         <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
         <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
@@ -89,7 +89,7 @@ Also please be aware that we used parseInt() and not the Integer.valueOf() metho
 Here some of you may ask why not use java.lang.Character.isDigit() and check the char values itself.isDigit returns true for things like Devanagari digits. While Integer.parseInt() handles these as digits, it may not be what’s expected for most use cases</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">//Jonas</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="p">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isInteger</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
 	<span class="k">if</span> <span class="o">(</span><span class="n">str</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 	<span class="o">}</span>
@@ -136,27 +136,27 @@ Here some test results with these methods.Running many times these methods shows
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
             Rest API Example with Java Jersey and Tomcat 
             <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -184,7 +184,7 @@ Here some test results with these methods.Running many times these methods shows
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

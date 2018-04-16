@@ -64,7 +64,7 @@
   <time datetime="2014-12-11T20:00:00+01:00" class="page-date">11 Dec 2014</time>
   <p>In java you can use two ways of inserting data into your table. First one is using classical transactions and the second one is prepared statements.</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="p">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">insertTfStats</span><span class="o">(</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
@@ -99,7 +99,7 @@
 <p>Doing the same insert with prepared statement.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"> 
-<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">InsertTfStats</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RawDataObject</span><span class="o">&gt;</span> <span class="n">playerObj</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">final</span> <span class="n">Transaction</span> <span class="n">trans</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
         <span class="kt">boolean</span> <span class="n">retval</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
@@ -137,27 +137,27 @@
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
             Rest API Example with Java Jersey and Tomcat 
             <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -185,7 +185,7 @@
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>

@@ -79,7 +79,7 @@ First create a class that extends Server and by giving port to its constructor w
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GsonBuilder</span><span class="o">().</span>
     <span class="n">setDateFormat</span><span class="o">(</span><span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">).</span><span class="na">create</span><span class="o">();</span>
  
-    <span class="kd">public</span> <span class="n">Jetty</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Jetty</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">port</span><span class="o">);</span>
  
         <span class="n">ServletContextHandler</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletContextHandler</span><span class="o">(</span><span class="n">ServletContextHandler</span>
@@ -112,11 +112,11 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
 <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"serial"</span><span class="o">)</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SaveName</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
  
-    <span class="kd">public</span> <span class="n">SaveName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SaveName</span><span class="o">()</span> <span class="o">{</span>
     <span class="o">}</span>
  
     <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="n">doPost</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span>
                                              <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="kd">final</span> <span class="kt">long</span> <span class="n">timeStamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
@@ -154,12 +154,12 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
  
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">Gson</span> <span class="n">gson</span><span class="o">;</span>
  
-    <span class="kd">public</span> <span class="n">GetTeamDictionary</span><span class="o">(</span><span class="n">Gson</span> <span class="n">gson</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">GetTeamDictionary</span><span class="o">(</span><span class="n">Gson</span> <span class="n">gson</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">gson</span> <span class="o">=</span> <span class="n">gson</span><span class="o">;</span>
     <span class="o">}</span>
  
     <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="n">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> 
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> 
                                             <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
         <span class="n">String</span> <span class="n">output</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
@@ -188,12 +188,12 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
  
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
  
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
             <span class="kd">final</span> <span class="n">Jetty</span> <span class="n">jetty</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Jetty</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
             <span class="n">jetty</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
             <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">500</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="kc">false</span> <span class="o">==</span> <span class="n">jetty</span><span class="o">.</span><span class="na">isStarted</span><span class="o">())</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="n">Exception</span><span class="o">(</span><span class="s">"Cannot start jetty server"</span><span class="o">);</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="o">(</span><span class="s">"Cannot start jetty server"</span><span class="o">);</span>
             <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -215,27 +215,27 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
     
       <li>
         <h3>
+          <a href="/2018/04/07/Java-Jersey-2.26-JDBI/">
+            Java Jersey Database with Jersey 2.26 and JDBI
+            <small><time datetime="2018-04-07T23:32:52+02:00">07 Apr 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2018/03/28/Java-Jersey-2.26-Tutorial/">
+            Java Jersey Hello World with Jersey 2.26
+            <small><time datetime="2018-03-28T12:03:21+02:00">28 Mar 2018</time></small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
           <a href="/2016/01/03/Java-Jersey-Rest-Hello/">
             Rest API Example with Java Jersey and Tomcat 
             <small><time datetime="2016-01-03T11:43:32+01:00">03 Jan 2016</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/06/27/Understanding-innodb_buffer_pool_size/">
-            Understanding innodb_buffer_pool_size
-            <small><time datetime="2015-06-27T23:54:22+02:00">27 Jun 2015</time></small>
-          </a>
-        </h3>
-      </li>
-    
-      <li>
-        <h3>
-          <a href="/2015/03/01/Tomcat-7-Run-on-Port-80/">
-            Run Tomcat7 on Port 80
-            <small><time datetime="2015-03-01T20:46:32+01:00">01 Mar 2015</time></small>
           </a>
         </h3>
       </li>
@@ -263,7 +263,7 @@ GET methods are defined using doGet and POST methods are defined with doPost.Sav
 
       <footer class="footer">
         <small>
-          &copy; <time datetime="2017-04-14T15:04:36+02:00">2017</time>. All rights reserved.
+          &copy; <time datetime="2018-04-16T19:30:33+02:00">2018</time>. All rights reserved.
         </small>
       </footer>
     </div>
