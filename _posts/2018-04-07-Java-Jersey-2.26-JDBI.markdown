@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Java Jersey Database Injection with Jersey 2.26 and JDBI"
+title:  "Java Jersey Database with Jersey 2.26 and JDBI"
 date:   2018-04-07 21:32:52
 categories:
 ---
@@ -36,7 +36,7 @@ public class MyListener implements ServletContextListener {
 {% endhighlight %}
  
 `ServletContextListener` has two methods and one is contextInitialized, the other is contextDestroyed. You can check the logs to see where these methods run. Also after defining the custom listener we need to add it to `web.xml`.
-```xml 
+{% highlight xml %}
 <listener>
     <description>Context Listener</description>
     <listener-class>com.blog.api.MyListener</listener-class>
