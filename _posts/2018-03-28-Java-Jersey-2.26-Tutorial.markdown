@@ -38,6 +38,7 @@ Packaging will be war since we will be using Tomcat to run it and can be added a
 
 The main difference is the dependencies we use for jersey. After version 2.26 you need to add common and hk2 to your project to have a minimum running Jersey app. 
 
+
 ```xml
 <dependencies>
     <dependency>
