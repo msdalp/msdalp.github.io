@@ -10,17 +10,18 @@ How does this really work? We don't have a database connection at this stage and
 
 I will be using a `ServletContextListener` for the web app which enables us to have methods on context initialized and destroyed. It is basically gives access to the start and end of your application. Also we could be using `@PostConstruct` and `@PreDestroy` for `RestApplication` class and as expected it will run after app is initialized and before getting destroyed. 
 
-```xml
+{% highlight xml %}
 <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>
     <version>3.1.0</version>
     <scope>provided</scope>
 </dependency>
-```
+{% endhighlight %}
+
 When you try to implement ServletContextListener you will notice it is not in our project scope yet. Add `javax.servlet-api` to your pom to be able to use `ContextListener` properly. Next will be defining a custom listener and adding it to our `web.xml` file. 
 
-```java
+{% highlight java %}
 public class MyListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -32,17 +33,19 @@ public class MyListener implements ServletContextListener {
         System.out.println("Context dying");
     }
 }
-``` 
+{% endhighlight %}
+ 
 `ServletContextListener` has two methods and one is contextInitialized, the other is contextDestroyed. You can check the logs to see where these methods run. Also after defining the custom listener we need to add it to `web.xml`.
 ```xml 
 <listener>
     <description>Context Listener</description>
     <listener-class>com.blog.api.MyListener</listener-class>
 </listener>
-``` 
+{% endhighlight %}
+ 
 You web.xml file only had a simple webapp definition before and now it includes the context listener. 
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -55,12 +58,13 @@ You web.xml file only had a simple webapp definition before and now it includes 
         <listener-class>com.blog.api.MyListener</listener-class>
     </listener>
 </web-app>
-```
+{% endhighlight %}
+
 You can try running the app and see where these methods print the messages we put for now temporarily. 
 
 We can't use a single db connection for a real application. It would require to have a proper connection pool which we will use HikariCP for that. Details for HikariCP can be found at [https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP). Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
 
-```xml
+{% highlight xml %}
 <dependency>
     <groupId>org.jdbi</groupId>
     <artifactId>jdbi3-core</artifactId>
@@ -77,11 +81,11 @@ We can't use a single db connection for a real application. It would require to 
     <artifactId>HikariCP</artifactId>
     <version>3.0.0</version>
 </dependency> 
-```
+{% endhighlight %}
 
 Now I want to have a database manager class for just storing the `HikariDataSource` and `Jdbi` object for database access. 
 
-```java
+{% highlight java %}
 public class DBIManager {
     private static DBIManager instance;
 
@@ -115,10 +119,11 @@ public class DBIManager {
         return instance.jdbi;
     }
 }
-```
+{% endhighlight %}
+
 With this manager class, we will start the connection `contextInitialized` and close it with `contextDestroyed`, and access to database connection with `getJdbi()` method. The connection information will be stored in context xml or you can just set in start method with `HikariConfig` object. Finally we can update `context` methods to start and stop database connection pool.
 
-```java
+{% highlight java %}
 public class MyListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -130,11 +135,11 @@ public class MyListener implements ServletContextListener {
         DBIManager.shutdown();
     }
 }
-```
+{% endhighlight %}
 
 As you might notice I get the connection details from the context lookup but haven't done anything about it. First create a folder for the `context.xml` just next to `WEB-INF` as `META-INF` and put the `context.xml` in it. 
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <Context path="/">
 
@@ -154,9 +159,10 @@ As you might notice I get the connection details from the context lookup but hav
               username="root"
               minimumIdle="5" maximumPoolSize="20" connectionTimeout="20000" maxLifetime="1800000"/>
 </Context>
-``` 
+{% endhighlight %}
+
 These are specific HikariConfig details which you can update as you want but it should be enough for now to run our application. Also need to define this context in `web.xml`. After adding it to `web.xml` it should be something like below.
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -177,7 +183,8 @@ These are specific HikariConfig details which you can update as you want but it 
     </resource-ref>
 
 </web-app>
-``` 
+{% endhighlight %}
+
 If you run without a proper database connection you will get the error `Caused by: java.net.ConnectException: Connection refused (Connection refused)`. 
 
 I will run mysql on my local with docker. Also my default database name will be `jersey` so make sure you created a schema as `create database jersey;`. 
@@ -185,14 +192,15 @@ I will run mysql on my local with docker. Also my default database name will be 
 `docker run -d --name=jersey-mysql -e MYSQL_ROOT_PASSWORD=mypassword -v mysql:/var/lib/mysql mysql` 
 
 Create a db package under `com.blog.api` and have two classes in it as `User` and `UserDao`. `User` is our resource model and make sure you implement empty constructor and getters-setters. Otherwise JDBI will fail to initialize the model while mapping it. 
-```java
+{% highlight java %}
 public class User {
     private int id;
     private String name;
 }
-```
+{% endhighlight %}
+
 `UserDao` is the JDBI interface where you just define your application logic. You can read JDBI specific details from [http://jdbi.org](http://jdbi.org). 
-```java
+{% highlight java %}
 public interface UserDao{
 
     @SqlQuery("SELECT * FROM user;")
@@ -203,10 +211,10 @@ public interface UserDao{
     @RegisterBeanMapper(User.class)
     User getUser(@Bind("id") int id );
 }
-```
+{% endhighlight %}
 
 Last thing will be removing the Test resource we had created in previous post and create a `UserResource` class in rest package.
-```java
+{% highlight java %}
 @Path("users")
 public class UserResource {
 
@@ -225,9 +233,10 @@ public class UserResource {
         return Response.ok().entity(DBIManager.getJdbi().onDemand(UserDao.class).getUser(userId)).build();
     }
 }
-```
+{% endhighlight %}
+
 I will implement two rest calls for `User` as get all users and get a specific user. To make sure you have all the data required put the default models as below in the `RestApp` class. It will keep inserting new users as we re-run again but doesn't really matter. You access the JDBI calls `jdbi.onDemand(Dao.class)` and have your method call on it. It will close the connection automatically and will use the pool properly with Hikari. 
-```java
+{% highlight java %}
 @PostConstruct
 public void postCreate(){
     DBIManager.getJdbi().withHandle(handle -> {
@@ -242,21 +251,21 @@ public void postCreate(){
         return null;
     });
 }
-```
+{% endhighlight %}
 
 These should be all we need to have a proper resource call on user table. First try a specific user call as `/users/{userId}` and it should return a single user object.
 
 
 `http://localhost:8080/users/2`
-```json
+{% highlight json %}
 {"id":2,"name":"Repa"}
-```
+{% endhighlight %}
 
 Next you can check all the users with `/users/` call and see the list of users.
 
 `http://localhost:8080/users/`
-```json
+{% highlight json %}
 [{"id":1,"name":"John"},{"id":2,"name":"Repa"},{"id":3,"name":"Smith"}]
-```
+{% endhighlight %}
 
 You can check the project from [https://github.com/msdalp/jersey-jdbi-sample](https://github.com/msdalp/jersey-jdbi-sample). Next I will convert Dao classes to annotation and inject it to resources automatically. 

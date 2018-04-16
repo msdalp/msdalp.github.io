@@ -14,7 +14,7 @@ First start with new maven project and create your pom. It will have nothing spe
 
 ![create project](/assets/img/1_create_project.png)
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -25,21 +25,21 @@ First start with new maven project and create your pom. It will have nothing spe
     <artifactId>blog-jersey</artifactId>
     <version>1.0-SNAPSHOT</version>
 </project>
-```
+{% endhighlight %}
 
 Packaging will be war since we will be using Tomcat to run it and can be added as `<packaging>war</packaging>`. Also add a name for the project as `<name>JerseyBlog</name>`. Also it should better have a proper source encoding which can be added as properties.
 
-```xml
+{% highlight xml %}
 <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey.version>2.26</jersey.version>
 </properties>
-```
+{% endhighlight %}
 
 The main difference is the dependencies we use for jersey. After version 2.26 you need to add common and hk2 to your project to have a minimum running Jersey app. 
 
 
-```xml
+{% highlight xml %}
 <dependencies>
     <dependency>
         <groupId>org.glassfish.jersey.core</groupId>
@@ -62,11 +62,11 @@ The main difference is the dependencies we use for jersey. After version 2.26 yo
         <version>${jersey.version}</version>
     </dependency>
 </dependencies>
-```
+{% endhighlight %}
 
 To build and compile the project we will be using Java 8 and maven war compiler as given below. There is nothing specific about that, it is the default settings when you add war support to your project.
 
-```xml
+{% highlight xml %}
 <build>
     <finalName>JerseyBlog</finalName>
     <plugins>
@@ -88,11 +88,11 @@ To build and compile the project we will be using Java 8 and maven war compiler 
 
     </plugins>
 </build>
-```
+{% endhighlight %}
 
 With the build script I have everything I need for my Jersey project and the final pom file should be something like this. 
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -157,7 +157,7 @@ With the build script I have everything I need for my Jersey project and the fin
         </plugins>
     </build>
 </project>
-```
+{% endhighlight %}
 
 Now lets move on our source code and start with web.xml file. Since this is a web project it will require to have to web.xml under the folder webapp. When you try to run it without web.xml it will give the error it needs that file.
 
@@ -170,7 +170,7 @@ Now lets move on our source code and start with web.xml file. Since this is a we
 We can add `web.xml` file and it will empty for now just with the default web-app definition as given below. 
  
 
-```xml
+{% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -179,26 +179,27 @@ We can add `web.xml` file and it will empty for now just with the default web-ap
          version="3.1"
          id="blog-api">
 </web-app>
-```
+{% endhighlight %}
 
 Finally all the project structure we have to setup is done. It is time to move on Java files and implementing the rest api. If you are not familiar with Jersey it has an `Application` class where you can initialize your application and have all your settings etc in it. We will use `ResourceConfig` which extends this Application class and implement `ServerConfig` methods which enables you to set all server settings easily in one place with ease. These are both in Jersey API and we are not implementing or 
 importing something from other sources. Let's create our app which will be under `com.blog.api` for me as `RestApp.java`.
 
-```java
+{% highlight java %}
 @ApplicationPath("")
 public class RestApp extends ResourceConfig {
     public RestApp(){
         packages("com.blog.api.rest");
     }
 }
-```
+{% endhighlight %}
+
 Here we have a `RestApp` class which extends `ResourceConfig` with `@ApplicationPath("")` annotation. It is obvious that the path you give here will be your top path on the url as `host:/api/...`. To utilize the imported settings from the `ResourceConfig` we just need  the default constructor and can access all these directly which I will not go into details. But as expected `packages("com.blog.api.rest")`  will scan the `"com.blog.api.rest"` folder for the resources and if have any deploy them automatically. 
 
 ![Folder structure](/assets/img/4_source_codes.png)
 
 Let's add a resource that returns a JSON response from an object automatically as in the package above. This will be done with jackson as you can see in your pom file, we added it as a dependency. 
 
-```java
+{% highlight java %}
 @Path("")
 public class Test {
 
@@ -209,15 +210,16 @@ public class Test {
     	return new TestResponse(1);
     }
 }
-```
-```java
+{% endhighlight %}
+
+{% highlight java %}
 public class TestResponse {
     public int value;
     public TestResponse(int value){
         this.value = value;
     }
 }
-```
+{% endhighlight %}
 
 When you add `@Path("")` annotation to the class it will be treated as a resource. However just adding the annotation will give you an error saying `this class doesn't have any jax-rs implementation`. To have that we will add the `getTest()` method which doesn't take any parameters and returns TestResponse. HTTP methods are defined as annotations `@GET`, `@POST`, `@DELETE` etc. The path you defined will be a subpath on the class, meaning if you have `@Path("users")` on class and `@Path("teams")` on the method then you will be accessing it to as `users/teams/`. `@Produces()` defines the return type and you can have multiple return types by just adding it to annotation. 
 
