@@ -144,7 +144,7 @@ DELETE users/{userId} = HTTP 204 delete a specific user
 ```
 
 Check the methods below and read the details through the comments I left on those. 
-{% highlight xml %}
+{% highlight java %}
 @Path("users")
 public class UserResource {
 
@@ -240,6 +240,7 @@ After creating user we have all tools we need to have a proper login method. Now
 Simply check if user input is valid and if not throw error. Later check if user exists and if it is validate password. A `POST` method with consuming user model as json or `form-url-encoded` formatted username and password fields possible. Both works quite well so pick one that you are comfortable with. I will be using JSON consuming one. Again you can go through the comments and understand the logic easily. 
 
 {% highlight java %}
+
 @Path("auth")
 public class AuthResource {
     private static final Random secureRandom = new SecureRandom();
@@ -432,6 +433,7 @@ public Response getUsers(){
 At last I wanted to have a JDBI annotation so we can just inject it by using `@Dao UserDao dao` on methods or constructors rather than bunch of DbiManager etc. every time.
 However Jersey 2.26 broke some api calls and apparently there is no `AbstractValueFactoryProvider` class anymore. Also no clue what is the replacement and can't ask on Github at this stage because project is archived and will be transferred to Eclipse Jakarta.
 
+You can check all codes on [https://github.com/msdalp/jersey-jdbi-sample/tree/auth_filter-dao](https://github.com/msdalp/jersey-jdbi-sample/tree/auth_filter-dao)
 I think I will have one or two more posts about Jersey and it will cover:
 
     * Using Redis injection for token validations and cache
