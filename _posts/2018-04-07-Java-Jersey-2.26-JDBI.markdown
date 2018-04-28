@@ -8,7 +8,7 @@ In the previous blog we just created an empty Jersey project to have a hello wor
 
 How does this really work? We don't have a database connection at this stage and how do we start the db connection with application start and close it when the application is closed? 
 
-I will be using a `ServletContextListener` for the web app which enables us to have methods on context initialized and destroyed. It is basically gives access to the start and end of your application. Also we could be using `@PostConstruct` and `@PreDestroy` for `RestApplication` class and as expected it will run after app is initialized and before getting destroyed. 
+I will be using a `ServletContextListener` for the web app which enables us to have methods on context initialized and destroyed. It is basically gives access to the start and end of your application. Also we could be using `@PostConstruct` and `@PreDestroy` for `RestApplication` class and as expected it will run after app is initialized and before getting destroyed. Additionally if your app is not deployed as war but a jar then you can start your modules at start and close them on `Shutdown Hook` properly. 
 
 {% highlight xml %}
 <dependency>
@@ -19,7 +19,7 @@ I will be using a `ServletContextListener` for the web app which enables us to h
 </dependency>
 {% endhighlight %}
 
-When you try to implement ServletContextListener you will notice it is not in our project scope yet. Add `javax.servlet-api` to your pom to be able to use `ContextListener` properly. Next will be defining a custom listener and adding it to our `web.xml` file. 
+When you try to implement `ServletContextListener` you will notice it is not in our project scope yet. Add `javax.servlet-api` to your pom to be able to use `ContextListener` properly. Next will be defining a custom listener and adding it to our `web.xml` file. 
 
 {% highlight java %}
 public class MyListener implements ServletContextListener {
@@ -43,7 +43,7 @@ public class MyListener implements ServletContextListener {
 </listener>
 {% endhighlight %}
  
-You web.xml file only had a simple webapp definition before and now it includes the context listener. 
+Your web.xml file only had a simple webapp definition before and now it includes the context listener. 
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
@@ -60,9 +60,9 @@ You web.xml file only had a simple webapp definition before and now it includes 
 </web-app>
 {% endhighlight %}
 
-You can try running the app and see where these methods print the messages we put for now temporarily. 
+You can try running the app and see where these methods print out the messages we put for now temporarily. 
 
-We can't use a single db connection for a real application. It would require to have a proper connection pool which we will use HikariCP for that. Details for HikariCP can be found at [https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP). Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
+We can't use a single db connection for a real application. It would require to have a proper connection pool which we will use HikariCP for that. Details for HikariCP can be found at [https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP). It is also possible to use Tomcat Pool, c3p0, or dbcp2 but especially for production hikari has the best implementation with proper Thread safe methods. Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
 
 {% highlight xml %}
 <dependency>
@@ -121,7 +121,7 @@ public class DBIManager {
 }
 {% endhighlight %}
 
-With this manager class, we will start the connection `contextInitialized` and close it with `contextDestroyed`, and access to database connection with `getJdbi()` method. The connection information will be stored in context xml or you can just set in start method with `HikariConfig` object. Finally we can update `context` methods to start and stop database connection pool.
+With this manager class, we will start the connection on `contextInitialized` and close it with `contextDestroyed`, and access to database connection with `getJdbi()` method. The connection information will be stored in context xml or you can just set in start method with `HikariConfig` object. Finally we can update `context` methods to start and stop database connection pool.
 
 {% highlight java %}
 public class MyListener implements ServletContextListener {
@@ -199,7 +199,7 @@ public class User {
 }
 {% endhighlight %}
 
-`UserDao` is the JDBI interface where you just define your application logic. You can read JDBI specific details from [http://jdbi.org](http://jdbi.org). 
+`UserDao` is the JDBI interface where you define your application logic. You can read JDBI specific details from [http://jdbi.org](http://jdbi.org). 
 {% highlight java %}
 public interface UserDao{
 
