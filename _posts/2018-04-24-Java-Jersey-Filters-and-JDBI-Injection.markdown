@@ -239,7 +239,7 @@ It should return a result similar to this and later you can try updating and del
 {% endhighlight %}
 
 After creating user we have all tools we need to have a proper login method. Now create an `AuthResource` class and have a `POST` method for login.
-Simply check if user input is valid and if not throw error. Later check if user exists and if it is validate password. A `POST` method with consuming user model as json or `form-url-encoded` formatted username and password fields possible. Both works quite well so pick one that you are comfortable with. I will be using JSON consuming one. Again you can go through the comments and understand the logic easily. 
+Simply check if user input is valid and if not throw error. Later check if user exists and if it is then validate password. A `POST` method with consuming user model as json or `form-url-encoded` formatted username and password fields are both feasible. Both works quite well so pick one that you are comfortable with. I will be using JSON consuming one. Again you can go through the comments and understand the logic easily. 
 
 {% highlight java %}
 
@@ -281,8 +281,7 @@ public class AuthResource {
 }
 {% endhighlight %}
 
-It is obviously useless right now without a proper filter to check if user has authorization. You can just login and it will return a token but we are using it anywhere. Jersey provides `ContainerRequestFilter` and by implementing this interface you can have a filter method. It enables you to have chance check or validate before processing all request. What we will do is check the `Authorization` header and get token from it. If there is no token or the token we got is invalid and abort the request with `HTTP 401` not authorized. Also we will allow this `auth` path so people can login without a 
-token. 
+It is obviously useless right now without a proper filter to check if user has authorization. You can just login and it will return a token but we are not using it anywhere yet. Jersey provides `ContainerRequestFilter` and by implementing this interface you can have a filter method. It enables you to  check or validate headers and other stuff before processing all request. What we will do is check the `Authorization` header and get token from it. If there is no token or the token we got is invalid and abort the request with `HTTP 401` not authorized. Also we will allow this `auth` path so people can login without a token. 
 
 {% highlight java %}
 @Provider
@@ -321,9 +320,9 @@ public class NoAuth {
 }
 {% endhighlight %}
 
-You can inject resources with `@Context` annotation. There some resources on default which are provided by Jersey like `HttpServletRequest`, `HttpServletResponse` or `UriInfo`. Also you can define your custom resources to inject like database source or `SecurityContext`. By utilizing these two we will get `Authorization` header and the top request path. If you just check token return error if it is not valid then there will no way for users to login properly. Therefore you need to exclude the `auth` resource from the token check. Also I am defining errors as just classes so I can show it quickly but a proper way is having a `GenericExceptionMapper` and catch errors there for logging properly and returning generic errors. I will probably show it later in a post.
+You can inject resources with `@Context` annotation. There are some resources on default which are provided by Jersey like `HttpServletRequest`, `HttpServletResponse` or `UriInfo`. Also you can define your custom resources to inject like database source or `SecurityContext`. By utilizing these `ServletRequest` and `ContainerRequest` we will get `Authorization` header and the top part of the request path. If you just check token and  return error when it is not valid then there will be no way for users to login properly. Therefore you need to exclude the `auth` resource from the token control. Also I am defining errors as just classes so I can show it quickly but a proper way is having a `GenericExceptionMapper` and catch errors from there for logging properly and returning generic errors. I will probably show it later within a different post.
 
-Now call `users` service again without a token and it will return an `401` error to you saying `Auth token is not valid`. After adding the tokens we got from earlier calls it will work again properly. 
+Now call `users` service again without a token and it will return an `401` error to you saying `Auth token is not valid`. After adding the tokens we got from earlier calls it will work again properly.
 
 {% highlight json %}
 {
@@ -332,9 +331,9 @@ Now call `users` service again without a token and it will return an `401` error
 }
 {% endhighlight %}
 
-We have last two parts which implementing user roles so normal users can not add or delete users. It will be possible thanks to `SecurityContext` that Jersey provides we will use the roles we defined earlier. 
+We have last two parts which implementing user roles so normal users can not add or delete users. It will be possible thanks to `SecurityContext` that Jersey provides  and we will use the role enum we defined earlier.
 
-Start with implementing `Principal` interface as `AuthUser implements Principal`. You will implement two methods, return a name and check if implies. Ignore the second and just return username as name for now. Also make sure you made `Role` enum public so we can use it in `SecurityContext`.
+Start with implementing `Principal` interface as `AuthUser implements Principal`. You will implement one method which returns the name of the user. Also make sure you made `Role` enum public so we can use it in `SecurityContext`.
 
 {% highlight java %}
 @Override
@@ -342,17 +341,12 @@ public String getName() {
     return this.username;
 }
 
-@Override
-public boolean implies(Subject subject) {
-    return false;
-}
-
 public enum Role{
     admin,mod,user
 }
 {% endhighlight %}
 
-Now we can create a `SecurityUser` which implements `SecurityContext`. It will ask you to add `isSecure`, `authenticationScheme`, `isUserInRole`, and `isSecure`. We implemented `Principal` on `AuthUser` earlier so we can return that user in here as principal.
+Now we can create a `SecurityUser` which implements `SecurityContext`. It will ask you to add `isSecure`, `authenticationScheme`, `isUserInRole`, and `getPrincipal`. We implemented `Principal` on `AuthUser` earlier so we can return that user in here as principal.
 
 {% highlight java %}
 public class SecurityUser implements SecurityContext {
@@ -384,9 +378,8 @@ public class SecurityUser implements SecurityContext {
     }
 }
 {% endhighlight %}
-We added user into this object and it will our principal. Authentication scheme is "token" or any other name you prefer. Set isSecure as true and compare the role given to us with the user's role and return true if they are equal.
-This is just a class though. How do we set this into our `Context`? As expected it will require us to register `RolesAllowed` as `register (RolesAllowedDynamicFeature.class);` in our `RestApp` class. After this in the filter method if it is actually a valid token then get the user and 
-set as `SecurityContext`. I updated filter method a bit so we can just return if it is a `auth` request. 
+We added user into this object and it will be our principal. Authentication scheme is "token" or any other name you prefer. Set isSecure as true and compare the role given to us with the user's role and return true if they are equal.
+This is just a class though. How do we put this into our `Context`? As expected it will require us to register `RolesAllowed` as `register (RolesAllowedDynamicFeature.class);` in our `RestApp` class. Almost all the time if you need to enable something you will probably need to register it first on your app class. After this, in the filter method if it is actually a valid token then get the user and set it as `SecurityContext`. I updated filter method a bit so we can just return if it is an `auth` request. 
 
 {% highlight java %}
 @Override
@@ -410,9 +403,9 @@ public void filter(ContainerRequestContext requestContext) {
 }
 {% endhighlight %}
 
-With this filter method when it is an `auth` request we just continue. If token header is empty then directly throw no auth error. Otherwise check token and if it is not valid throw no auth error. At last this is a valid token with a valid user so get the user info and set it as security context. Whenever you call `@Context SecurityContext securityContext;` in any resource you would be able to access to the current user. 
+With this filter method when it is an `auth` request we just continue. If token header is empty then directly throw no auth error. Otherwise check token and if it is not valid throw no auth error again. At last this is a valid token with a valid user so get the user info and set it as security context. Whenever you call `@Context SecurityContext securityContext;` in any resource you would be able to access to the current user. 
 
-Update the `UserResource` and add `@RolesAllowed({"admin","mod"})` on top of it. With this, path `users/*` will be only accessible to mods and admins. When you try to access it with user role it will throw `403 Forbidden`.  
+Update the `UserResource` and add `@RolesAllowed({"admin","mod"})` on top of it. With this, path `users/*` will be only accessible to mods and admins. When you try to access it with user role, it will throw `403 Forbidden`. 
 
 {% highlight java %}
 @RolesAllowed({"admin","mod"})
@@ -420,7 +413,7 @@ Update the `UserResource` and add `@RolesAllowed({"admin","mod"})` on top of it.
 public class UserResource { ...
 {% endhighlight %}
 
-Also you can allow a sub path to user role just putting `@RolesAllowed({"user"})` on top of the method. Let's say we want to give user role the access of retrieving users. Adding this will only affect this specific method and now our default user can access to `/users` call directly. 
+Also you can allow a sub path to user role by just putting `@RolesAllowed({"user"})` on top of the method. Let's say we want to give access of retrieving users to user role. Adding this will only affect this specific method and now our default user can access to `/users` call directly. 
 
 {% highlight java %}
 @RolesAllowed("user")
