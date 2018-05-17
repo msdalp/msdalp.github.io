@@ -6,9 +6,9 @@ categories:
 ---
 
 I started with a dummy jersey project and later added jdbi to that. You can see both posts below 
-[http://msdalp.github.io/2018/03/28/Java-Jersey-2.26-Tutorial/](First inital project)
+[http://msdalp.github.io/2018/03/28/Java-Jersey-2.26-Tutorial/](http://msdalp.github.io/2018/03/28/Java-Jersey-2.26-Tutorial/)
 
-[http://msdalp.github.io/2018/04/07/Java-Jersey-2.26-JDBI/](Adding Jdbi and Mysql to first project)
+[http://msdalp.github.io/2018/04/07/Java-Jersey-2.26-JDBI/](http://msdalp.github.io/2018/04/07/Java-Jersey-2.26-JDBI/)
 
 I will continue from the last part which you can pull from [https://github.com/msdalp/jersey-jdbi-sample](https://github.com/msdalp/jersey-jdbi-sample) the `master` branch. All work done on this post will go to `auth_filter-dao` branch. 
 
