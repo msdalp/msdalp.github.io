@@ -69,7 +69,7 @@ Before adding the gitlab-ci file we need to set environment variables first. Go 
 
 <br>![variables](/assets/img/24_06_variables.png)<br>
 
-`SSH_PRIVATE_KEY` is the private key we created on gitlab server. You will copy everything from `id_rsa` file and put here. `TARGET_USER` is just the username and server address which is `test_app@production.msdalp.com` for us in this case. 
+`SSH_PRIVATE_KEY` is the private key we created for deployment. You will copy everything from `id_rsa` file and put here. `TARGET_USER` is just the username and server address for production server which is `test_app@production.msdalp.com` in this case. 
 
 Next we can add `.gitlab-ci.yml` and ssh into our production server when there is a commit on master. The simplest file would be:
 
