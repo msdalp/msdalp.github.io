@@ -12,7 +12,7 @@ You can create auto deployments for your project when there is a commit to speci
 
 If the gitlab is just installed then you probably don't have runners. Runners are used for building and deploying the code. 
 
-First install `gitlab-runner` from this page https://docs.gitlab.com/runner/install/linux-repository.html.
+First install `gitlab-runner` from this page [https://docs.gitlab.com/runner/install/linux-repository.html](https://docs.gitlab.com/runner/install/linux-repository.html).
 Then add docker runners to your system for building docker projects. 
 Since I had ubuntu server followed these to install runners: 
 
@@ -37,7 +37,7 @@ sudo gitlab-runner register -n   --url https://git.msdalp.com   --registration-t
 sudo gitlab-runner register -n   --url https://git.msdalp.com   --registration-token YOUR_TOKEN   --executor docker   --description "Docker Runner"   --docker-image "docker:stable"   --docker-privileged
 {% endhighlight %}
 
-If you go back to page `https://git.msdalp.com/admin/runners` you should see both runners below. 
+If you go back to page [https://git.msdalp.com/admin/runners](https://git.msdalp.com/admin/runners) you should see both runners below. 
 
 We can either deploy sending the files to remote server and use `docker build` on there or build on gitlab server and push to docker repository. Second option is better in general but since I don't have google image repository permissions right now I will go with the first one. 
 
@@ -65,7 +65,7 @@ Also make sure you have proper permission for ssh folder:
 
 Now you should be able to ssh into production server by using deployment key as `ssh test_app@production.msdalp.com`.  
 
-Before adding the gitlab-ci file we need to set environment variables first. Go to the page https://git.msdalp.com/test_app/settings/ci_cd and set these two variables.
+Before adding the gitlab-ci file we need to set environment variables first. Go to the page [https://git.msdalp.com/test_app/settings/ci_cd](https://git.msdalp.com/test_app/settings/ci_cd) and set these two variables.
 
 <br>![variables](/assets/img/24_06_variables.png)<br>
 
