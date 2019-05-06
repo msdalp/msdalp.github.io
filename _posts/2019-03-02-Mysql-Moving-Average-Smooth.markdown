@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Moving Average Smooth for Mysql"
-date:   2018-03-02 12:00:00
+date:   2019-03-02 12:00:00
 categories:
 ---
 
