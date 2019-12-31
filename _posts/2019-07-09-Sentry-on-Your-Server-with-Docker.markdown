@@ -86,7 +86,7 @@ keep the generated secret_key to use in the next steps.
    $ docker run -it --rm -e SENTRY_SECRET_KEY='generated_key_from_above' --link sentry-redis:redis --link sentry-postgres:postgres sentry createuser
 {% endhighlight %}
 
-Go to `$ cd /etc/nginx/sites-enabled/` and rm the default setting file if its there with `$ rm default`. Add the nginx file to that files with any name. `$ nano sentry`
+Go to `$ cd /etc/nginx/sites-enabled/` and remove the default setting file if its there with `$ rm default`. Add the nginx file to that folder with any name. `$ nano sentry`
 {% highlight bash %}
  server {
     listen   80;
