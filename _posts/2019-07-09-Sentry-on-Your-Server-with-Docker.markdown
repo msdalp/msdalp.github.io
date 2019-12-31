@@ -154,4 +154,14 @@ Go to `$ cd /etc/nginx/sites-enabled/` and rm the default setting file if its th
 
 {% endhighlight %}
 
-Go to your domain on sentry.your_domain.com and can login there. 
+Go to your domain on sentry.your_domain.com and can login there with the user created at the last step.
+![login page](/assets/img/sentry_login_page.png)
+
+Fix default url if its wrong. 
+
+![fix url](/assets/img/sentry_url_settings.png)
+
+Create a new organization (was Test for me and it will take you to the homepage). 
+![main page](/assets/img/sentry_main_page.png)
+
+
