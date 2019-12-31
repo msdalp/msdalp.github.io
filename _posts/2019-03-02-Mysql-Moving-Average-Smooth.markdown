@@ -5,12 +5,12 @@ date:   2019-03-02 12:00:00
 categories:
 ---
 
-In some cases you might want to have a basic filtering on sql data directly. It is not directly available in mysql but can make it work with a simple counter logic. Idea is:
+In some cases you might want to have a basic filtering on sql data directly. It is not available in mysql but can make it work with a simple counter logic. Idea is:
 
 * Select full data with counter on first loop with a specific order by section.
-* Select the same data again but filter the data with counter comparing to above.
+* Select the same data again but filter the data with the counter comparing to above.
 <br>
-Is it the most efficient way? I am not really sure but if you just want to see results or test some data then it works quite well.
+Is it the most efficient way? It probably depends on your setup but if you just want to see results or test some data then it works quite well.
 <br>
 I'll be using `the same data` I used before to show an example which is loaded at  [https://www.db-fiddle.com/f/bbC16J8iMWTLisFKbAypUi/1](https://www.db-fiddle.com/f/bbC16J8iMWTLisFKbAypUi/1). Data contains position data with timestamp and speed for a specific person.  
 <br>

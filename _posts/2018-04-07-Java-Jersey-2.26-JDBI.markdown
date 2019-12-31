@@ -4,11 +4,11 @@ title:  "Java Jersey Database with Jersey 2.26 and JDBI"
 date:   2018-04-07 21:32:52
 categories:
 ---
-In the previous blog we just created an empty Jersey project to have a hello world service but it is quite useless. To make it more realistic I will add database connection and implement some methods with JDBI. You can utilize other options like MyBatis or Hibernate but I really don't like giving all control to the ORM and have a system that increases productivity compare to having raw JDBC. If you haven't used JDBI before it is the default JDBC Api on Dropwizard and actually it is quite similar to the Spring JDBC Template. Since we will be using simple stuff you will get the idea very quickly so don't worry about that. 
+In the previous blog we created an empty Jersey project to have a hello world service but it is quite useless as you expect. To make it more realistic I will add database connection and implement some methods with JDBI. You can use other options like MyBatis or Hibernate but I really don't like giving all control to the ORM. If you haven't used JDBI before it is the default JDBC Api on Dropwizard and actually it is quite similar to the Spring JDBC Template. Since we will be using simple stuff you will get the idea very quickly so don't worry about that. 
 
 How does this really work? We don't have a database connection at this stage and how do we start the db connection with application start and close it when the application is closed? 
 
-I will be using a `ServletContextListener` for the web app which enables us to have methods on context initialized and destroyed. It is basically gives access to the start and end of your application. Also we could be using `@PostConstruct` and `@PreDestroy` for `RestApplication` class and as expected it will run after app is initialized and before getting destroyed. Additionally if your app is not deployed as war but a jar then you can start your modules at start and close them on `Shutdown Hook` properly. 
+Answer is `ServletContextListener` for the web app which enables us to have methods when context initialized and destroyed. It basically gives access to the start and end of your application. Also we could be using `@PostConstruct` and `@PreDestroy` for `RestApplication` class and as expected it will run after app is initialized and before getting destroyed. Additionally if your app is not deployed as war but a jar then you can start your modules at start and close them on `Shutdown Hook` properly. 
 
 {% highlight xml %}
 <dependency>
@@ -35,7 +35,7 @@ public class MyListener implements ServletContextListener {
 }
 {% endhighlight %}
  
-`ServletContextListener` has two methods and one is contextInitialized, the other is contextDestroyed. You can check the logs to see where these methods run. Also after defining the custom listener we need to add it to `web.xml`.
+`ServletContextListener` has two methods as contextInitialized and contextDestroyed. You can check the logs to see where these methods run. Also after defining the custom listener we need to add it to `web.xml`.
 {% highlight xml %}
 <listener>
     <description>Context Listener</description>
@@ -62,7 +62,7 @@ Your web.xml file only had a simple webapp definition before and now it includes
 
 You can try running the app and see where these methods print out the messages we put for now temporarily. 
 
-We can't use a single db connection for a real application. It would require to have a proper connection pool which we will use HikariCP for that. Details for HikariCP can be found at [https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP). It is also possible to use Tomcat Pool, c3p0, or dbcp2 but especially for production hikari has the best implementation with proper Thread safe methods. Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
+We can't use a single db connection for real user applications. It would require us to have a proper connection pool which will be done by HikariCP. Details for HikariCP can be found at [https://github.com/brettwooldridge/HikariCP](https://github.com/brettwooldridge/HikariCP). It is also possible to use Tomcat Pool, c3p0, or dbcp2 but especially for production hikari has the best implementation with proper Thread safe methods. Also as I mentioned before, JDBI is the JDBC wrapper we will be using. Add both of these dependencies to your pom file. 
 
 {% highlight xml %}
 <dependency>
@@ -137,7 +137,7 @@ public class MyListener implements ServletContextListener {
 }
 {% endhighlight %}
 
-As you might notice I get the connection details from the context lookup but haven't done anything about it. First create a folder for the `context.xml` just next to `WEB-INF` as `META-INF` and put the `context.xml` in it. 
+As you might notice connection details are retrieved from the context lookup but haven't done anything about it. First create a folder for the `context.xml` just next to `WEB-INF` as `META-INF` and put the `context.xml` in it. 
 
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
@@ -199,7 +199,7 @@ public class User {
 }
 {% endhighlight %}
 
-`UserDao` is the JDBI interface where you define your application logic. You can read JDBI specific details from [http://jdbi.org](http://jdbi.org). 
+`UserDao` is the JDBI interface where you define your database logic. You can read JDBI specific details from [http://jdbi.org](http://jdbi.org). 
 {% highlight java %}
 public interface UserDao{
 
@@ -253,7 +253,7 @@ public void postCreate(){
 }
 {% endhighlight %}
 
-These should be all we need to have a proper resource call on user table. First try a specific user call as `/users/{userId}` and it should return a single user object.
+These should be all we need for a proper representation of user table as a resource. First try a specific user retrieval as `/users/{userId}` and it should return a single user object.
 
 
 `http://localhost:8080/users/2`
