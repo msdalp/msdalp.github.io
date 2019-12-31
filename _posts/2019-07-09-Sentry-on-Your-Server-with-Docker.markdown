@@ -154,6 +154,8 @@ Go to `$ cd /etc/nginx/sites-enabled/` and rm the default setting file if its th
 
 {% endhighlight %}
 
+Restart nginx or reload the settings `$ sudo service nginx restart`
+
 Go to your domain on sentry.your_domain.com and can login there with the user created at the last step.
 ![login page](/assets/img/sentry_login_page.png)
 
