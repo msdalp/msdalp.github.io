@@ -16,6 +16,11 @@ a real application?:
 
 Step by step Spring Boot How to Rest:
 * Have proper urls, responses, and http status codes 
+* JWT or auth token based auth
+* Swagger documentation generated automatically. 
+* Cache 
+* Migration and deployment through CI 
+
 
 ## Follow Rest (Restful) Standards
 * Use HTTP methods (verbs) `GET, POST, PUT, PATCH and DELETE`.
