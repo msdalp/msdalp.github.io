@@ -4,6 +4,9 @@ title:  "Setting up Sentry on Your Server with Docker"
 date:   2019-07-09 11:41:05
 categories:
 ---
+**REMARK: Sentry now has a docker-compose to use https://github.com/getsentry/onpremise**
+
+
 If you want to use Sentry on your server with your custom domain then it is quite easy. Main setup will have: 
 
 * nginx for reverse proxy: requests coming to sentry.my_domain.com will be redirected to sentry application runnning in docker. 
