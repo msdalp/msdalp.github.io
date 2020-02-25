@@ -5,9 +5,9 @@ date:   2019-10-12 12:00:00
 categories:
 ---
 
-Adding two database connection to a Spring Boot application is quite straightforward unless you are using `JpaRepositories`. Simple task of adding urls and giving JdbcTemplate different identifier names become an annoying task.
+Adding two database connections to a Spring Boot application is quite straightforward unless you are using `JpaRepositories`. Simple task of  giving JdbcTemplate beans different identifier names becomes a bit confusing.
 
-Starting with adding configurations of two different Datasource to the project: 
+Starting with the configuration file the only thing needed is having different initials like 
 
 {% highlight yaml %}
 app.datasource.backup.url=jdbc:mysql://backup_db
@@ -21,7 +21,7 @@ app.datasource.main.password=password
 app.datasource.main.maximum-pool-size=10
 {% endhighlight %}
 
-These will be used for datasource creation initially and later identifiers will be enough. 
+These will be used for datasource creation and after that identifiers will be enough to separate JDBC beans.
 
 {% highlight java %}
     @Bean
@@ -64,11 +64,11 @@ These will be used for datasource creation initially and later identifiers will 
 {% endhighlight %}
 
 In a configuration file or in the SpringBoot main class define these datasource beans. 
-* Read configuration information for resources
+* Read configuration information from resources
 * Create a datasource with a name from that configuration
-* Set the datasource created to a JdbcTemplate. The name given here will be used for accessing to the different JdbcTemplate beans as `@Qualifier("jdbcMain") JdbcTemplate jdbcTemplate`
+* Set the datasource created to a specific JdbcTemplate. The name given here will be used for accessing to the different JdbcTemplate beans as `@Qualifier("jdbcMain") JdbcTemplate jdbcTemplate`
 
-While defining a jdbc repository give the identifier to access a specific database. 
+While defining a jdbc repository give the identifier for accessing to that database. 
 
 {% highlight java %}
 @Repository
@@ -85,9 +85,9 @@ public class GameRepository {
 
 What if we want to use JPA and define our objects with `Entity`. Datasource definitions and initialization will not change. However different `EntityManagers` and `TransactionManagers` must be defined. 
 
-Annoying part is having auto mapping repositories to these frameworks is done by scanning packages. Which package to scan must be defined clearly otherwise build will fail. Another point is  different entity managers must have different packages as well. It is not possible to use a `com.test.repositories` package and make both scan in there. 
+Annoying part is having auto mapping repositories to these classes is done by scanning packages. Which package to scan must be defined clearly otherwise it will fail while creating database connection. Another point is  different entity managers must have different packages as well. It is not possible to use a `com.test.repositories` package and make both scan in there. 
 
-Datasource configuration is almost the same as the previous one but this time let's use configuration file. `DataSourceConfiguration` file will be defined as:
+Datasource configuration is almost the same as the previous one but this time let's use configuration annotation. `DataSourceConfiguration` file will be defined as: 
 
 {% highlight java %}
 @Configuration
@@ -121,7 +121,7 @@ public class DataSourceConfig {
 }
 {% endhighlight %}
 
-Next step is defining a EntityManager. Be aware of the base package `io.msdalp.dsone` to be scanned. First entity manager will deal with datasource one and everything related to it will be stored in `io.msdalp.dsone`. Also do not forget to update Hibernate Dialect if you are using a different database. 
+Next step is defining an EntityManager. Be aware of the base package `io.msdalp.dsone` to be scanned. First entity manager will deal with datasource one and everything related to it will be stored in `io.msdalp.dsone`. Also do not forget to update Hibernate Dialect if you are using a different database. 
 
 {% highlight java %}
 
