@@ -40,6 +40,7 @@ sudo gitlab-runner register -n   --url https://git.msdalp.com   --registration-t
 If you go back to page [https://git.msdalp.com/admin/runners](https://git.msdalp.com/admin/runners) you should see both runners below. 
 
 We can either deploy sending the files to remote server and use `docker build` on there or build on gitlab server and push to docker repository. Second option is better in general but since I don't have google image repository permissions right now I will go with the first one. 
+**Make sure you disabled docker-builder from shared runners. Since it is a shell executer it might work differently and if both are active it would select randomly for build process. I was asked before why the builds are randomly failing and this might be your reason as well.**
 
 Create a user on the deployment server with only docker group permissions and nothing else. On the `production` server:
 
@@ -74,18 +75,18 @@ Before adding the gitlab-ci file we need to set environment variables first. Go 
 Next we can add `.gitlab-ci.yml` and ssh into our production server when there is a commit on master. The simplest file would be:
 
 ```yaml
-image: ubuntu
+image: alpine
 
-services:
-- docker:dind
+variables:
 
 before_script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - 'which ssh-agent || ( apk add openssh-client)'
 
   ##
   ## Run ssh-agent (inside the build environment)
   ##
-  - eval $(ssh-agent -s)
+
+  - eval "$(ssh-agent -s)"
 
   ##
   ## Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
@@ -100,6 +101,7 @@ before_script:
   ##
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
+  - ssh-keyscan -H 'your ip or domain' >> ~/.ssh/known_hosts
 
 
 build:
