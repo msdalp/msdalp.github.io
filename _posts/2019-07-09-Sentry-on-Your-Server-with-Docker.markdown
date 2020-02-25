@@ -41,22 +41,13 @@ $ sudo apt install python-certbot-nginx
 $ sudo certbot --nginx -d sentry.your_domain.com
 {% endhighlight %}
 
-Before moving forward first disable docker from updating iptables since we want to use ufw as a simple firewall. What does this mean? Simply when you use docker and expose a port to the server (can be used for any reason) docker doesn't care about ufw. Let's say we will use these simple firewall settings and block everything else.
+Before moving forward be aware docker messes with the iptables and makes using ufw tricky. What does this mean? Simply when you use docker and expose a port to the server (can be used for any reason) docker doesn't care about ufw. Therefore make sure you are not exposing the port globally but only localhost.
 {% highlight bash %}
 $ ufw allow https
 $ ufw allow ssh
 $ ufw allow http
 {% endhighlight %}
 
-What you expect now that if docker is running a web app at port 8080 you should not be allowed to access to it by ip:8080. Well unfortunately docker will override rules including the firewall and expose this port to global. If you want to read details about this check [https://www.mkubaczyk.com/2017/09/05/force-docker-not-bypass-ufw-rules-ubuntu-16-04/](https://www.mkubaczyk.com/2017/09/05/force-docker-not-bypass-ufw-rules-ubuntu-16-04/) 
-To prevent this:
-{% highlight bash %}
-$ echo "{
-\"iptables\": false
-}" > /etc/docker/daemon.json
-
-$ sed -i -e 's/DEFAULT_FORWARD_POLICY="DROP"/DEFAULT_FORWARD_POLICY="ACCEPT"/g' /etc/default/ufw
-{% endhighlight %}
 
 Restart docker and ufw (allow ssh-http-https as shown above). 
 {% highlight bash %}
@@ -75,9 +66,9 @@ keep the generated secret_key to use in the next steps.
 
    $ docker run -it --rm -e SENTRY_SECRET_KEY='generated_key_from_above' --link sentry-postgres:postgres --link sentry-redis:redis sentry upgrade
 
-   $ docker run -d -p 9000:9000 --name custom-sentry -e SENTRY_SECRET_KEY='generated_key_from_above' --link sentry-redis:redis --link sentry-postgres:postgres sentry
+   $ docker run -d -p 127.0.0.1:9000:9000 --name custom-sentry -e SENTRY_SECRET_KEY='generated_key_from_above' --link sentry-redis:redis --link sentry-postgres:postgres sentry
 
-   $ docker run -d -p 9000:9000 --name custom-sentry -e SENTRY_SECRET_KEY='generated_key_from_above' -e SENTRY_SINGLE_ORGANIZATION=false -e SENTRY_USE_SSL=0 --link sentry-redis:redis --link sentry-postgres:postgres sentry   
+   $ docker run -d -p 127.0.0.1:9000:9000 --name custom-sentry -e SENTRY_SECRET_KEY='generated_key_from_above' -e SENTRY_SINGLE_ORGANIZATION=false -e SENTRY_USE_SSL=0 --link sentry-redis:redis --link sentry-postgres:postgres sentry   
 
    $ docker run -d --name sentry-cron -e SENTRY_SECRET_KEY='generated_key_from_above' --link sentry-postgres:postgres --link sentry-redis:redis sentry run cron
 
