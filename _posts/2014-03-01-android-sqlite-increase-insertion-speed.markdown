@@ -29,7 +29,7 @@ public synchronized boolean setData(List<YourObject> _objects) {
         return 
 }
 {% endhighlight %}
-After some digging I found nnother method to insert data into the database by using SqliteStatements.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.We had to make sure it is really inserting the data to database and it was successful.
+After some digging it was obvious for this kind of task using SqliteStatements is much better options.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.
 
 {% highlight java %}
 public synchronized boolean setData(List<YourObject> _objects) {
