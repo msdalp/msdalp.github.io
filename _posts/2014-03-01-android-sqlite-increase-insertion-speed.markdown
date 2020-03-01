@@ -29,7 +29,7 @@ public synchronized boolean setData(List<YourObject> _objects) {
         return 
 }
 {% endhighlight %}
-After some digging it was obvious for this kind of task using SqliteStatements is much better options.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.
+After some digging it was obvious for this kind of task using SqliteStatements is much better option.You can check the details of SqliteStatement here. Combining transactions with compiled statements yielded a tremendous performance boost: From the original 150 seconds on the Android device (Asus TF300) down to an incredible 1.5 seconds.
 
 {% highlight java %}
 public synchronized boolean setData(List<YourObject> _objects) {
